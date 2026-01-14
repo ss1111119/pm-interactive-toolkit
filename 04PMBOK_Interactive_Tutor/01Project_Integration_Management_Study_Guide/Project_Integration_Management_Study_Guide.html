@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案整合管理：新手學習指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0fdfa; /* Teal-50 */
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .step-connector::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            width: 2px;
+            height: 2rem;
+            background-color: #cbd5e1;
+            transform: translateX(-50%);
+            z-index: 0;
+        }
+        .step-connector:last-child::after {
+            display: none;
+        }
+        /* Mobile responsive adjustments for connector */
+        @media (min-width: 768px) {
+            .step-connector::after {
+                top: 50%;
+                left: 100%;
+                width: 2rem;
+                height: 2px;
+                transform: translateY(-50%);
+            }
+        }
+        .hidden-section {
+            display: none;
+        }
+        .active-tab {
+            border-bottom: 3px solid #0d9488; /* Teal-600 */
+            color: #0f766e; /* Teal-700 */
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Navbar -->
+    <nav class="bg-teal-700 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold"><i class="fas fa-project-diagram mr-2"></i>專案整合管理學習網</h1>
+            <span class="text-sm bg-teal-800 px-3 py-1 rounded-full">PMP 備考專用</span>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto p-4 md:p-6 space-y-8">
+
+        <!-- Intro Section -->
+        <section class="bg-white rounded-xl p-6 shadow-md border-l-4 border-teal-500">
+            <h2 class="text-2xl font-bold text-teal-800 mb-4">為什麼這裡最重要？</h2>
+            <p class="text-lg leading-relaxed mb-4">
+                如果專案管理是人體，其他九大領域（成本、時間、範疇...）是肌肉與骨骼，<br>
+                <span class="font-bold text-teal-600 bg-teal-50 px-2 rounded">整合管理就是「大腦與神經系統」</span>。
+            </p>
+            <div class="grid md:grid-cols-2 gap-4 mt-6">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-blue-800"><i class="fas fa-crown mr-2"></i>唯一不可授權</h3>
+                    <p class="text-sm text-gray-600 mt-2">只有專案經理 (PM) 能夠負責整合。你不能把這項工作丟給助理或廠商。</p>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-orange-800"><i class="fas fa-balance-scale mr-2"></i>權衡與取捨</h3>
+                    <p class="text-sm text-gray-600 mt-2">當進度與成本衝突時，只有整合管理能決定犧牲哪一邊來保全大局。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analogy Interactive Section -->
+        <section class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="bg-gray-800 text-white p-4 text-center">
+                <h2 class="text-xl font-bold"><i class="fas fa-music mr-2"></i>觀念具象化：百人交響樂團</h2>
+                <p class="text-sm text-gray-400">點擊下方的圖示，看看它們對應到專案管理的什麼角色？</p>
+            </div>
+            
+            <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <!-- Conductor -->
+                <div onclick="revealAnalogy('conductor')" class="cursor-pointer group p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition">
+                    <div class="text-4xl text-gray-400 group-hover:text-teal-600 mb-3 transition">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">指揮家</h3>
+                    <div id="conductor-text" class="hidden text-sm text-teal-800 font-bold bg-white p-2 rounded shadow-sm animate-pulse">
+                        專案經理 (PM)<br>
+                        <span class="text-xs font-normal text-gray-600">不一定最會拉琴，但負責協調全場</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 group-hover:hidden">(點擊查看)</p>
+                </div>
+
+                <!-- Sheet Music -->
+                <div onclick="revealAnalogy('score')" class="cursor-pointer group p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition">
+                    <div class="text-4xl text-gray-400 group-hover:text-teal-600 mb-3 transition">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">唯一的總譜</h3>
+                    <div id="score-text" class="hidden text-sm text-teal-800 font-bold bg-white p-2 rounded shadow-sm animate-pulse">
+                        專案管理計畫書<br>
+                        <span class="text-xs font-normal text-gray-600">所有子計畫的集合體，行動的依據</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 group-hover:hidden">(點擊查看)</p>
+                </div>
+
+                <!-- Musicians -->
+                <div onclick="revealAnalogy('musicians')" class="cursor-pointer group p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition">
+                    <div class="text-4xl text-gray-400 group-hover:text-teal-600 mb-3 transition">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">樂手聲部</h3>
+                    <div id="musicians-text" class="hidden text-sm text-teal-800 font-bold bg-white p-2 rounded shadow-sm animate-pulse">
+                        其他九大知識領域<br>
+                        <span class="text-xs font-normal text-gray-600">成本、時間、品質等專業部門</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 group-hover:hidden">(點擊查看)</p>
+                </div>
+            </div>
+            <div class="px-6 pb-6 text-center text-sm text-gray-500 italic">
+                「指揮家要確保大提琴想彈快一點時（變更），不會破壞整體的和諧。」
+            </div>
+        </section>
+
+        <!-- Process Flow Accordion -->
+        <section>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="bg-teal-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">5</span>
+                貫穿五大過程組的流程
+            </h2>
+            <div class="space-y-4">
+                
+                <!-- Step 1 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <button onclick="toggleAccordion('step1')" class="w-full flex items-center justify-between p-4 bg-teal-50 hover:bg-teal-100 transition text-left">
+                        <span class="font-bold text-teal-800"><span class="mr-3 text-teal-500">1. 啟動</span>發展專案章程</span>
+                        <i id="icon-step1" class="fas fa-chevron-down text-teal-500 transition-transform"></i>
+                    </button>
+                    <div id="step1" class="hidden p-4 border-t border-teal-100 text-gray-600 text-sm">
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>這是專案正式成立的「出生證明」。</li>
+                            <li>在這個階段，正式指派你為專案經理 (PM)。</li>
+                            <li>沒有章程，你就沒有權力動用資源。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <button onclick="toggleAccordion('step2')" class="w-full flex items-center justify-between p-4 bg-teal-50 hover:bg-teal-100 transition text-left">
+                        <span class="font-bold text-teal-800"><span class="mr-3 text-teal-500">2. 規劃</span>發展專案管理計畫書</span>
+                        <i id="icon-step2" class="fas fa-chevron-down text-teal-500 transition-transform"></i>
+                    </button>
+                    <div id="step2" class="hidden p-4 border-t border-teal-100 text-gray-600 text-sm">
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>將所有子計畫（範疇、時程、風險...）整合為一套統一的「行動手冊」。</li>
+                            <li>定義專案將「如何」被執行、監控與結束。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <button onclick="toggleAccordion('step3')" class="w-full flex items-center justify-between p-4 bg-teal-50 hover:bg-teal-100 transition text-left">
+                        <span class="font-bold text-teal-800"><span class="mr-3 text-teal-500">3. 執行</span>指導與管理專案執行 / 管理專案知識</span>
+                        <i id="icon-step3" class="fas fa-chevron-down text-teal-500 transition-transform"></i>
+                    </button>
+                    <div id="step3" class="hidden p-4 border-t border-teal-100 text-gray-600 text-sm">
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>產出實際的產品（交付標的）。</li>
+                            <li>運用 PMIS (資訊系統) 收集數據。</li>
+                            <li>分享知識，創造組織學習價值。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <button onclick="toggleAccordion('step4')" class="w-full flex items-center justify-between p-4 bg-red-50 hover:bg-red-100 transition text-left border-l-4 border-red-500">
+                        <span class="font-bold text-red-800"><span class="mr-3 text-red-500">4. 監控</span>(必考!) 整合變更控制</span>
+                        <i id="icon-step4" class="fas fa-chevron-down text-red-500 transition-transform"></i>
+                    </button>
+                    <div id="step4" class="hidden p-4 border-t border-red-100 text-gray-600 text-sm">
+                        <div class="bg-white p-3 rounded border border-red-100 mb-2">
+                            <strong class="text-red-600 block mb-1">關鍵流程：</strong>
+                            變更請求 &rarr; 評估影響 &rarr; CCB (委員會) 審核 &rarr; 更新基準
+                        </div>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>目的是防止「範疇蔓延」（隨意加功能）。</li>
+                            <li>只有經過核准的變更，才能修改計畫。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <button onclick="toggleAccordion('step5')" class="w-full flex items-center justify-between p-4 bg-teal-50 hover:bg-teal-100 transition text-left">
+                        <span class="font-bold text-teal-800"><span class="mr-3 text-teal-500">5. 結束</span>結束專案或階段</span>
+                        <i id="icon-step5" class="fas fa-chevron-down text-teal-500 transition-transform"></i>
+                    </button>
+                    <div id="step5" class="hidden p-4 border-t border-teal-100 text-gray-600 text-sm">
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>行政結案、釋放資源。</li>
+                            <li>一定要做完這一步，專案才算正式關閉。</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="bg-gray-800 text-white rounded-xl p-6 shadow-xl">
+            <h2 class="text-2xl font-bold mb-4"><i class="fas fa-clipboard-check mr-2"></i>新手小測驗</h2>
+            <p class="mb-6 text-gray-400 text-sm">測試看看你是否掌握了整合管理的核心觀念。</p>
+            
+            <div id="quiz-container">
+                <!-- Question Area -->
+                <div id="question-area" class="mb-4">
+                    <h3 id="question-text" class="text-lg font-semibold mb-4">題目載入中...</h3>
+                    <div id="options-container" class="space-y-3">
+                        <!-- Options will be injected here -->
+                    </div>
+                </div>
+                
+                <!-- Feedback Area -->
+                <div id="feedback-area" class="hidden mt-4 p-4 rounded bg-gray-700 border-l-4">
+                    <p id="feedback-text" class="text-sm"></p>
+                    <button onclick="nextQuestion()" class="mt-3 px-4 py-2 bg-teal-600 hover:bg-teal-500 rounded text-sm font-bold transition">下一題</button>
+                </div>
+
+                <!-- Final Score Area -->
+                <div id="score-area" class="hidden text-center py-8">
+                    <div class="text-4xl font-bold text-teal-400 mb-2" id="final-score"></div>
+                    <p class="text-gray-300 mb-4">完成複習！</p>
+                    <button onclick="restartQuiz()" class="px-6 py-2 bg-white text-gray-800 font-bold rounded hover:bg-gray-200 transition">重新測驗</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-teal-900 text-teal-200 text-center p-6 mt-8 text-sm">
+        <p>Project Management Integration Study Guide &copy; 2026</p>
+        <p class="text-xs mt-1 opacity-75">Based on NotebookLM Analysis</p>
+    </footer>
+
+    <script>
+        // --- Interactivity Scripts ---
+
+        // 1. Analogy Reveal
+        function revealAnalogy(id) {
+            const textEl = document.getElementById(id + '-text');
+            // Hide all first to allow single focus if desired, or just toggle
+            // Simple toggle logic:
+            if (textEl.classList.contains('hidden')) {
+                textEl.classList.remove('hidden');
+            } else {
+                textEl.classList.add('hidden');
+            }
+        }
+
+        // 2. Accordion
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // 3. Quiz Logic
+        const questions = [
+            {
+                q: "在專案執行過程中，客戶要求增加一個新功能。作為專案經理，你應該首先做什麼？",
+                options: [
+                    "為了讓客戶滿意，立即答應並執行。",
+                    "拒絕客戶，因為這不在原始計畫中。",
+                    "執行變更控制流程，先評估該變更對專案的影響。",
+                    "要求團隊成員加班完成。"
+                ],
+                correct: 2,
+                explanation: "核心觀念：遇到變更，不能直接答應或拒絕。必須透過整合變更控制流程，先「評估影響」，再送 CCB 審核。"
+            },
+            {
+                q: "以下哪一個知識領域是唯一貫穿所有五大過程組（啟動、規劃、執行、監控、結束）的？",
+                options: [
+                    "專案成本管理",
+                    "專案整合管理",
+                    "專案範疇管理",
+                    "專案風險管理"
+                ],
+                correct: 1,
+                explanation: "記憶點：整合管理是「大腦」，從專案出生（章程）到結束（結案）都需要大腦運作。"
+            },
+            {
+                q: "在「百人交響樂」的比喻中，專案經理的角色最像什麼？",
+                options: [
+                    "首席小提琴手 (技術最強的人)",
+                    "聽眾 (驗收成果的人)",
+                    "指揮家 (手握總譜，協調各聲部)",
+                    "作曲家 (提供資金的人)"
+                ],
+                correct: 2,
+                explanation: "PM 不一定是技術最強的（不用比首席會拉琴），但必須是能協調所有人、看懂總譜（計畫書）的指揮家。"
+            }
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const q = questions[currentQIndex];
+            document.getElementById('question-text').textContent = (currentQIndex + 1) + ". " + q.q;
+            
+            const optsContainer = document.getElementById('options-container');
+            optsContainer.innerHTML = '';
+
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-3 rounded bg-gray-700 hover:bg-gray-600 transition border border-gray-600";
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                optsContainer.appendChild(btn);
+            });
+
+            document.getElementById('feedback-area').classList.add('hidden');
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            const q = questions[currentQIndex];
+            const feedbackArea = document.getElementById('feedback-area');
+            const feedbackText = document.getElementById('feedback-text');
+            
+            // Disable all buttons
+            const allBtns = document.getElementById('options-container').children;
+            for(let btn of allBtns) {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+            }
+            btnElement.classList.remove('opacity-50');
+
+            if (selectedIndex === q.correct) {
+                score++;
+                btnElement.classList.remove('bg-gray-700');
+                btnElement.classList.add('bg-green-600', 'border-green-400');
+                feedbackArea.className = "mt-4 p-4 rounded bg-green-900 border-l-4 border-green-500 block";
+                feedbackText.textContent = "✅ 答對了！ " + q.explanation;
+            } else {
+                btnElement.classList.remove('bg-gray-700');
+                btnElement.classList.add('bg-red-600', 'border-red-400');
+                feedbackArea.className = "mt-4 p-4 rounded bg-red-900 border-l-4 border-red-500 block";
+                feedbackText.textContent = "❌ 答錯囉。 " + q.explanation;
+            }
+        }
+
+        function nextQuestion() {
+            currentQIndex++;
+            if (currentQIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showScore();
+            }
+        }
+
+        function showScore() {
+            document.getElementById('question-area').classList.add('hidden');
+            document.getElementById('feedback-area').classList.add('hidden');
+            document.getElementById('score-area').classList.remove('hidden');
+            document.getElementById('final-score').textContent = score + " / " + questions.length;
+        }
+
+        function restartQuiz() {
+            currentQIndex = 0;
+            score = 0;
+            document.getElementById('score-area').classList.add('hidden');
+            document.getElementById('question-area').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        // Initialize
+        loadQuestion();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案整合管理：變更管制學習機</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f3f4f6; }
+        .card-flip { transition: transform 0.6s; transform-style: preserve-3d; }
+        .card-flip:hover { transform: rotateY(180deg); }
+        .perspective { perspective: 1000px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // 圖標組件
+        const Icon = ({ name, color = "text-blue-500", size = "text-2xl" }) => (
+            <i className={`fas fa-${name} ${color} ${size}`}></i>
+        );
+
+        // 主應用程式
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('concept');
+
+            return (
+                <div className="min-h-screen flex flex-col items-center p-4 md:p-8">
+                    <header className="w-full max-w-4xl bg-white shadow-lg rounded-xl p-6 mb-6 border-l-8 border-blue-600">
+                        <h1 className="text-3xl font-bold text-gray-800 mb-2">專案整合管理：執行整合變更管制</h1>
+                        <p className="text-gray-600">專案的「守門員」與「平衡器」 - 互動式學習指南</p>
+                    </header>
+
+                    <nav className="w-full max-w-4xl flex flex-wrap gap-2 mb-6">
+                        {['concept', 'simulation', 'quiz'].map((tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab)}
+                                className={`flex-1 py-3 px-6 rounded-lg font-bold transition-all duration-300 shadow-sm
+                                    ${activeTab === tab 
+                                        ? 'bg-blue-600 text-white translate-y-1 shadow-md' 
+                                        : 'bg-white text-gray-600 hover:bg-blue-50'}`}
+                            >
+                                {tab === 'concept' && <span><i className="fas fa-book mr-2"></i>核心觀念</span>}
+                                {tab === 'simulation' && <span><i className="fas fa-plane mr-2"></i>飛機模擬情境</span>}
+                                {tab === 'quiz' && <span><i className="fas fa-pencil-alt mr-2"></i>模擬測驗</span>}
+                            </button>
+                        ))}
+                    </nav>
+
+                    <main className="w-full max-w-4xl">
+                        {activeTab === 'concept' && <ConceptSection />}
+                        {activeTab === 'simulation' && <SimulationSection />}
+                        {activeTab === 'quiz' && <QuizSection />}
+                    </main>
+
+                    <footer className="mt-8 text-gray-500 text-sm">
+                        根據 NotebookLM 分析內容製作 | 專案管理備考專用
+                    </footer>
+                </div>
+            );
+        };
+
+        // 1. 核心觀念區塊
+        const ConceptSection = () => {
+            const concepts = [
+                {
+                    title: "核心角色",
+                    icon: "user-shield",
+                    front: "這個流程在專案中扮演什麼角色？",
+                    back: "它是專案的「守門員」與「平衡器」。負責審查所有變更，防止「範疇蔓延」，確保專案完整性。",
+                    color: "bg-blue-100 border-blue-300"
+                },
+                {
+                    title: "執行時機",
+                    icon: "clock",
+                    front: "什麼時候開始執行此流程？",
+                    back: "當「績效基準」（範疇、時程、成本）建立後開始，直到專案結束。它是處理變動的唯一正式窗口。",
+                    color: "bg-green-100 border-green-300"
+                },
+                {
+                    title: "決策單位",
+                    icon: "gavel",
+                    front: "誰有權力決定變更？",
+                    back: "通常是「變更控制委員會（CCB）」或專案經理（根據授權）。他們會根據數據分析來投票或決策。",
+                    color: "bg-purple-100 border-purple-300"
+                },
+                {
+                    title: "運作邏輯",
+                    icon: "balance-scale",
+                    front: "收到變更請求後要做什麼？",
+                    back: "不能馬上做！要先評估對時間、成本、品質、風險的「跨領域綜合衝擊」，再決定是否批准。",
+                    color: "bg-orange-100 border-orange-300"
+                }
+            ];
+
+            return (
+                <div className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                        {concepts.map((item, idx) => (
+                            <div key={idx} className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-xl transition-shadow cursor-pointer group relative overflow-hidden">
+                                <div className={`absolute top-0 left-0 w-2 h-full ${item.color.replace('bg-', 'bg-').split(' ')[0].replace('100', '500')}`}></div>
+                                <div className="flex items-start mb-4 pl-4">
+                                    <div className={`p-3 rounded-full ${item.color} mr-4`}>
+                                        <i className={`fas fa-${item.icon} text-xl`}></i>
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-800 pt-2">{item.title}</h3>
+                                </div>
+                                <div className="pl-4">
+                                    <p className="text-gray-600 font-medium mb-2">Q: {item.front}</p>
+                                    <p className="text-gray-800 bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400 mt-2">
+                                        <strong className="text-red-500">A: </strong> {item.back}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                        <div className="md:col-span-2 bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+                            <h3 className="font-bold text-yellow-800 mb-2"><i className="fas fa-lightbulb mr-2"></i>整合管理的靈魂</h3>
+                            <p className="text-yellow-700">來源資料稱此為「靈魂控制室」。記住：變更不是壞事，但「未經審核」的變更是災難。</p>
+                        </div>
+                    </div>
+
+                    {/* 新增：考試關鍵字速記表 */}
+                    <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                        <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
+                            <i className="fas fa-list-check text-blue-600 mr-2"></i>
+                            考試必背關鍵字 (ITTO 速記)
+                        </h3>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h4 className="font-bold text-gray-700 mb-2">輸入 (Input)：依據什麼來審查？</h4>
+                                <ul className="space-y-2 text-sm text-gray-600">
+                                    <li><i className="fas fa-file-alt text-gray-400 w-6"></i><strong>專案管理計畫書：</strong>確認原本的基準是什麼。</li>
+                                    <li><i className="fas fa-chart-line text-gray-400 w-6"></i><strong>工作績效報告：</strong>了解目前執行狀況與偏差。</li>
+                                    <li><i className="fas fa-exclamation-circle text-gray-400 w-6"></i><strong>變更請求：</strong>任何想要修改的提案。</li>
+                                </ul>
+                            </div>
+                            <div className="bg-blue-50 p-4 rounded-lg">
+                                <h4 className="font-bold text-blue-800 mb-2">輸出 (Output)：審查完產出什麼？</h4>
+                                <ul className="space-y-2 text-sm text-blue-900">
+                                    <li><i className="fas fa-check-circle text-blue-500 w-6"></i><strong>核准的變更請求：</strong>CCB 同意執行的變更。</li>
+                                    <li><i className="fas fa-book text-blue-500 w-6"></i><strong>變更紀錄 (Change Log)：</strong>所有變更（含被拒絕的）都要記錄。</li>
+                                    <li><i className="fas fa-edit text-blue-500 w-6"></i><strong>計畫書/文件更新：</strong>修改基準或相關文件。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // 2. 飛行模擬器
+        const SimulationSection = () => {
+            const [step, setStep] = useState(0);
+            const [log, setLog] = useState([]);
+
+            const addLog = (msg) => setLog(prev => [...prev, msg]);
+
+            const resetSim = () => {
+                setStep(0);
+                setLog([]);
+            };
+
+            return (
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div className="bg-gray-800 p-4 text-white flex justify-between items-center">
+                        <h2 className="text-xl font-bold"><i className="fas fa-plane-departure mr-2"></i>自動駕駛變更模擬</h2>
+                        <button onClick={resetSim} className="text-sm bg-gray-600 px-3 py-1 rounded hover:bg-gray-500">重置模擬</button>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-3 min-h-[400px]">
+                        {/* 左側：控制台 */}
+                        <div className="md:col-span-2 p-6 border-r border-gray-200 relative">
+                            <div className="absolute top-4 right-4 text-gray-300 text-6xl opacity-20">
+                                <i className="fas fa-plane"></i>
+                            </div>
+
+                            {step === 0 && (
+                                <div className="space-y-4">
+                                    <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                                        <h3 className="font-bold text-lg mb-2">情境：正常航行中</h3>
+                                        <p>飛機（專案）正依照基準航行。突然，副機師（利害關係人）提出建議...</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => { setStep(1); addLog("收到變更請求：副機師建議為了避開雷雨區而改道。"); }}
+                                        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 shadow-md font-bold animate-pulse"
+                                    >
+                                        <i className="fas fa-exclamation-circle mr-2"></i>提出變更請求：避開雷雨改道
+                                    </button>
+                                </div>
+                            )}
+
+                            {step === 1 && (
+                                <div className="space-y-4">
+                                    <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
+                                        <h3 className="font-bold text-lg mb-2">關鍵時刻：你（CCB/系統）該怎麼做？</h3>
+                                        <p>你是控制系統。現在有人要求改道，你應該直接轉彎嗎？</p>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <button 
+                                            onClick={() => { alert("錯誤！直接執行會導致油料不足或延誤，這就是「範疇蔓延」。"); }}
+                                            className="bg-red-100 text-red-700 py-4 rounded-lg hover:bg-red-200 font-bold border border-red-300"
+                                        >
+                                            直接轉彎 (執行變更)
+                                        </button>
+                                        <button 
+                                            onClick={() => { setStep(2); addLog("啟動評估機制：計算油耗、時間與風險（參考工作績效報告）..."); }}
+                                            className="bg-green-100 text-green-700 py-4 rounded-lg hover:bg-green-200 font-bold border border-green-300"
+                                        >
+                                            先計算評估 (分析衝擊)
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {step === 2 && (
+                                <div className="space-y-4">
+                                    <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+                                        <h3 className="font-bold text-lg mb-2">分析結果出爐</h3>
+                                        <p>經計算：改道需多飛 30 分鐘，油料足夠，且能避開危險雷雨（降低風險）。</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => { setStep(3); addLog("決策：CCB 核准變更。"); addLog("產出：更新航行計畫 (基準更新)，寫入變更紀錄 (Change Log)。"); }}
+                                        className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 shadow-md font-bold"
+                                    >
+                                        <i className="fas fa-check-circle mr-2"></i>核准變更並更新計畫
+                                    </button>
+                                </div>
+                            )}
+
+                            {step === 3 && (
+                                <div className="text-center py-10">
+                                    <div className="inline-block p-6 rounded-full bg-green-100 text-green-600 mb-4">
+                                        <i className="fas fa-flag-checkered text-4xl"></i>
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-gray-800 mb-2">流程完成！</h3>
+                                    <p className="text-gray-600 max-w-md mx-auto">
+                                        你成功執行了「整合變更管制」。專案目標（安全抵達）得以維持，變更也經過了正式授權。
+                                    </p>
+                                    <button onClick={resetSim} className="mt-6 text-blue-600 underline">再玩一次</button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 右側：紀錄清單 */}
+                        <div className="bg-gray-50 p-4 font-mono text-sm">
+                            <h3 className="font-bold text-gray-500 uppercase mb-3 border-b pb-2">變更紀錄清單 (Log)</h3>
+                            <ul className="space-y-3">
+                                {log.length === 0 ? <li className="text-gray-400 italic">等待輸入...</li> : log.map((l, i) => (
+                                    <li key={i} className="flex items-start animate-fade-in-down">
+                                        <span className="text-blue-500 mr-2">[{i+1}]</span>
+                                        <span className="text-gray-700">{l}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // 3. 模擬測驗
+        const QuizSection = () => {
+            const questions = [
+                {
+                    q: "根據來源資料，哪一個流程被視為專案的「守門員」，負責防止範疇蔓延？",
+                    options: ["發展專案章程", "執行整合變更管制", "監控專案工作", "結束專案或階段"],
+                    ans: 1,
+                    explanation: "文中明確提到，「執行整合變更管制」被視為專案的「守門員」，且是防止「範疇蔓延」的核心流程。"
+                },
+                {
+                    q: "變更請求提出後，CCB 或專案經理應該首先做什麼？（基於飛機比喻的邏輯）",
+                    options: ["立刻執行變更以滿足客戶", "拒絕變更以維持穩定", "評估變更對所有面向的綜合衝擊", "更新專案章程"],
+                    ans: 2,
+                    explanation: "就像飛機控制系統不會立刻轉彎，必須先「計算評估」油耗與時間。此流程強調「跨領域影響分析」。"
+                },
+                {
+                    q: "關於「執行整合變更管制」的敘述，下列何者正確？",
+                    options: ["只在專案執行階段進行", "基準建立後，任何變更都必須進入此流程", "所有的變更都必須由客戶親自核准", "變更請求一旦核准，不需要更新專案管理計畫書"],
+                    ans: 1,
+                    explanation: "來源資料指出：當專案的績效基準建立後，任何變更都必須進入此流程。且變更核准後可能導致計畫書更新。"
+                }
+            ];
+
+            const [userAnswers, setUserAnswers] = useState({});
+            const [showResult, setShowResult] = useState(false);
+
+            const handleSelect = (qIdx, optIdx) => {
+                setUserAnswers({ ...userAnswers, [qIdx]: optIdx });
+            };
+
+            const score = Object.keys(userAnswers).reduce((acc, key) => {
+                return acc + (userAnswers[key] === questions[key].ans ? 1 : 0);
+            }, 0);
+
+            return (
+                <div className="space-y-6">
+                    {questions.map((q, idx) => (
+                        <div key={idx} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <h3 className="font-bold text-lg mb-4 text-gray-800">
+                                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm mr-2">Q{idx + 1}</span>
+                                {q.q}
+                            </h3>
+                            <div className="space-y-2 pl-4">
+                                {q.options.map((opt, oIdx) => (
+                                    <button
+                                        key={oIdx}
+                                        disabled={showResult}
+                                        onClick={() => handleSelect(idx, oIdx)}
+                                        className={`w-full text-left p-3 rounded-lg border transition-all
+                                            ${showResult 
+                                                ? (oIdx === q.ans 
+                                                    ? 'bg-green-100 border-green-500 text-green-900 font-bold' 
+                                                    : (userAnswers[idx] === oIdx ? 'bg-red-100 border-red-500' : 'bg-gray-50 border-gray-200 opacity-60'))
+                                                : (userAnswers[idx] === oIdx 
+                                                    ? 'bg-blue-600 text-white border-blue-600' 
+                                                    : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700')
+                                            }`}
+                                    >
+                                        {opt}
+                                        {showResult && oIdx === q.ans && <i className="fas fa-check float-right mt-1"></i>}
+                                        {showResult && userAnswers[idx] === oIdx && oIdx !== q.ans && <i className="fas fa-times float-right mt-1"></i>}
+                                    </button>
+                                ))}
+                            </div>
+                            {showResult && (
+                                <div className="mt-4 p-4 bg-yellow-50 text-yellow-800 rounded-lg text-sm">
+                                    <strong>解析：</strong> {q.explanation}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+
+                    <div className="text-center py-6">
+                        {!showResult ? (
+                            <button 
+                                onClick={() => setShowResult(true)}
+                                disabled={Object.keys(userAnswers).length < questions.length}
+                                className={`px-8 py-3 rounded-full font-bold text-lg shadow-lg
+                                    ${Object.keys(userAnswers).length < questions.length 
+                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                                        : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:scale-105 transition-transform'}`}
+                            >
+                                提交答案看解析
+                            </button>
+                        ) : (
+                            <div className="bg-white p-6 rounded-xl shadow-lg inline-block border-t-4 border-blue-500">
+                                <p className="text-2xl font-bold text-gray-800 mb-2">你的得分：{score} / {questions.length}</p>
+                                <p className="text-gray-500">
+                                    {score === questions.length ? "太棒了！你已經掌握了整合變更管制的精隨！" : "再複習一下核心觀念吧！"}
+                                </p>
+                                <button 
+                                    onClick={() => { setShowResult(false); setUserAnswers({}); }}
+                                    className="mt-4 text-blue-600 font-bold hover:underline"
+                                >
+                                    重測一次
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

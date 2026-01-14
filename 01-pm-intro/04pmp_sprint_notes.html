@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMP 考前衝刺筆記 | 專案管理概論</title>
+    <!-- 引入 Tailwind CSS 進行快速排版 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入字型 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pmp: {
+                            light: '#e0f2f1', // 淺綠背景
+                            main: '#26a69a',  // 主色調
+                            dark: '#00695c',  // 深色強調
+                            text: '#263238'   // 文字色
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans TC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 自定義 CSS 補強互動效果 */
+        body {
+            background-color: #f0f4f8;
+            color: #263238;
+        }
+
+        /* 翻轉卡片效果 */
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+            cursor: pointer;
+            height: 200px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 0.75rem;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            flex-direction: column;
+        }
+
+        .flip-card-front {
+            background-color: white;
+            color: #00695c;
+            border: 2px solid #26a69a;
+        }
+
+        .flip-card-back {
+            background-color: #26a69a;
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        /* 測驗選項樣式 */
+        .quiz-option {
+            transition: all 0.2s ease;
+        }
+        .quiz-option:hover:not(.disabled) {
+            background-color: #e0f2f1;
+            transform: translateX(5px);
+        }
+        .quiz-option.correct {
+            background-color: #d1fae5; /* Green-100 */
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .quiz-option.wrong {
+            background-color: #fee2e2; /* Red-100 */
+            border-color: #ef4444;
+            color: #7f1d1d;
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 40px;
+            height: 4px;
+            background-color: #26a69a;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+    <!-- Header -->
+    <header class="bg-pmp-dark text-white p-6 shadow-lg sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold tracking-wide">PMP 考前衝刺筆記</h1>
+                <p class="text-pmp-light text-sm mt-1">專案管理概論：系統、計畫、專案與作業</p>
+            </div>
+            <div class="hidden md:block text-sm opacity-80">
+                導師：10年經驗 PMP 教練
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-4 md:p-8 space-y-12">
+
+        <!-- 1. 核心概念儀表板 (Dashboard) -->
+        <section id="concepts">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 section-title">1. 核心定義光譜</h2>
+            <p class="text-gray-600 mb-4">這四者的關係是一個從「宏觀到微觀」、從「維持到變革」的光譜：</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- System -->
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-gray-500 hover:shadow-lg transition">
+                    <div class="flex items-center mb-3 text-gray-700">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        <h3 class="font-bold text-lg">系統 (System)</h3>
+                    </div>
+                    <p class="text-sm text-gray-600">最宏觀的概念。一組相互依賴的組成部分，共同運作以達成目標。</p>
+                </div>
+
+                <!-- Program -->
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-purple-500 hover:shadow-lg transition">
+                    <div class="flex items-center mb-3 text-purple-700">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        <h3 class="font-bold text-lg">計畫 (Program)</h3>
+                    </div>
+                    <p class="text-sm text-gray-600">一組相互關聯的專案。為了共同的大目標被協調管理。</p>
+                </div>
+
+                <!-- Project -->
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-pmp-main hover:shadow-lg transition">
+                    <div class="flex items-center mb-3 text-pmp-main">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <h3 class="font-bold text-lg">專案 (Project)</h3>
+                    </div>
+                    <p class="text-sm text-gray-600">暫時性、獨特性。為了創造獨一無二的產品或服務。</p>
+                </div>
+
+                <!-- Operations -->
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-orange-400 hover:shadow-lg transition">
+                    <div class="flex items-center mb-3 text-orange-600">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        <h3 class="font-bold text-lg">作業 (Operations)</h3>
+                    </div>
+                    <p class="text-sm text-gray-600">持續性、重複性。為了維持組織正常運作與現狀。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 新手白話文 (Analogies) -->
+        <section id="analogy">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 section-title">2. 人體比喻與對照</h2>
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 bg-pmp-light border-b border-pmp-main/20">
+                    <h3 class="text-xl font-bold text-pmp-dark flex items-center">
+                        <span class="text-3xl mr-3">🧍</span> 如果組織是「人體」...
+                    </h3>
+                </div>
+                
+                <div class="divide-y divide-gray-100">
+                    <!-- System -->
+                    <div class="p-6 flex flex-col md:flex-row md:items-center hover:bg-gray-50">
+                        <div class="md:w-1/4 font-bold text-gray-500 mb-2 md:mb-0">系統 (System)</div>
+                        <div class="md:w-3/4 flex items-start">
+                            <span class="text-2xl mr-3">🧠</span>
+                            <div>
+                                <strong class="text-gray-800">消化系統 / 循環系統</strong>
+                                <p class="text-sm text-gray-600 mt-1">器官相互配合的架構。這是整體運作的基礎環境。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Operations -->
+                    <div class="p-6 flex flex-col md:flex-row md:items-center hover:bg-gray-50 bg-orange-50/30">
+                        <div class="md:w-1/4 font-bold text-orange-600 mb-2 md:mb-0">作業 (Operations)</div>
+                        <div class="md:w-3/4 flex items-start">
+                            <span class="text-2xl mr-3">💓</span>
+                            <div>
+                                <strong class="text-gray-800">心跳與呼吸</strong>
+                                <p class="text-sm text-gray-600 mt-1">每天重複、不能停止。目的是「維持生命」，確保你活著。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project -->
+                    <div class="p-6 flex flex-col md:flex-row md:items-center hover:bg-gray-50 bg-teal-50/30">
+                        <div class="md:w-1/4 font-bold text-pmp-main mb-2 md:mb-0">專案 (Project)</div>
+                        <div class="md:w-3/4 flex items-start">
+                            <span class="text-2xl mr-3">👓</span>
+                            <div>
+                                <strong class="text-gray-800">做一次近視雷射手術</strong>
+                                <p class="text-sm text-gray-600 mt-1">暫時性（做完就結束）、獨特（改變視力）。目的是「造成改變」。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Program -->
+                    <div class="p-6 flex flex-col md:flex-row md:items-center hover:bg-gray-50">
+                        <div class="md:w-1/4 font-bold text-purple-600 mb-2 md:mb-0">計畫 (Program)</div>
+                        <div class="md:w-3/4 flex items-start">
+                            <span class="text-2xl mr-3">🏋️</span>
+                            <div>
+                                <strong class="text-gray-800">全套健康改造計畫</strong>
+                                <p class="text-sm text-gray-600 mt-1">包含減重專案 + 牙齒矯正專案 + 健身專案。多個專案協調管理，為了達成「變健康」的大目標。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. 重點記憶卡 (Flashcards) -->
+        <section id="flashcards">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 section-title">3. 關鍵字記憶卡 (點擊翻面)</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                
+                <!-- Card 1 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3 class="text-xl font-bold">專案<br>Project</h3>
+                            <span class="text-xs text-gray-400 mt-2">核心特性?</span>
+                        </div>
+                        <div class="flip-card-back">
+                            <p class="font-bold text-lg">獨特性 & 暫時性</p>
+                            <p class="text-xs mt-2 opacity-90">逐步完善，為創造獨特產品而生。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3 class="text-xl font-bold">作業<br>Operations</h3>
+                            <span class="text-xs text-gray-400 mt-2">核心特性?</span>
+                        </div>
+                        <div class="flip-card-back">
+                            <p class="font-bold text-lg">重複性 & 持續性</p>
+                            <p class="text-xs mt-2 opacity-90">維持組織正常運作，例行性工作。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3 class="text-xl font-bold">計畫<br>Program</h3>
+                            <span class="text-xs text-gray-400 mt-2">定義?</span>
+                        </div>
+                        <div class="flip-card-back">
+                            <p class="font-bold text-lg">一組相關聯專案</p>
+                            <p class="text-xs mt-2 opacity-90">協調管理以達成共同大目標。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3 class="text-xl font-bold">專案組合<br>Portfolio</h3>
+                            <span class="text-xs text-gray-400 mt-2">目的是?</span>
+                        </div>
+                        <div class="flip-card-back">
+                            <p class="font-bold text-lg">策略目標</p>
+                            <p class="text-xs mt-2 opacity-90">為了資源最佳化，不需要有依賴關係。</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 4. 模擬考題 (Quiz) -->
+        <section id="quiz">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 section-title">4. 實戰模擬考 (5題)</h2>
+            <div id="quiz-container" class="space-y-6">
+                <!-- 題目將由 JS 動態生成 -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 py-8 mt-12 text-center">
+        <p class="text-sm">Created with ❤️ by your AI PMP Tutor</p>
+    </footer>
+
+    <!-- JavaScript 邏輯 -->
+    <script>
+        // 題庫資料
+        const quizData = [
+            {
+                id: 1,
+                question: "關於「專案 (Project)」與「作業 (Operations)」的核心區別，下列敘述何者正確？",
+                options: [
+                    "專案是持續性的，作業是暫時性的",
+                    "專案是為了維持現狀，作業是為了創造變革",
+                    "專案具有獨特性與暫時性，作業具有重複性與持續性",
+                    "專案不需要規劃與控制，作業需要嚴格管理"
+                ],
+                correctIndex: 2,
+                explanation: "解析：這是最關鍵的定義。專案是「暫時且獨特」的（如雷射手術），作業是「持續且重複」的（如心跳）。兩者都需要規劃與控制。"
+            },
+            {
+                id: 2,
+                question: "如果將組織比喻為人體，下列哪一個類比最符合「作業 (Operations)」的角色？",
+                options: [
+                    "消化系統",
+                    "心跳與呼吸",
+                    "近視雷射手術",
+                    "全套健康改造計畫"
+                ],
+                correctIndex: 1,
+                explanation: "解析：作業是每天重複、維持生命存續的活動，就像心跳與呼吸。消化系統是「系統」，雷射手術是「專案」，健康改造是「計畫」。"
+            },
+            {
+                id: 3,
+                question: "下列關於「計畫 (Program)」的定義，何者最為精確？",
+                options: [
+                    "為了創造獨特產品的暫時性努力",
+                    "指一組具有互相關聯的專案，為了共同目標被協調管理",
+                    "為了達成組織策略目標的所有工作集合，不一定相關",
+                    "指組織中相互依賴的組成部分"
+                ],
+                correctIndex: 1,
+                explanation: "解析：計畫 (Program) 的重點在於「一組相關聯的專案」且被「協調管理」。選項 C 描述的是專案組合 (Portfolio)。"
+            },
+            {
+                id: 4,
+                question: "專案管理的目標通常是為了實現變革，而作業管理 (General Management) 則側重於？",
+                options: [
+                    "創造獨一無二的產品",
+                    "在既有系統下維持穩定、效率與連續性",
+                    "逐步完善不確定的範疇",
+                    "在限定時間內結束任務"
+                ],
+                correctIndex: 1,
+                explanation: "解析：作業管理是為了維持組織的正常運作（維持現狀），強調穩定與效率。變革與創造新事物是專案的目標。"
+            },
+            {
+                id: 5,
+                question: "來源資料提到這四者的關係光譜，下列排列順序何者符合「從抽象到具體」或「從維持到變革」的概念？",
+                options: [
+                    "系統是架構 -> 作業維持現狀 -> 專案改變現狀",
+                    "專案維持現狀 -> 作業改變現狀 -> 系統是架構",
+                    "計畫是最小單位 -> 專案是最大集合 -> 系統是暫時的",
+                    "作業是為了達成策略目標 -> 專案是為了重複生產"
+                ],
+                correctIndex: 0,
+                explanation: "解析：系統是整體運作的宏觀架構；作業是在架構內維持現狀的勞動；專案則是為了打破現狀、創造變革的任務。"
+            }
+        ];
+
+        // 渲染題目函數
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            
+            quizData.forEach((q, index) => {
+                const questionHTML = `
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Q${index + 1}. ${q.question}</h3>
+                        <div class="space-y-3">
+                            ${q.options.map((opt, optIndex) => `
+                                <div class="quiz-option border-2 border-gray-100 rounded-lg p-3 cursor-pointer"
+                                     onclick="checkAnswer(this, ${index}, ${optIndex})">
+                                    <span class="font-bold mr-2 text-gray-400">${String.fromCharCode(65 + optIndex)}.</span>
+                                    ${opt}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div id="feedback-${index}" class="hidden mt-4 p-4 rounded-lg text-sm bg-gray-50 border-l-4">
+                            <!-- 解析將顯示於此 -->
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += questionHTML;
+            });
+        }
+
+        // 檢查答案函數
+        function checkAnswer(element, questionIndex, selectedOptionIndex) {
+            const q = quizData[questionIndex];
+            const parent = element.parentElement;
+            const feedbackEl = document.getElementById(`feedback-${questionIndex}`);
+            
+            // 避免重複作答
+            if (parent.classList.contains('answered')) return;
+            parent.classList.add('answered');
+
+            // 鎖定所有選項
+            const options = parent.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.classList.add('disabled'));
+
+            // 判斷對錯
+            if (selectedOptionIndex === q.correctIndex) {
+                element.classList.add('correct');
+                feedbackEl.classList.remove('hidden', 'bg-red-50', 'border-red-500', 'text-red-700');
+                feedbackEl.classList.add('bg-green-50', 'border-green-500', 'text-green-700');
+                feedbackEl.innerHTML = `<strong>✅ 正確！</strong><br>${q.explanation}`;
+            } else {
+                element.classList.add('wrong');
+                // 標示正確答案
+                options[q.correctIndex].classList.add('correct');
+                
+                feedbackEl.classList.remove('hidden', 'bg-green-50', 'border-green-500', 'text-green-700');
+                feedbackEl.classList.add('bg-red-50', 'border-red-500', 'text-red-800');
+                feedbackEl.innerHTML = `<strong>❌ 答錯了。</strong><br>${q.explanation}`;
+            }
+            
+            feedbackEl.classList.remove('hidden');
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuiz();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理新手備考導航 | PM Exam Navigator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #fdfbf7; /* Warm neutral background */
+            color: #4b5563;
+        }
+
+        .tab-btn.active {
+            background-color: #f59e0b; /* Amber-500 */
+            color: white;
+            border-bottom: 2px solid #b45309;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background-color: #fef3c7; /* Amber-100 */
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        /* Card flip animation classes */
+        .perspective {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 1rem;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+    </style>
+    <!-- Chosen Palette: Warm Neutrals (Background: #fdfbf7) with Amber/Orange Accents (#f59e0b) for a studious, encouraging feel. Secondary colors: Slate for text, Emerald for success, Rose for alerts. -->
+    
+    <!-- Application Structure Plan: 
+         1. Header: Simple progress tracking and title.
+         2. Tab Navigation: 5 distinct units + Summary, mirroring the "Learning Strategy" from the source. This breaks the heavy text into digestible "levels".
+         3. Dynamic Content Area:
+            - Unit 1: Definition Cards & Quiz (Gamification of "Project vs Ops").
+            - Unit 2: Interactive Radar Chart (Visualizing the Triple Constraint trade-offs).
+            - Unit 3: Interactive Bar Chart (Visualizing PM Authority across Org structures).
+            - Unit 4: Timeline & Grid (Visualizing Processes and Knowledge Areas).
+            - Unit 5: Comparison Cards (Old vs New PMBOK).
+            - Summary: Interactive Checklist.
+         Rationale: The source material is a study guide. A modular, interactive dashboard approach reduces cognitive load and allows the user to focus on one concept at a time while providing immediate visual feedback.
+    -->
+
+    <!-- Visualization & Content Choices:
+         1. Project vs Ops: Interactive Quiz. Goal: Inform/Distinguish. Method: JS-based definition check. Justification: "Project vs Ops" is a binary classification task, best learned through practice.
+         2. Triple Constraint: Radar Chart (Chart.js). Goal: Relationships. Method: 3-axis radar chart (Scope, Time, Cost). Justification: Perfect for showing how expanding one point pulls/affects the shape of the project.
+         3. Org Structure: Bar Chart (Chart.js). Goal: Compare. Method: Horizontal bars representing "PM Authority". Justification: Visually demonstrates the gradient of power from Functional to Projectized.
+         4. Process Groups: Horizontal Timeline (HTML/Flex). Goal: Inform/Sequence. Method: Ordered steps. Justification: Shows the chronological nature of a project.
+    -->
+    
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">專案管理備考導航</h1>
+                    <p class="text-sm text-slate-500">新手全攻略：從零基礎到掌握 PMBOK 核心</p>
+                </div>
+                <div class="hidden md:block">
+                    <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">當前進度</span>
+                    <div id="unit-indicator" class="text-amber-600 font-bold text-lg">第一單元</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-slate-100 border-b border-slate-200 overflow-x-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-2 py-2 min-w-max" id="nav-container">
+                <!-- Nav buttons injected by JS -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div id="content-area" class="bg-white rounded-xl shadow-lg p-6 sm:p-10 min-h-[500px]">
+            <!-- Content injected by JS -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-300 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm">資料來源：專案管理新手備考全攻略 (基於 PMBOK 知識體系)</p>
+            <p class="text-xs mt-2 text-slate-500">此應用程式為學習輔助工具，內容僅供參考。</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Data & State ---
+        const state = {
+            currentTab: 'unit1',
+            quizScore: 0,
+            quizIndex: 0
+        };
+
+        const units = [
+            { id: 'unit1', title: '單元一：核心定義', icon: '🌱' },
+            { id: 'unit2', title: '單元二：限制條件', icon: '⚠️' },
+            { id: 'unit3', title: '單元三：組織結構', icon: '🏢' },
+            { id: 'unit4', title: '單元四：五大群組', icon: '🗺️' },
+            { id: 'unit5', title: '單元五：新舊思維', icon: '🔄' },
+            { id: 'summary', title: '總結清單', icon: '✅' }
+        ];
+
+        const quizQuestions = [
+            { text: "開發一款全新的折疊式手機", type: "project", reason: "這是一項獨特的、暫時性的任務，旨在創造新產品。" },
+            { text: "手機組裝線的日常生產", type: "ops", reason: "這是重複性的、持續的製造過程，目的是維持運作。" },
+            { text: "舉辦一場世紀婚禮", type: "project", reason: "這有明確的日期（暫時性）且每場婚禮都是獨特的。" },
+            { text: "銀行櫃檯每日受理存款", type: "ops", reason: "這是例行公事，屬於標準化服務。" },
+            { text: "修訂公司的年度財務報表", type: "project", reason: "雖然每年做，但每年的報表都是一個有起訖點的專案。" }
+        ];
+
+        // --- Charts Setup ---
+        let radarChartInstance = null;
+        let barChartInstance = null;
+
+        // --- Render Functions ---
+
+        function renderNav() {
+            const navContainer = document.getElementById('nav-container');
+            navContainer.innerHTML = units.map(unit => `
+                <button 
+                    onclick="switchTab('${unit.id}')"
+                    class="tab-btn px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 flex items-center space-x-2 ${state.currentTab === unit.id ? 'active' : 'text-slate-600 bg-white shadow-sm'}"
+                >
+                    <span>${unit.icon}</span>
+                    <span>${unit.title}</span>
+                </button>
+            `).join('');
+            
+            const currentUnit = units.find(u => u.id === state.currentTab);
+            document.getElementById('unit-indicator').innerText = currentUnit ? currentUnit.title : '';
+        }
+
+        function switchTab(tabId) {
+            state.currentTab = tabId;
+            renderNav();
+            renderContent();
+            window.scrollTo(0, 0);
+        }
+
+        function renderContent() {
+            const container = document.getElementById('content-area');
+            let content = '';
+
+            switch (state.currentTab) {
+                case 'unit1':
+                    content = renderUnit1();
+                    break;
+                case 'unit2':
+                    content = renderUnit2();
+                    break;
+                case 'unit3':
+                    content = renderUnit3();
+                    break;
+                case 'unit4':
+                    content = renderUnit4();
+                    break;
+                case 'unit5':
+                    content = renderUnit5();
+                    break;
+                case 'summary':
+                    content = renderSummary();
+                    break;
+            }
+            container.innerHTML = content;
+
+            // Initialize Charts after DOM injection
+            if (state.currentTab === 'unit2') initRadarChart();
+            if (state.currentTab === 'unit3') initBarChart();
+            if (state.currentTab === 'unit1') initQuiz();
+        }
+
+        // --- Unit 1: Definitions & Quiz ---
+        function renderUnit1() {
+            return `
+                <div class="space-y-8 animate-fade-in">
+                    <div class="border-l-4 border-amber-500 pl-4">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-2">單元一：先搞懂「我們在學什麼」</h2>
+                        <p class="text-lg text-slate-600">這是考試最基礎但也最容易混淆的部分。我們不僅要認識權威（PMI），更要學會區分「專案」與「作業」。</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-amber-50 rounded-xl p-6 border border-amber-100">
+                            <h3 class="text-xl font-bold text-amber-800 mb-3">📘 權威來源</h3>
+                            <ul class="space-y-2 text-amber-900">
+                                <li class="flex items-start"><span class="mr-2">🔹</span> 聖經：專案管理協會 (PMI) 的 <strong>PMBOK 指南</strong>。</li>
+                                <li class="flex items-start"><span class="mr-2">🔹</span> 核心：運用知識、工具，讓利害關係人滿意。</li>
+                                <li class="flex items-start"><span class="mr-2">⚠️</span> 陷阱：成功不僅是做完，而是符合<strong>期望</strong>。</li>
+                            </ul>
+                        </div>
+                        <div class="bg-blue-50 rounded-xl p-6 border border-blue-100">
+                            <h3 class="text-xl font-bold text-blue-800 mb-3">🆚 關鍵差異 (必考)</h3>
+                            <div class="flex justify-between text-sm mb-2 border-b border-blue-200 pb-2">
+                                <span class="font-bold text-blue-600">專案 (Project)</span>
+                                <span class="font-bold text-slate-500">作業 (Operations)</span>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between"><span class="bg-white px-2 py-1 rounded shadow-sm text-blue-700">暫時性 (有始有終)</span> <span class="text-slate-400">↔</span> <span class="bg-slate-100 px-2 py-1 rounded text-slate-600">持續性 (重複做)</span></div>
+                                <div class="flex justify-between"><span class="bg-white px-2 py-1 rounded shadow-sm text-blue-700">獨特性 (以前沒做過)</span> <span class="text-slate-400">↔</span> <span class="bg-slate-100 px-2 py-1 rounded text-slate-600">例行性 (維持運作)</span></div>
+                                <div class="flex justify-between"><span class="bg-white px-2 py-1 rounded shadow-sm text-blue-700">創造變革</span> <span class="text-slate-400">↔</span> <span class="bg-slate-100 px-2 py-1 rounded text-slate-600">維持現狀</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Quiz Section -->
+                    <div class="mt-8 bg-white rounded-xl border-2 border-slate-100 shadow-sm overflow-hidden">
+                        <div class="bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="font-bold text-lg text-slate-700">🎓 隨堂測驗：這是專案還是作業？</h3>
+                            <span class="text-sm bg-slate-200 px-3 py-1 rounded-full text-slate-600" id="quiz-score">得分: 0</span>
+                        </div>
+                        <div class="p-8 text-center" id="quiz-container">
+                            <div class="mb-6">
+                                <p class="text-2xl font-light text-slate-800 mb-2" id="quiz-question">準備中...</p>
+                                <p class="text-sm text-slate-400">請點擊下方按鈕進行分類</p>
+                            </div>
+                            <div class="flex justify-center space-x-4">
+                                <button onclick="answerQuiz('project')" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:-translate-y-1">專案 (Project)</button>
+                                <button onclick="answerQuiz('ops')" class="bg-slate-500 hover:bg-slate-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:-translate-y-1">作業 (Operations)</button>
+                            </div>
+                            <div id="quiz-feedback" class="mt-4 h-6 text-sm font-bold"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function initQuiz() {
+            state.quizIndex = 0;
+            state.quizScore = 0;
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            if (state.quizIndex < quizQuestions.length) {
+                document.getElementById('quiz-question').innerText = quizQuestions[state.quizIndex].text;
+                document.getElementById('quiz-feedback').innerText = "";
+                document.getElementById('quiz-feedback').className = "mt-4 h-6 text-sm font-bold";
+            } else {
+                document.getElementById('quiz-container').innerHTML = `
+                    <div class="text-green-600 text-2xl font-bold mb-4">測驗完成！</div>
+                    <p class="mb-4">你已經掌握了分辨專案與作業的關鍵能力。</p>
+                    <button onclick="initQuiz()" class="text-blue-500 underline">再玩一次</button>
+                `;
+            }
+        }
+
+        function answerQuiz(answer) {
+            const currentQ = quizQuestions[state.quizIndex];
+            const feedbackEl = document.getElementById('quiz-feedback');
+            
+            if (currentQ.type === answer) {
+                state.quizScore++;
+                feedbackEl.innerText = "✅ 正確！" + currentQ.reason;
+                feedbackEl.classList.add("text-green-600");
+                document.getElementById('quiz-score').innerText = `得分: ${state.quizScore}`;
+                setTimeout(() => {
+                    state.quizIndex++;
+                    loadQuizQuestion();
+                }, 1500);
+            } else {
+                feedbackEl.innerText = "❌ 錯誤。" + currentQ.reason;
+                feedbackEl.classList.add("text-red-500");
+            }
+        }
+
+        // --- Unit 2: Triple Constraint ---
+        function renderUnit2() {
+            return `
+                <div class="space-y-8 animate-fade-in">
+                    <div class="border-l-4 border-amber-500 pl-4">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-2">單元二：專案經理的緊箍咒</h2>
+                        <p class="text-lg text-slate-600">專案經理不是想做什麼就做什麼，我們是在限制中求生存。透過下方的互動圖表，體驗「傳統金三角」的連動關係。</p>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <div class="chart-container">
+                                <canvas id="radarChart"></canvas>
+                            </div>
+                            <p class="text-center text-xs text-slate-400 mt-2">嘗試滑動下方的控制桿，觀察形狀變化</p>
+                        </div>
+                        
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                            <h3 class="font-bold text-xl mb-4 text-slate-800">調整專案參數</h3>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="flex justify-between mb-1">
+                                        <span class="font-medium text-slate-700">範疇 (Scope): 要做多少事？</span>
+                                        <span id="val-scope" class="font-mono text-blue-600">50</span>
+                                    </label>
+                                    <input type="range" id="range-scope" min="20" max="100" value="50" class="w-full accent-blue-500" oninput="updateRadar('scope')">
+                                    <p class="text-xs text-slate-500 mt-1">增加範疇通常需要更多時間或成本。</p>
+                                </div>
+
+                                <div>
+                                    <label class="flex justify-between mb-1">
+                                        <span class="font-medium text-slate-700">時間 (Time): 時間有多緊迫？</span>
+                                        <span id="val-time" class="font-mono text-green-600">50</span>
+                                    </label>
+                                    <input type="range" id="range-time" min="20" max="100" value="50" class="w-full accent-green-500" oninput="updateRadar('time')">
+                                    <p class="text-xs text-slate-500 mt-1">數值越高代表時間越充裕；數值越低代表趕工 (成本會增加)。</p>
+                                </div>
+
+                                <div>
+                                    <label class="flex justify-between mb-1">
+                                        <span class="font-medium text-slate-700">成本 (Cost): 預算有多少？</span>
+                                        <span id="val-cost" class="font-mono text-red-600">50</span>
+                                    </label>
+                                    <input type="range" id="range-cost" min="20" max="100" value="50" class="w-full accent-red-500" oninput="updateRadar('cost')">
+                                    <p class="text-xs text-slate-500 mt-1">高品質通常伴隨高成本。</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 p-4 bg-amber-50 rounded-lg text-sm text-amber-800">
+                                <strong>💡 考試重點：</strong>這三者是連動的。如果你縮短時間（數值變小），通常需要增加成本（加人趕工）或減少範疇（少做功能）。這三者的平衡決定了<strong>品質</strong>。
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 pt-6 border-t border-slate-200">
+                        <h4 class="font-bold text-slate-700 mb-2">現代擴充限制 (必背)</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm">風險 (Risk)</span>
+                            <span class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm">資源 (Resources)</span>
+                            <span class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm">客戶滿意度 (Customer Satisfaction)</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function initRadarChart() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['範疇 (Scope)', '時間 (Time)', '成本 (Cost)'],
+                    datasets: [{
+                        label: '專案平衡狀態',
+                        data: [50, 50, 50],
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                        borderColor: 'rgba(245, 158, 11, 1)',
+                        pointBackgroundColor: ['rgba(59, 130, 246, 1)', 'rgba(34, 197, 94, 1)', 'rgba(239, 68, 68, 1)'],
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(245, 158, 11)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function updateRadar(changed) {
+            const scope = parseInt(document.getElementById('range-scope').value);
+            const time = parseInt(document.getElementById('range-time').value);
+            const cost = parseInt(document.getElementById('range-cost').value);
+
+            document.getElementById('val-scope').innerText = scope;
+            document.getElementById('val-time').innerText = time;
+            document.getElementById('val-cost').innerText = cost;
+
+            // Simple simulation logic for feedback
+            // In a real scenario, reducing time (rushing) often increases cost.
+            
+            radarChartInstance.data.datasets[0].data = [scope, time, cost];
+            radarChartInstance.update();
+        }
+
+        // --- Unit 3: Organization Structure ---
+        function renderUnit3() {
+            return `
+                <div class="space-y-8 animate-fade-in">
+                    <div class="border-l-4 border-amber-500 pl-4">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-2">單元三：你在哪裡上班很重要</h2>
+                        <p class="text-lg text-slate-600">考試常考：「PM 權力最大是在哪種組織？」透過下方圖表，比較不同組織結構中 PM 的職權與資源掌控力。</p>
+                    </div>
+
+                    <div class="grid lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2">
+                             <div class="chart-container">
+                                <canvas id="orgChart"></canvas>
+                            </div>
+                            <p class="text-center text-xs text-slate-400 mt-2">點擊圖表中的長條以查看詳情</p>
+                        </div>
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 flex flex-col justify-center">
+                            <h3 class="text-lg font-bold text-slate-800 mb-2" id="org-title">請點擊左側圖表</h3>
+                            <p class="text-slate-600 mb-4" id="org-desc">查看不同組織結構的詳細說明。</p>
+                            <div class="bg-white p-4 rounded border border-slate-100 shadow-sm">
+                                <h4 class="font-bold text-sm text-slate-500 mb-1">PM 角色特徵</h4>
+                                <p class="text-amber-600 font-bold" id="org-role">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                        <p class="font-bold text-yellow-800">🔥 備考重點口訣：</p>
+                        <ul class="list-disc ml-5 text-yellow-700 mt-1">
+                            <li>題目問「PM 權力最大」，選 <strong>專案式</strong> 或 <strong>強矩陣</strong>。</li>
+                            <li>題目問「PM 沒人理、要不到人」，通常是 <strong>功能式</strong>。</li>
+                            <li><strong>矩陣式</strong>是混合體，最常見但也最容易有衝突（因為員工有兩個老闆）。</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        function initBarChart() {
+            const ctx = document.getElementById('orgChart').getContext('2d');
+            
+            const orgData = {
+                labels: ['功能式 (Functional)', '弱矩陣 (Weak Matrix)', '平衡矩陣 (Balanced)', '強矩陣 (Strong Matrix)', '專案式 (Projectized)'],
+                data: [10, 30, 50, 80, 95],
+                descriptions: [
+                    "權力在部門經理手上。PM 只是「聯絡員」，幾乎沒有權力。",
+                    "PM 權力很小，仍由功能經理主導。",
+                    "PM 與功能經理共享權力，需協調資源。",
+                    "PM 權力大於功能經理，擁有專職團隊。",
+                    "公司為專案而存在，PM 擁有最高職權與資源掌控力。"
+                ],
+                roles: [
+                    "兼職，聯絡員/協調員",
+                    "兼職，協調員",
+                    "全職，專案經理",
+                    "全職，專案經理 (高職權)",
+                    "全職，總工程師/負責人"
+                ]
+            };
+
+            barChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: orgData.labels,
+                    datasets: [{
+                        label: 'PM 職權大小',
+                        data: orgData.data,
+                        backgroundColor: [
+                            'rgba(148, 163, 184, 0.6)', // Slate
+                            'rgba(147, 197, 253, 0.6)', // Blue light
+                            'rgba(59, 130, 246, 0.6)',  // Blue
+                            'rgba(37, 99, 235, 0.6)',   // Blue dark
+                            'rgba(245, 158, 11, 0.8)'   // Amber (Target)
+                        ],
+                        borderColor: [
+                            'rgba(148, 163, 184, 1)',
+                            'rgba(147, 197, 253, 1)',
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(37, 99, 235, 1)',
+                            'rgba(245, 158, 11, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    onClick: (e, activeElements) => {
+                        if (activeElements.length > 0) {
+                            const index = activeElements[0].index;
+                            document.getElementById('org-title').innerText = orgData.labels[index];
+                            document.getElementById('org-desc').innerText = orgData.descriptions[index];
+                            document.getElementById('org-role').innerText = orgData.roles[index];
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: '職權與資源掌控力 (%)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // --- Unit 4: Process Groups & Knowledge Areas ---
+        function renderUnit4() {
+            return `
+                <div class="space-y-8 animate-fade-in">
+                    <div class="border-l-4 border-amber-500 pl-4">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-2">單元四：地圖的核心 - 5大群組與10大知識</h2>
+                        <p class="text-lg text-slate-600">這是考試佔分最重的地方。不要死背 49 個子過程，先理解下方的時間軸邏輯。</p>
+                    </div>
+
+                    <!-- Process Groups Timeline -->
+                    <div class="bg-white p-2 overflow-x-auto">
+                        <h3 class="font-bold text-xl mb-4 text-center">⏳ 五大流程群組 (時間軸)</h3>
+                        <div class="flex min-w-[600px] justify-between items-center relative py-6">
+                            <!-- Line -->
+                            <div class="absolute top-1/2 left-0 w-full h-1 bg-slate-200 -z-10"></div>
+                            
+                            <!-- Steps -->
+                            <div class="flex flex-col items-center group cursor-pointer hover:scale-110 transition-transform">
+                                <div class="w-12 h-12 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-lg shadow-lg mb-2">1</div>
+                                <div class="font-bold text-slate-700">啟動</div>
+                                <div class="text-xs text-slate-500">專案章程</div>
+                            </div>
+                            <div class="flex flex-col items-center group cursor-pointer hover:scale-110 transition-transform">
+                                <div class="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-lg mb-2">2</div>
+                                <div class="font-bold text-slate-700">規劃</div>
+                                <div class="text-xs text-slate-500">計畫書(最忙)</div>
+                            </div>
+                            <div class="flex flex-col items-center group cursor-pointer hover:scale-110 transition-transform">
+                                <div class="w-12 h-12 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-lg shadow-lg mb-2">3</div>
+                                <div class="font-bold text-slate-700">執行</div>
+                                <div class="text-xs text-slate-500">實際動手</div>
+                            </div>
+                            <div class="flex flex-col items-center group cursor-pointer hover:scale-110 transition-transform">
+                                <div class="w-12 h-12 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold text-lg shadow-lg mb-2">4</div>
+                                <div class="font-bold text-slate-700">監控</div>
+                                <div class="text-xs text-slate-500">檢查修正</div>
+                            </div>
+                            <div class="flex flex-col items-center group cursor-pointer hover:scale-110 transition-transform">
+                                <div class="w-12 h-12 rounded-full bg-slate-400 text-white flex items-center justify-center font-bold text-lg shadow-lg mb-2">5</div>
+                                <div class="font-bold text-slate-700">結案</div>
+                                <div class="text-xs text-slate-500">驗收存檔</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Knowledge Areas Grid -->
+                    <div>
+                        <h3 class="font-bold text-xl mb-4 text-center mt-8">📚 十大知識領域</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                            <div class="p-3 bg-slate-100 rounded text-center text-sm hover:bg-amber-100 transition-colors">整合</div>
+                            <div class="p-3 bg-slate-100 rounded text-center text-sm hover:bg-amber-100 transition-colors">範疇</div>
+                            <div class="p-3 bg-slate-100 rounded text-center text-sm hover:bg-amber-100 transition-colors">時程</div>
+                            <div class="p-3 bg-slate-100 rounded text-center text-sm hover:bg-amber-100 transition-colors">成本</div>
+                            <div class="p-3 bg-slate-100 rounded text-center text-sm hover:bg-amber-100 transition-colors">品質</div>
+                            <div class="p-3 bg-slate-100 rounded text-center text-sm hover:bg-amber-100 transition-colors">資源</div>
+                            <div class="p-3 bg-slate-100 rounded text-center text-sm hover:bg-amber-100 transition-colors">溝通</div>
+                            <div class="p-3 bg-slate-100 rounded text-center text-sm hover:bg-amber-100 transition-colors">風險</div>
+                            <div class="p-3 bg-slate-100 rounded text-center text-sm hover:bg-amber-100 transition-colors">採購</div>
+                            <div class="p-3 bg-slate-100 rounded text-center text-sm hover:bg-amber-100 transition-colors">利害關係人</div>
+                        </div>
+                        <p class="text-center text-xs text-slate-400 mt-2">提示：這些知識領域在五大流程中交叉運作，形成 49 個子過程。</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Unit 5: New vs Old ---
+        function renderUnit5() {
+            return `
+                <div class="space-y-8 animate-fade-in">
+                    <div class="border-l-4 border-amber-500 pl-4">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-2">單元五：新舊思維的碰撞</h2>
+                        <p class="text-lg text-slate-600">PMBOK 第 7 版帶來了重大變革，但舊版的「硬技術」依然是考試重點。理解兩者的差異是得分關鍵。</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Old Way -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 shadow-sm">
+                            <h3 class="text-xl font-bold text-slate-600 mb-4 flex items-center">
+                                <span class="text-2xl mr-2">🏛️</span> 舊思維 (第 6 版前)
+                            </h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-center text-slate-700"><span class="w-2 h-2 bg-slate-400 rounded-full mr-2"></span>重視「過程」 (Process)</li>
+                                <li class="flex items-center text-slate-700"><span class="w-2 h-2 bg-slate-400 rounded-full mr-2"></span>強調 ITTO (輸入、工具、輸出)</li>
+                                <li class="flex items-center text-slate-700"><span class="w-2 h-2 bg-slate-400 rounded-full mr-2"></span>適合預測型專案 (如蓋房子)</li>
+                            </ul>
+                            <div class="mt-4 p-3 bg-white rounded border border-slate-100 text-sm text-slate-500">
+                                <strong>必考硬技術：</strong>WBS (工作分解)、要徑法 (算時間)、EVM (算錢)。
+                            </div>
+                        </div>
+
+                        <!-- New Way -->
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 shadow-sm">
+                            <h3 class="text-xl font-bold text-amber-700 mb-4 flex items-center">
+                                <span class="text-2xl mr-2">🚀</span> 新思維 (第 7 版)
+                            </h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-center text-amber-900"><span class="w-2 h-2 bg-amber-500 rounded-full mr-2"></span>重視「原則」 (Principles)</li>
+                                <li class="flex items-center text-amber-900"><span class="w-2 h-2 bg-amber-500 rounded-full mr-2"></span>強調價值交付、適應性</li>
+                                <li class="flex items-center text-amber-900"><span class="w-2 h-2 bg-amber-500 rounded-full mr-2"></span>適合變化快速的專案 (如軟體開發)</li>
+                            </ul>
+                             <div class="mt-4 p-3 bg-white rounded border border-amber-100 text-sm text-amber-800">
+                                <strong>核心概念：</strong>12 項原則 + 8 項績效領域。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Summary Checklist ---
+        function renderSummary() {
+            return `
+                <div class="space-y-8 animate-fade-in">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-2">考前最後確認</h2>
+                        <p class="text-slate-500">勾選你已經理解的概念，準備上考場！</p>
+                    </div>
+
+                    <div class="max-w-2xl mx-auto bg-white border-2 border-slate-100 rounded-xl overflow-hidden">
+                        <div class="divide-y divide-slate-100">
+                            <label class="flex items-center p-4 hover:bg-slate-50 cursor-pointer transition">
+                                <input type="checkbox" class="w-6 h-6 text-amber-500 rounded border-gray-300 focus:ring-amber-500">
+                                <span class="ml-4 text-slate-700 text-lg">能分辨「專案」還是「作業」</span>
+                            </label>
+                            <label class="flex items-center p-4 hover:bg-slate-50 cursor-pointer transition">
+                                <input type="checkbox" class="w-6 h-6 text-amber-500 rounded border-gray-300 focus:ring-amber-500">
+                                <span class="ml-4 text-slate-700 text-lg">理解傳統金三角 (範疇/時間/成本) 的連動</span>
+                            </label>
+                            <label class="flex items-center p-4 hover:bg-slate-50 cursor-pointer transition">
+                                <input type="checkbox" class="w-6 h-6 text-amber-500 rounded border-gray-300 focus:ring-amber-500">
+                                <span class="ml-4 text-slate-700 text-lg">知道「強矩陣/專案式」組織對 PM 最好</span>
+                            </label>
+                            <label class="flex items-center p-4 hover:bg-slate-50 cursor-pointer transition">
+                                <input type="checkbox" class="w-6 h-6 text-amber-500 rounded border-gray-300 focus:ring-amber-500">
+                                <span class="ml-4 text-slate-700 text-lg">背熟五大流程群組的順序 (啟動->規劃->執行...)</span>
+                            </label>
+                             <label class="flex items-center p-4 hover:bg-slate-50 cursor-pointer transition">
+                                <input type="checkbox" class="w-6 h-6 text-amber-500 rounded border-gray-300 focus:ring-amber-500">
+                                <span class="ml-4 text-slate-700 text-lg">知道專案最終目標是「交付價值、滿足利害關係人」</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center p-8 bg-amber-50 rounded-xl mt-8">
+                        <p class="text-xl font-bold text-amber-800">祝你備考順利！🎉</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNav();
+            renderContent();
+        });
+
+    </script>
+</body>
+</html>

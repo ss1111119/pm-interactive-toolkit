@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理：結束過程組學習指南</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f0f9ff; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .animate-fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { BookOpen, Anchor, CheckCircle, HelpCircle, Archive, Users, FileText, XCircle, ArrowRight, GitMerge, DollarSign } = lucide;
+
+        // Icons map
+        const Icon = ({ name, size = 24, color = "currentColor", className="" }) => {
+            const icons = {
+                BookOpen: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>,
+                Anchor: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="5" r="3"></circle><line x1="12" y1="22" x2="12" y2="8"></line><path d="M5 12H2a10 10 0 0 0 20 0h-3"></path></svg>,
+                CheckCircle: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>,
+                HelpCircle: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+                Archive: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>,
+                Users: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>,
+                FileText: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>,
+                XCircle: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>,
+                ArrowRight: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>,
+                GitMerge: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M6 21V9a9 9 0 0 0 9 9"></path></svg>,
+                DollarSign: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            };
+            return icons[name] || null;
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('metaphor');
+            const [quizScore, setQuizScore] = useState(0);
+            const [showResult, setShowResult] = useState(false);
+            const [userAnswers, setUserAnswers] = useState({});
+
+            const questions = [
+                {
+                    id: 1,
+                    question: "結束過程組在 PMP 知識領域中，屬於哪一個管理範疇？",
+                    options: [
+                        { text: "範疇管理 (Scope Management)", correct: false },
+                        { text: "整合管理 (Integration Management)", correct: true },
+                        { text: "溝通管理 (Communications Management)", correct: false },
+                        { text: "採購管理 (Procurement Management)", correct: false }
+                    ],
+                    explanation: "結束過程組負責將零散的成果整合成最終的結案行為，屬於「整合管理」的一部分。"
+                },
+                {
+                    id: 2,
+                    question: "關於「資源釋放」，下列順序何者較為合理？",
+                    options: [
+                        { text: "先釋放團隊，再進行客戶驗收", correct: false },
+                        { text: "先獲得正式驗收與行政結案，最後才釋放資源", correct: true },
+                        { text: "專案經理覺得做完了就可以釋放資源", correct: false },
+                        { text: "不需要釋放資源，直接進入下個專案", correct: false }
+                    ],
+                    explanation: "資源通常在確認交付、完成結案程序後才正式釋放（解散），以確保收尾工作有人執行。"
+                },
+                {
+                    id: 3,
+                    question: "下列哪一項是結束過程組最重要的「輸出」，能讓組織未來受益？",
+                    options: [
+                        { text: "專案章程", correct: false },
+                        { text: "更新組織流程資產 (如：經驗學習)", correct: true },
+                        { text: "工作績效數據", correct: false },
+                        { text: "變更請求", correct: false }
+                    ],
+                    explanation: "「經驗學習 (Lessons Learned)」是組織智慧的傳承，屬於組織流程資產 (OPAs) 的更新。"
+                },
+                {
+                    id: 4,
+                    question: "除了經驗學習，結束過程組還必須產出哪一份正式文件來彙整專案成果？",
+                    options: [
+                        { text: "最終專案報告 (Final Report)", correct: true },
+                        { text: "專案管理計畫書", correct: false },
+                        { text: "風險登記冊", correct: false },
+                        { text: "利害關係人登記冊", correct: false }
+                    ],
+                    explanation: "撰寫「結案報告 (Final Report)」是關鍵執行程序之一，用於彙整專案績效與成果。"
+                },
+                {
+                    id: 5,
+                    question: "在階段結束時進行的「Kill Point (封殺點)」審查，目的是什麼？",
+                    options: [
+                        { text: "殺掉專案經理", correct: false },
+                        { text: "決定專案是否繼續進行下一階段 (Go/No-Go)", correct: true },
+                        { text: "增加專案預算", correct: false },
+                        { text: "重新啟動專案", correct: false }
+                    ],
+                    explanation: "Kill Point 是決策點，用來評估績效並決定是否值得投入資源進入下一階段。"
+                }
+            ];
+
+            const handleAnswer = (qId, isCorrect) => {
+                setUserAnswers(prev => ({ ...prev, [qId]: isCorrect }));
+            };
+
+            const calculateScore = () => {
+                const correctCount = Object.values(userAnswers).filter(val => val === true).length;
+                setQuizScore(correctCount);
+                setShowResult(true);
+            };
+
+            const resetQuiz = () => {
+                setUserAnswers({});
+                setShowResult(false);
+                setQuizScore(0);
+            };
+
+            return (
+                <div className="min-h-screen pb-12">
+                    {/* Header */}
+                    <header className="bg-blue-600 text-white p-6 shadow-lg">
+                        <div className="max-w-4xl mx-auto flex items-center justify-between">
+                            <div>
+                                <h1 className="text-3xl font-bold flex items-center gap-3">
+                                    <Icon name="Anchor" size={32} />
+                                    專案航海指南
+                                </h1>
+                                <p className="mt-2 text-blue-100">新手專案管理 PMP 備考輔助：結束過程組 (Closing)</p>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Navigation */}
+                    <nav className="max-w-4xl mx-auto mt-6 px-4">
+                        <div className="flex space-x-2 bg-white p-1 rounded-xl shadow-sm">
+                            <button 
+                                onClick={() => setActiveTab('metaphor')}
+                                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${activeTab === 'metaphor' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
+                            >
+                                <Icon name="Anchor" size={20} />
+                                航海譬喻 (理解)
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab('concepts')}
+                                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${activeTab === 'concepts' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
+                            >
+                                <Icon name="BookOpen" size={20} />
+                                核心觀念 (記憶)
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab('quiz')}
+                                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${activeTab === 'quiz' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
+                            >
+                                <Icon name="CheckCircle" size={20} />
+                                模擬測驗 (驗收)
+                            </button>
+                        </div>
+                    </nav>
+
+                    {/* Content Area */}
+                    <main className="max-w-4xl mx-auto mt-8 px-4">
+                        
+                        {/* Tab: Metaphor */}
+                        {activeTab === 'metaphor' && (
+                            <div className="space-y-8 animate-fade-in">
+                                <div className="bg-white p-8 rounded-2xl shadow-md border border-blue-100">
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-6 border-l-4 border-blue-500 pl-4">如果專案是一場長途航行...</h2>
+                                    
+                                    <div className="relative border-l-2 border-dashed border-blue-300 ml-6 space-y-12 pb-4">
+                                        
+                                        {/* Step 1 */}
+                                        <div className="relative pl-8 group">
+                                            <div className="absolute -left-3 top-0 bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold shadow-lg group-hover:scale-110 transition-transform">1</div>
+                                            <div className="bg-blue-50 p-6 rounded-xl card-hover">
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <Icon name="CheckCircle" size={24} className="text-blue-600" />
+                                                    <h3 className="text-xl font-bold text-gray-800">靠岸與卸貨 (確認交付)</h3>
+                                                </div>
+                                                <p className="text-gray-600 leading-relaxed">
+                                                    船開到了目的地，第一件事不是船員回家，而是請貨主來「點交貨物」。<br/>
+                                                    <span className="font-bold text-blue-700">考試對應：</span> 獲得客戶或發起人的「正式驗收 (Formal Acceptance)」。
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Step 2 */}
+                                        <div className="relative pl-8 group">
+                                            <div className="absolute -left-3 top-0 bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold shadow-lg group-hover:scale-110 transition-transform">2</div>
+                                            <div className="bg-indigo-50 p-6 rounded-xl card-hover">
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <Icon name="FileText" size={24} className="text-indigo-600" />
+                                                    <h3 className="text-xl font-bold text-gray-800">撰寫航海日誌 (經驗學習)</h3>
+                                                </div>
+                                                <p className="text-gray-600 leading-relaxed">
+                                                    這趟旅程發現了新航道或暗礁？必須記錄下來，下次別人的船才不會翻在同一個地方。<br/>
+                                                    <span className="font-bold text-indigo-700">考試對應：</span> 更新組織流程資產 (OPAs)，特別是「經驗學習 (Lessons Learned)」。
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Step 3 */}
+                                        <div className="relative pl-8 group">
+                                            <div className="absolute -left-3 top-0 bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold shadow-lg group-hover:scale-110 transition-transform">3</div>
+                                            <div className="bg-cyan-50 p-6 rounded-xl card-hover">
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <Icon name="Users" size={24} className="text-cyan-600" />
+                                                    <h3 className="text-xl font-bold text-gray-800">結算與解散 (資源釋放)</h3>
+                                                </div>
+                                                <p className="text-gray-600 leading-relaxed">
+                                                    貨交了、日誌寫了，最後才是結清船員薪水，把船還給公司，讓大家下船回家。<br/>
+                                                    <span className="font-bold text-cyan-700">考試對應：</span> 行政/財務結案，最後「釋放專案資源」。
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200 text-yellow-800 text-sm">
+                                        <strong>💡 考試秘訣：</strong> 順序很重要！你不能在「客戶還沒驗收」的時候就「解散團隊」。
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tab: Concepts */}
+                        {activeTab === 'concepts' && (
+                            <div className="grid md:grid-cols-2 gap-6 animate-fade-in">
+                                
+                                {/* 1. Definition */}
+                                <div className="bg-white p-6 rounded-xl shadow-md border-t-4 border-green-500">
+                                    <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                                        <Icon name="CheckCircle" size={24} className="text-green-500" />
+                                        核心定義與歸屬
+                                    </h3>
+                                    <div className="bg-green-50 p-3 rounded-lg mb-3 text-sm text-green-800 font-bold flex items-center gap-2">
+                                        <Icon name="GitMerge" size={16} />
+                                        屬於：整合管理 (Integration Management)
+                                    </div>
+                                    <p className="text-gray-600 mb-2 text-sm">不是隨便停止，而是「正式」結束。這是一個嚴謹的行政程序。</p>
+                                    <ul className="space-y-1 text-sm text-gray-700">
+                                        <li className="flex items-start gap-2"><div className="mt-1.5 w-1.5 h-1.5 bg-green-500 rounded-full"></div> 確保所有流程已完成</li>
+                                        <li className="flex items-start gap-2"><div className="mt-1.5 w-1.5 h-1.5 bg-green-500 rounded-full"></div> 確保產品已移交</li>
+                                    </ul>
+                                </div>
+
+                                {/* 2. Key Actions (Expanded) */}
+                                <div className="bg-white p-6 rounded-xl shadow-md border-t-4 border-purple-500">
+                                    <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                                        <Icon name="DollarSign" size={24} className="text-purple-500" />
+                                        關鍵執行程序
+                                    </h3>
+                                    <ul className="space-y-2 text-sm text-gray-700 bg-gray-50 p-4 rounded-lg">
+                                        <li className="flex items-start gap-2">
+                                            <span className="font-bold text-purple-700 flex-shrink-0">行政結案：</span>
+                                            <span>辦理會計決算、合約結算。</span>
+                                        </li>
+                                        <li className="flex items-start gap-2">
+                                            <span className="font-bold text-purple-700 flex-shrink-0">資源釋放：</span>
+                                            <span>正式解散團隊、釋放設備。</span>
+                                        </li>
+                                        <li className="flex items-start gap-2">
+                                            <span className="font-bold text-purple-700 flex-shrink-0">撰寫報告：</span>
+                                            <span>彙整「最終專案報告 (Final Report)」。</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                {/* 3. OPA */}
+                                <div className="bg-white p-6 rounded-xl shadow-md border-t-4 border-orange-500">
+                                    <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                                        <Icon name="Archive" size={24} className="text-orange-500" />
+                                        最重要的輸出：組織資產
+                                    </h3>
+                                    <p className="text-gray-600 mb-2 text-sm">專案結束後，留給公司的智慧 (OPAs)。</p>
+                                    <ul className="space-y-2 text-sm text-gray-700 bg-gray-50 p-4 rounded-lg">
+                                        <li className="flex items-start gap-2"><div className="mt-1.5 w-1.5 h-1.5 bg-orange-500 rounded-full"></div> 經驗學習 (Lessons Learned)</li>
+                                        <li className="flex items-start gap-2"><div className="mt-1.5 w-1.5 h-1.5 bg-orange-500 rounded-full"></div> 歷史資訊與文件歸檔</li>
+                                    </ul>
+                                </div>
+
+                                {/* 4. Kill Point */}
+                                <div className="bg-white p-6 rounded-xl shadow-md border-t-4 border-red-500">
+                                    <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                                        <Icon name="XCircle" size={24} className="text-red-500" />
+                                        階段決策：Kill Point
+                                    </h3>
+                                    <p className="text-gray-600 text-sm mb-3">每個階段結束都是一個「檢查站」，決定專案命運 (Go/No-Go)。</p>
+                                    <div className="bg-red-50 p-3 rounded-lg flex items-center justify-around font-bold text-sm">
+                                        <span className="text-green-600 flex items-center gap-1"><Icon name="ArrowRight" size={16}/> Go (繼續)</span>
+                                        <span className="w-px h-6 bg-red-200"></span>
+                                        <span className="text-red-600 flex items-center gap-1"><Icon name="XCircle" size={16}/> No-Go (終止)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tab: Quiz */}
+                        {activeTab === 'quiz' && (
+                            <div className="bg-white p-8 rounded-2xl shadow-md">
+                                <h2 className="text-2xl font-bold text-gray-800 mb-6">自我評量</h2>
+                                
+                                {!showResult ? (
+                                    <div className="space-y-8 animate-fade-in">
+                                        {questions.map((q) => (
+                                            <div key={q.id} className="border-b border-gray-100 pb-6 last:border-0">
+                                                <p className="font-bold text-lg text-gray-800 mb-4">
+                                                    <span className="text-blue-600 mr-2">Q{q.id}.</span>
+                                                    {q.question}
+                                                </p>
+                                                <div className="space-y-2 pl-4">
+                                                    {q.options.map((opt, idx) => (
+                                                        <label key={idx} className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${userAnswers[q.id] === opt.correct && userAnswers.hasOwnProperty(q.id) ? 'bg-blue-50 border-blue-300' : 'border-gray-200 hover:bg-gray-50'}`}>
+                                                            <input 
+                                                                type="radio" 
+                                                                name={`question-${q.id}`} 
+                                                                className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                                                                onChange={() => handleAnswer(q.id, opt.correct)}
+                                                            />
+                                                            <span className="ml-3 text-gray-700">{opt.text}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <button 
+                                            onClick={calculateScore}
+                                            disabled={Object.keys(userAnswers).length < questions.length}
+                                            className="w-full py-3 bg-blue-600 text-white rounded-lg font-bold text-lg shadow-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                            提交答案
+                                        </button>
+                                        {Object.keys(userAnswers).length < questions.length && (
+                                            <p className="text-center text-sm text-gray-500 mt-2">請完成所有題目後提交</p>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="text-center animate-fade-in">
+                                        <div className="inline-block p-6 rounded-full bg-blue-50 mb-4">
+                                            {quizScore === questions.length ? (
+                                                <Icon name="CheckCircle" size={64} className="text-green-500" />
+                                            ) : (
+                                                <Icon name="HelpCircle" size={64} className="text-blue-500" />
+                                            )}
+                                        </div>
+                                        <h3 className="text-3xl font-bold text-gray-800 mb-2">
+                                            你的得分：{quizScore} / {questions.length}
+                                        </h3>
+                                        <p className="text-gray-600 mb-8">
+                                            {quizScore === questions.length ? "太棒了！你已經掌握了結束過程組的精髓！" : "再接再厲，複習一下觀念吧！"}
+                                        </p>
+                                        
+                                        {/* Review Section */}
+                                        <div className="text-left space-y-4 mb-8">
+                                            <h4 className="font-bold text-gray-700 border-b pb-2">解析：</h4>
+                                            {questions.map(q => (
+                                                <div key={q.id} className="bg-gray-50 p-4 rounded-lg text-sm">
+                                                    <span className="font-bold text-blue-600">Q{q.id}: </span>
+                                                    <span className="text-gray-800">{q.explanation}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <button 
+                                            onClick={resetQuiz}
+                                            className="px-8 py-3 bg-gray-600 text-white rounded-lg font-bold hover:bg-gray-700 transition-colors"
+                                        >
+                                            重新測驗
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="max-w-4xl mx-auto mt-12 px-4 text-center text-gray-400 text-sm">
+                        <p>© 2024 PM Study Guide - 基於 NotebookLM 分析筆記製作</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>

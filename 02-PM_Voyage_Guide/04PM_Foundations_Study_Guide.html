@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理基礎：角色與組織互動指南</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        body {
+            background-color: #f0f4f8;
+            font-family: "Noto Sans TC", sans-serif;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Data Models based on the provided text
+        const contentData = {
+            roles: [
+                {
+                    title: "整合者 (Integrator)",
+                    icon: "ph-arrows-merge",
+                    desc: "PM 的核心靈魂。負責將時間、成本、範疇、品質等相互競爭的限制條件進行平衡。就像指揮家協調所有樂器。",
+                    highlight: "最根本職責"
+                },
+                {
+                    title: "溝通樞紐 (Communicator)",
+                    icon: "ph-chat-circle-text",
+                    desc: "連結高層、團隊與外部利害關係人。PM 需要花費 75%-90% 的時間在溝通上。",
+                    highlight: "佔據 90% 時間"
+                },
+                {
+                    title: "決策與問題解決者",
+                    icon: "ph-gavel",
+                    desc: "在資源有限的情況下分配資源，並解決團隊衝突與突發狀況。",
+                    highlight: "資源分配"
+                }
+            ],
+            triangle: [
+                {
+                    title: "技術專案管理",
+                    eng: "Technical Project Management",
+                    desc: "硬實力。熟悉 PMBOK 流程、排程、EVM、風險分析。",
+                    metaphor: "指揮家的指揮棒與樂理知識"
+                },
+                {
+                    title: "領導統御",
+                    eng: "Leadership",
+                    desc: "軟實力。協商、溝通、解決衝突、影響力。在矩陣組織中尤為重要。",
+                    metaphor: "讓樂手服氣的個人魅力"
+                },
+                {
+                    title: "策略與商業管理",
+                    eng: "Strategic & Business",
+                    desc: "高層視野。理解組織策略、產業趨勢、確保商業價值。",
+                    metaphor: "對音樂會票房與曲目安排的理解"
+                }
+            ],
+            // New section added based on user feedback
+            evolution: [
+                {
+                    title: "展現領導力",
+                    eng: "Demonstrate Leadership",
+                    desc: "領導力不限於擁有職稱的 PM，任何團隊成員都可以展現領導行為。",
+                    icon: "ph-users-four"
+                },
+                {
+                    title: "管家精神",
+                    eng: "Stewardship",
+                    desc: "PM 被視為值得信賴的管家，需以正直、關懷與誠信的態度來監管組織資源。",
+                    icon: "ph-hand-heart"
+                }
+            ],
+            // New distinction section
+            definitions: {
+                title: "考點：功能式組織中的兩種角色",
+                items: [
+                    {
+                        term: "專案促進者 (Project Expeditor)",
+                        desc: "地位最低。主要負責跑腿、傳遞訊息，類似「助理」。完全沒有決策權。",
+                        color: "bg-gray-100 text-gray-700"
+                    },
+                    {
+                        term: "專案聯絡員 (Project Coordinator)",
+                        desc: "地位稍高。類似「領班」，擁有些許權力與決策空間，可以向高層報告。",
+                        color: "bg-blue-50 text-blue-700"
+                    }
+                ]
+            },
+            quiz: [
+                {
+                    question: "在「功能式組織」中，專案經理的角色通常被稱為什麼？",
+                    options: ["全權指揮官 (Commander)", "專案聯絡員 (Coordinator) 或 專案促進者 (Expeditor)", "功能經理 (Functional Manager)", "技術專家 (Technical Expert)"],
+                    answer: 1,
+                    explanation: "在功能式組織中，PM 權力極小，通常只擔任聯絡員或促進者（助理）的角色。"
+                },
+                {
+                    question: "根據 PMI 人才三角，PM 需要具備哪三種關鍵能力？",
+                    options: ["技術、領導、策略", "成本、時間、範疇", "溝通、談判、執行", "預算、人事、採購"],
+                    answer: 0,
+                    explanation: "PMI 人才三角包含：技術專案管理、領導統御、策略與商業管理。"
+                },
+                {
+                    question: "專案經理花費最多的時間（約 75%-90%）在做什麼？",
+                    options: ["制定排程", "寫程式或技術實作", "溝通", "計算預算"],
+                    answer: 2,
+                    explanation: "來源資料強調，溝通佔據了專案經理 75% 到 90% 的時間。"
+                },
+                {
+                    question: "將專案比喻為交響樂團，功能經理（Functional Manager）的角色最像什麼？",
+                    options: ["指揮家", "聽眾", "各分部的首席樂手", "售票員"],
+                    answer: 2,
+                    explanation: "功能經理負責訓練樂手技巧並提供資源，就像各分部的首席樂手。"
+                },
+                {
+                    question: "PMBOK 第 7 版提到的「管家精神 (Stewardship)」強調什麼態度？",
+                    options: ["追求最大利潤", "嚴格控制員工", "正直、關懷與誠信", "快速擴張市場"],
+                    answer: 2,
+                    explanation: "管家精神強調 PM 應以正直、關懷與誠信的態度來監管組織資源。"
+                },
+                {
+                    question: "在哪種組織結構下，專案經理擁有最高的權力與資源控制權？",
+                    options: ["強矩陣組織", "平衡矩陣組織", "功能式組織", "專案式組織"],
+                    answer: 3,
+                    explanation: "在專案式組織中，PM 是真正的指揮官，擁有全權處理資源與人事。"
+                }
+            ]
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('concepts');
+            const [orgType, setOrgType] = useState(1); // 0: Functional, 1: Matrix, 2: Projectized
+
+            // Quiz State
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [score, setScore] = useState(0);
+            const [showScore, setShowScore] = useState(false);
+            const [selectedOption, setSelectedOption] = useState(null);
+            const [isCorrect, setIsCorrect] = useState(null);
+
+            const handleAnswer = (index) => {
+                setSelectedOption(index);
+                const correct = index === contentData.quiz[currentQuestion].answer;
+                setIsCorrect(correct);
+                if (correct) setScore(score + 1);
+            };
+
+            const nextQuestion = () => {
+                setSelectedOption(null);
+                setIsCorrect(null);
+                const nextQ = currentQuestion + 1;
+                if (nextQ < contentData.quiz.length) {
+                    setCurrentQuestion(nextQ);
+                } else {
+                    setShowScore(true);
+                }
+            };
+
+            const resetQuiz = () => {
+                setCurrentQuestion(0);
+                setScore(0);
+                setShowScore(false);
+                setSelectedOption(null);
+                setIsCorrect(null);
+            };
+
+            return (
+                <div className="min-h-screen pb-12">
+                    {/* Header */}
+                    <header className="bg-slate-800 text-white p-6 shadow-lg">
+                        <div className="max-w-4xl mx-auto">
+                            <h1 className="text-3xl font-bold flex items-center gap-3">
+                                <i className="ph ph-strategy text-yellow-400"></i>
+                                專案經理備考指南
+                            </h1>
+                            <p className="mt-2 text-slate-300">基於 NotebookLM 分析資料的互動式學習工具</p>
+                        </div>
+                    </header>
+
+                    {/* Navigation */}
+                    <nav className="bg-white shadow sticky top-0 z-10">
+                        <div className="max-w-4xl mx-auto flex overflow-x-auto">
+                            {[
+                                { id: 'concepts', label: '核心角色與能力', icon: 'ph-student' },
+                                { id: 'orgs', label: '組織環境模擬', icon: 'ph-buildings' },
+                                { id: 'quiz', label: '模擬測驗', icon: 'ph-exam' }
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex-1 py-4 px-6 font-medium flex items-center justify-center gap-2 transition-colors whitespace-nowrap
+                                        ${activeTab === tab.id ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50' : 'text-gray-600 hover:bg-gray-50'}`}
+                                >
+                                    <i className={`ph ${tab.icon} text-xl`}></i>
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                    </nav>
+
+                    {/* Content Area */}
+                    <main className="max-w-4xl mx-auto mt-8 px-4">
+                        
+                        {/* Tab 1: Concepts */}
+                        {activeTab === 'concepts' && (
+                            <div className="fade-in space-y-8">
+                                <section>
+                                    <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <i className="ph ph-crown text-yellow-500"></i>
+                                        PM 的核心角色
+                                    </h2>
+                                    <div className="grid md:grid-cols-3 gap-4">
+                                        {contentData.roles.map((role, idx) => (
+                                            <div key={idx} className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 card-hover transition-all">
+                                                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4 text-blue-600 text-2xl">
+                                                    <i className={`ph ${role.icon}`}></i>
+                                                </div>
+                                                <h3 className="font-bold text-lg mb-2">{role.title}</h3>
+                                                <span className="inline-block bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded mb-2">{role.highlight}</span>
+                                                <p className="text-slate-600 text-sm leading-relaxed">{role.desc}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                <section>
+                                    <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <i className="ph ph-triangle text-purple-500"></i>
+                                        PMI 人才三角 (The Talent Triangle)
+                                    </h2>
+                                    <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                                        {contentData.triangle.map((item, idx) => (
+                                            <div key={idx} className="p-6 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
+                                                <div className="flex flex-col md:flex-row md:items-start gap-4">
+                                                    <div className={`w-16 h-16 rounded-lg flex items-center justify-center text-3xl shrink-0
+                                                        ${idx === 0 ? 'bg-pink-100 text-pink-600' : idx === 1 ? 'bg-yellow-100 text-yellow-600' : 'bg-cyan-100 text-cyan-600'}`}>
+                                                        <i className={`ph ${idx === 0 ? 'ph-wrench' : idx === 1 ? 'ph-users-three' : 'ph-trend-up'}`}></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-bold text-lg text-slate-800">{item.title} <span className="text-slate-400 text-sm font-normal">({item.eng})</span></h3>
+                                                        <p className="text-slate-600 mt-1">{item.desc}</p>
+                                                        <div className="mt-3 flex items-center gap-2 text-sm text-slate-500 bg-slate-100 p-2 rounded">
+                                                            <i className="ph ph-music-notes"></i>
+                                                            <span className="font-medium">樂團比喻：</span> {item.metaphor}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                {/* New Section: Role Evolution & Distinctions */}
+                                <div className="grid md:grid-cols-2 gap-8">
+                                    <section>
+                                        <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                            <i className="ph ph-trend-up text-green-500"></i>
+                                            角色演進 (PMBOK 7th)
+                                        </h2>
+                                        <div className="space-y-4">
+                                            {contentData.evolution.map((item, idx) => (
+                                                <div key={idx} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex gap-4">
+                                                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 shrink-0 text-xl">
+                                                        <i className={`ph ${item.icon}`}></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-bold text-slate-800">{item.title}</h3>
+                                                        <p className="text-sm text-slate-600 mt-1">{item.desc}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                            <i className="ph ph-warning-circle text-orange-500"></i>
+                                            {contentData.definitions.title}
+                                        </h2>
+                                        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-4">
+                                            {contentData.definitions.items.map((item, idx) => (
+                                                <div key={idx} className={`${item.color} p-4 rounded-lg`}>
+                                                    <h3 className="font-bold mb-1 flex items-center gap-2">
+                                                        {item.term}
+                                                        {idx === 0 ? <i className="ph ph-bicycle text-xl"></i> : <i className="ph ph-clipboard-text text-xl"></i>}
+                                                    </h3>
+                                                    <p className="text-sm opacity-90">{item.desc}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tab 2: Org Structures */}
+                        {activeTab === 'orgs' && (
+                            <div className="fade-in">
+                                <h2 className="text-2xl font-bold text-slate-800 mb-6">組織環境模擬器</h2>
+                                <p className="mb-6 text-slate-600">滑動下方的滑桿，觀察不同組織結構對 PM 權力與角色的影響。</p>
+
+                                <div className="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+                                    {/* Slider */}
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="2" 
+                                        step="1" 
+                                        value={orgType} 
+                                        onChange={(e) => setOrgType(parseInt(e.target.value))}
+                                        className="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer mb-8 accent-blue-600"
+                                    />
+                                    
+                                    <div className="flex justify-between text-sm font-bold text-slate-400 mb-8 px-1">
+                                        <span className={orgType === 0 ? 'text-blue-600 transform scale-110' : ''}>功能式組織</span>
+                                        <span className={orgType === 1 ? 'text-red-600 transform scale-110 animate-pulse' : ''}>矩陣式組織 (弱 → 強)</span>
+                                        <span className={orgType === 2 ? 'text-blue-600 transform scale-110' : ''}>專案式組織</span>
+                                    </div>
+
+                                    {/* Visualization */}
+                                    <div className="grid md:grid-cols-2 gap-8 items-center">
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-center border-b pb-2">
+                                                <span className="text-slate-500">PM 職稱</span>
+                                                <span className="font-bold text-lg text-blue-800">
+                                                    {orgType === 0 ? '聯絡員 / 促進者' : orgType === 1 ? '專案經理 (權力受限)' : '專案經理 (指揮官)'}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-center border-b pb-2">
+                                                <span className="text-slate-500">權力大小</span>
+                                                <div className="flex gap-1">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <div key={i} className={`w-4 h-4 rounded-full ${i < (orgType * 2 + 1) ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between items-center border-b pb-2">
+                                                <span className="text-slate-500">資源控制</span>
+                                                <span className="font-medium text-slate-700">
+                                                    {orgType === 0 ? '無 / 極低' : orgType === 1 ? '協商 / 中等' : '全權控制'}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-center border-b pb-2">
+                                                <span className="text-slate-500">樂團比喻</span>
+                                                <span className="font-medium text-slate-700">
+                                                    {orgType === 0 ? '翻譜員 / 跑腿' : orgType === 1 ? '受限的指揮 (看首席臉色)' : '絕對指揮家'}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 h-full flex flex-col justify-center items-center text-center">
+                                            <i className={`ph ${orgType === 0 ? 'ph-bicycle' : orgType === 1 ? 'ph-scales' : 'ph-rocket-launch'} text-6xl mb-4 text-blue-500`}></i>
+                                            <p className="text-slate-700 font-medium">
+                                                {orgType === 0 
+                                                    ? 'PM 幾乎沒有權力，主要負責跑腿 (Expeditor) 或擔任助理 (Coordinator)。' 
+                                                    : orgType === 1 
+                                                    ? 'PM 必須與功能經理進行權力拉鋸與資源協商。「溝通」與「談判」能力在此最為關鍵。' 
+                                                    : 'PM 擁有全權處理資源、預算與人事。團隊歸 PM 管，專案結束後團隊解散。'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tab 3: Quiz */}
+                        {activeTab === 'quiz' && (
+                            <div className="fade-in max-w-2xl mx-auto">
+                                <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">觀念驗收測驗</h2>
+                                
+                                {!showScore ? (
+                                    <div className="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+                                        <div className="flex justify-between text-sm text-slate-400 mb-4">
+                                            <span>Question {currentQuestion + 1} / {contentData.quiz.length}</span>
+                                            <span>Score: {score}</span>
+                                        </div>
+                                        
+                                        <h3 className="text-xl font-bold text-slate-800 mb-6">{contentData.quiz[currentQuestion].question}</h3>
+                                        
+                                        <div className="space-y-3">
+                                            {contentData.quiz[currentQuestion].options.map((option, index) => (
+                                                <button
+                                                    key={index}
+                                                    onClick={() => handleAnswer(index)}
+                                                    disabled={selectedOption !== null}
+                                                    className={`w-full text-left p-4 rounded-lg border transition-all relative
+                                                        ${selectedOption === null 
+                                                            ? 'border-slate-200 hover:border-blue-500 hover:bg-blue-50' 
+                                                            : index === contentData.quiz[currentQuestion].answer 
+                                                                ? 'border-green-500 bg-green-50 text-green-700 font-bold' 
+                                                                : selectedOption === index 
+                                                                    ? 'border-red-500 bg-red-50 text-red-700' 
+                                                                    : 'border-slate-100 opacity-50'
+                                                        }`}
+                                                >
+                                                    {option}
+                                                    {selectedOption !== null && index === contentData.quiz[currentQuestion].answer && (
+                                                        <i className="ph ph-check-circle absolute right-4 top-4 text-xl text-green-600"></i>
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        {selectedOption !== null && (
+                                            <div className="mt-6 p-4 bg-slate-50 rounded border border-slate-200">
+                                                <p className="font-bold text-slate-700 mb-1">
+                                                    {isCorrect ? '✨ 答對了！' : '❌ 答錯了'}
+                                                </p>
+                                                <p className="text-slate-600 text-sm">
+                                                    {contentData.quiz[currentQuestion].explanation}
+                                                </p>
+                                                <button 
+                                                    onClick={nextQuestion}
+                                                    className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                                                >
+                                                    下一題
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="bg-white p-8 rounded-xl shadow-lg border border-slate-200 text-center">
+                                        <i className="ph ph-medal text-6xl text-yellow-400 mb-4"></i>
+                                        <h3 className="text-2xl font-bold text-slate-800 mb-2">測驗完成！</h3>
+                                        <p className="text-slate-600 mb-6">您的得分是： <span className="text-3xl font-bold text-blue-600">{score}</span> / {contentData.quiz.length}</p>
+                                        
+                                        <p className="text-sm text-slate-500 mb-8">
+                                            {score === 6 ? "太棒了！您已經完全掌握了基礎觀念，具備「指揮家」的潛質！" : 
+                                             score >= 4 ? "表現不錯！回頭再複習一下組織結構的差異會更完美。" : 
+                                             "建議您回到「核心角色」區塊重新複習一下觀念喔！"}
+                                        </p>
+
+                                        <button 
+                                            onClick={resetQuiz}
+                                            className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                        >
+                                            重新測驗
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="max-w-4xl mx-auto mt-12 py-6 border-t border-slate-200 text-center text-slate-400 text-sm">
+                        <p>專案管理學習輔助工具 | Generated based on User Source Material</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

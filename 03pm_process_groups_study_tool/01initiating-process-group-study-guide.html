@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理：啟動過程組學習指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        .card-flip {
+            perspective: 1000px;
+        }
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card-flip.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom scrollbar for better mobile experience */
+        .overflow-x-auto::-webkit-scrollbar {
+            height: 4px;
+        }
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold"><i class="fas fa-flag-checkered mr-2"></i>PM 啟動過程組</h1>
+            <span class="text-xs md:text-sm bg-blue-500 px-3 py-1 rounded-full whitespace-nowrap">全方位學習版</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-4xl mx-auto w-full p-4">
+        
+        <!-- Navigation Tabs -->
+        <div class="flex space-x-2 mb-6 bg-white p-2 rounded-lg shadow-sm overflow-x-auto">
+            <button onclick="switchTab('concept')" id="btn-concept" class="tab-btn flex-none md:flex-1 py-2 px-4 rounded-md font-medium transition-colors bg-blue-100 text-blue-700 whitespace-nowrap">
+                <i class="fas fa-book-open mr-1"></i> 觀念故事
+            </button>
+            <button onclick="switchTab('notes')" id="btn-notes" class="tab-btn flex-none md:flex-1 py-2 px-4 rounded-md font-medium transition-colors text-slate-600 hover:bg-slate-100 whitespace-nowrap">
+                <i class="fas fa-list-alt mr-1"></i> 重點筆記
+            </button>
+            <button onclick="switchTab('flashcards')" id="btn-flashcards" class="tab-btn flex-none md:flex-1 py-2 px-4 rounded-md font-medium transition-colors text-slate-600 hover:bg-slate-100 whitespace-nowrap">
+                <i class="fas fa-clone mr-1"></i> 記憶卡片
+            </button>
+            <button onclick="switchTab('quiz')" id="btn-quiz" class="tab-btn flex-none md:flex-1 py-2 px-4 rounded-md font-medium transition-colors text-slate-600 hover:bg-slate-100 whitespace-nowrap">
+                <i class="fas fa-pencil-alt mr-1"></i> 模擬測驗
+            </button>
+        </div>
+
+        <!-- Section: Concept Story -->
+        <div id="tab-concept" class="tab-content fade-in">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 border-b pb-2">出國遠征的比喻</h2>
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="bg-yellow-100 p-3 rounded-full mr-4 text-yellow-600 flex-shrink-0">
+                                <i class="fas fa-crown text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-slate-800">1. 覲見國王 (獲得授權)</h3>
+                                <p class="text-slate-600 mt-1">啟動不是開始打包行李，而是從國王（發起人 Sponsor）手中接過聖旨。這張聖旨證明了這次遠征是「合法的」，不是你私下想去玩的。</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4 text-blue-600 flex-shrink-0">
+                                <i class="fas fa-scroll text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-slate-800">2. 領取詔書 (專案章程 Charter)</h3>
+                                <p class="text-slate-600 mt-1">這份文件寫著：<br>
+                                    • 去哪裡取經？ (高層級目標)<br>
+                                    • 給你多少盤纏？ (預算彙總)<br>
+                                    • 封你為隊長！ (指派 PM 並授權動用資源)</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="bg-green-100 p-3 rounded-full mr-4 text-green-600 flex-shrink-0">
+                                <i class="fas fa-users-viewfinder text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-slate-800">3. 打聽情報 (辨識利害關係人)</h3>
+                                <p class="text-slate-600 mt-1">出發前先搞清楚：<br>
+                                    • 誰會支持我們？ (盟友)<br>
+                                    • 誰可能阻撓我們？ (潛在阻力)<br>
+                                    這叫「辨識利害關係人」，越早知道，以後路上越安全。</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 p-4 bg-slate-50 rounded-lg border-l-4 border-red-400">
+                            <h4 class="font-bold text-red-500 mb-1"><i class="fas fa-exclamation-circle"></i> 考試陷阱</h4>
+                            <p class="text-sm text-slate-600">啟動不只發生在最開始！如果是分階段的大型專案（例如：先設計、後施工），進入「施工階段」前，必須再次執行啟動過程，重新確認授權。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Detailed Notes (New) -->
+        <div id="tab-notes" class="tab-content hidden fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6 space-y-6">
+                <h2 class="text-2xl font-bold text-slate-800 border-b pb-2">完整筆記重點整理</h2>
+                
+                <!-- Point 1 -->
+                <div class="space-y-2">
+                    <h3 class="text-lg font-bold text-blue-700 flex items-center">
+                        <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">1</span>
+                        定義與目的
+                    </h3>
+                    <ul class="list-disc list-inside text-slate-700 ml-4 space-y-1">
+                        <li><strong>起點與合法化：</strong>啟動不僅是開始做事，更是專案的「出生證明」。</li>
+                        <li><strong>核心目的：</strong>獲得授權 (Authorization)。由組織或發起人正式批准。</li>
+                        <li><strong>確立邊界：</strong>定義高層級目標 (High-level objectives) 與初步範疇。</li>
+                        <li><strong>資源承諾：</strong>確保財務資源被列入預算。</li>
+                    </ul>
+                </div>
+
+                <!-- Point 2 -->
+                <div class="space-y-2">
+                    <h3 class="text-lg font-bold text-blue-700 flex items-center">
+                        <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">2</span>
+                        兩大核心支柱 (關鍵過程)
+                    </h3>
+                    
+                    <div class="bg-slate-50 p-4 rounded-lg ml-2 border-l-4 border-blue-400">
+                        <h4 class="font-bold text-slate-800">A. 發展專案章程 (Develop Project Charter)</h4>
+                        <p class="text-sm text-slate-600 mt-1 font-medium">屬於「整合管理」範疇</p>
+                        <ul class="list-disc list-inside text-slate-700 mt-2 text-sm">
+                            <li>正式承認專案存在，授權 PM 使用資源。</li>
+                            <li>連結組織策略與專案目標。</li>
+                            <li>內容包含：目的、高層級需求、預算彙總、時程里程碑。</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-lg ml-2 border-l-4 border-purple-400">
+                        <h4 class="font-bold text-slate-800">B. 辨識利害關係人 (Identify Stakeholders)</h4>
+                        <p class="text-sm text-slate-600 mt-1 font-medium">屬於「溝通管理」的起點</p>
+                        <ul class="list-disc list-inside text-slate-700 mt-2 text-sm">
+                            <li>識別誰會影響專案或受專案影響。</li>
+                            <li>記錄利益、參與度、依賴性及潛在影響力。</li>
+                            <li>強調「儘早參與」以避免後續阻力。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Point 3 -->
+                <div class="space-y-2">
+                    <h3 class="text-lg font-bold text-blue-700 flex items-center">
+                        <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">3</span>
+                        專案經理 (PM) 的確立
+                    </h3>
+                    <ul class="list-disc list-inside text-slate-700 ml-4 space-y-1">
+                        <li><strong>正式任命：</strong>章程的發布標誌著 PM 被正式賦予權力。</li>
+                        <li><strong>參與時機：</strong>理想情況下，PM 應在啟動階段就被指派，甚至參與章程起草，以深刻理解目標。</li>
+                    </ul>
+                </div>
+
+                <!-- Point 4 -->
+                <div class="space-y-2">
+                    <h3 class="text-lg font-bold text-blue-700 flex items-center">
+                        <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">4</span>
+                        滾動式啟動 (Rolling Wave)
+                    </h3>
+                    <ul class="list-disc list-inside text-slate-700 ml-4 space-y-1">
+                        <li><strong>多階段適用：</strong>大型專案分為多個階段 (Phases)。</li>
+                        <li><strong>反覆執行：</strong>每個新階段開始前，都要重新執行啟動過程。</li>
+                        <li><strong>Go/No-Go：</strong>驗證目標是否仍符合商業需求，決定是否繼續。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Flashcards -->
+        <div id="tab-flashcards" class="tab-content hidden fade-in">
+            <div class="grid md:grid-cols-2 gap-4">
+                <!-- Card 1 -->
+                <div class="card-flip h-64 w-full cursor-pointer group" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner relative w-full h-full shadow-md rounded-xl">
+                        <div class="card-front bg-white flex flex-col items-center justify-center p-6 border-2 border-blue-50 rounded-xl">
+                            <span class="text-4xl text-blue-500 mb-4"><i class="fas fa-file-signature"></i></span>
+                            <h3 class="text-xl font-bold text-center">專案章程<br>(Project Charter)</h3>
+                            <p class="mt-4 text-sm text-gray-400">點擊翻面查看定義</p>
+                        </div>
+                        <div class="card-back bg-blue-600 text-white flex flex-col items-center justify-center p-6 rounded-xl">
+                            <h3 class="font-bold text-lg mb-2">主要產出文件</h3>
+                            <p class="text-center text-sm">正式授權專案存在的文件。賦予專案經理動用組織資源的權力。包含高層級需求與目標。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="card-flip h-64 w-full cursor-pointer" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner relative w-full h-full shadow-md rounded-xl">
+                        <div class="card-front bg-white flex flex-col items-center justify-center p-6 border-2 border-blue-50 rounded-xl">
+                            <span class="text-4xl text-green-500 mb-4"><i class="fas fa-user-tie"></i></span>
+                            <h3 class="text-xl font-bold text-center">專案發起人<br>(Sponsor)</h3>
+                            <p class="mt-4 text-sm text-gray-400">點擊翻面查看定義</p>
+                        </div>
+                        <div class="card-back bg-green-600 text-white flex flex-col items-center justify-center p-6 rounded-xl">
+                            <h3 class="font-bold text-lg mb-2">關鍵角色</h3>
+                            <p class="text-center text-sm">通常是提供資金來源的人或高層。負責發布專案章程，並在專案過程中提供支持與解決高層級問題。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card-flip h-64 w-full cursor-pointer" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner relative w-full h-full shadow-md rounded-xl">
+                        <div class="card-front bg-white flex flex-col items-center justify-center p-6 border-2 border-blue-50 rounded-xl">
+                            <span class="text-4xl text-purple-500 mb-4"><i class="fas fa-users"></i></span>
+                            <h3 class="text-xl font-bold text-center">利害關係人<br>(Stakeholders)</h3>
+                            <p class="mt-4 text-sm text-gray-400">點擊翻面查看定義</p>
+                        </div>
+                        <div class="card-back bg-purple-600 text-white flex flex-col items-center justify-center p-6 rounded-xl">
+                            <h3 class="font-bold text-lg mb-2">何時辨識？</h3>
+                            <p class="text-center text-sm">越早越好！包含所有會影響專案或受專案影響的人。需記錄他們的利益、參與度與潛在影響力。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="card-flip h-64 w-full cursor-pointer" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner relative w-full h-full shadow-md rounded-xl">
+                        <div class="card-front bg-white flex flex-col items-center justify-center p-6 border-2 border-blue-50 rounded-xl">
+                            <span class="text-4xl text-red-500 mb-4"><i class="fas fa-sync-alt"></i></span>
+                            <h3 class="text-xl font-bold text-center">滾動式啟動<br>(多階段專案)</h3>
+                            <p class="mt-4 text-sm text-gray-400">點擊翻面查看定義</p>
+                        </div>
+                        <div class="card-back bg-red-500 text-white flex flex-col items-center justify-center p-6 rounded-xl">
+                            <h3 class="font-bold text-lg mb-2">重要觀念</h3>
+                            <p class="text-center text-sm">啟動不只發生在專案開始。在進入每一個新階段（如設計進入施工）前，都需要重新執行啟動過程以確認授權。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Quiz -->
+        <div id="tab-quiz" class="tab-content hidden fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-2xl font-bold mb-6">初學者自我檢測</h2>
+                
+                <div id="quiz-container" class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="question-block" data-answer="b">
+                        <p class="font-bold text-lg mb-3">1. 關於「啟動過程組」，下列哪一個描述最準確？</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q1" value="a" class="mr-3">
+                                <span>這是專案開始進行細部規劃與排程的階段。</span>
+                            </label>
+                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q1" value="b" class="mr-3">
+                                <span>這是一個獲得正式授權，確立專案存在與指派 PM 的階段。</span>
+                            </label>
+                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q1" value="c" class="mr-3">
+                                <span>這是專案團隊開始執行工作包與產出產品的階段。</span>
+                            </label>
+                        </div>
+                        <div class="feedback hidden mt-2 p-3 rounded bg-gray-100 text-sm"></div>
+                    </div>
+
+                    <!-- Question 2 -->
+                    <div class="question-block" data-answer="c">
+                        <p class="font-bold text-lg mb-3">2. 專案章程（Project Charter）的主要功能是什麼？</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q2" value="a" class="mr-3">
+                                <span>詳細列出所有的預算細項與花費。</span>
+                            </label>
+                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q2" value="b" class="mr-3">
+                                <span>定義專案所有的技術規格與設計圖。</span>
+                            </label>
+                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q2" value="c" class="mr-3">
+                                <span>連結組織策略，授權專案經理使用資源，並定義高層級目標。</span>
+                            </label>
+                        </div>
+                        <div class="feedback hidden mt-2 p-3 rounded bg-gray-100 text-sm"></div>
+                    </div>
+
+                    <!-- Question 3 -->
+                    <div class="question-block" data-answer="a">
+                        <p class="font-bold text-lg mb-3">3. 什麼時候應該辨識利害關係人？</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q3" value="a" class="mr-3">
+                                <span>盡可能在專案早期，甚至在章程批准時就開始。</span>
+                            </label>
+                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q3" value="b" class="mr-3">
+                                <span>等到專案發生問題，有人抗議的時候。</span>
+                            </label>
+                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q3" value="c" class="mr-3">
+                                <span>在專案結束驗收時。</span>
+                            </label>
+                        </div>
+                        <div class="feedback hidden mt-2 p-3 rounded bg-gray-100 text-sm"></div>
+                    </div>
+                </div>
+
+                <button onclick="checkAnswers()" class="mt-8 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md">
+                    提交答案
+                </button>
+
+                <div id="score-display" class="hidden mt-6 text-center">
+                    <p class="text-2xl font-bold text-slate-800">你的得分：<span id="score-value">0</span>/3</p>
+                    <p id="score-msg" class="text-slate-600 mt-2"></p>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+
+    <footer class="bg-slate-800 text-slate-300 py-6 mt-8">
+        <div class="max-w-4xl mx-auto px-4 text-center text-sm">
+            <p>專案管理學習筆記工具 | Based on NotebookLM Analysis</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            // Reset all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-100', 'text-blue-700');
+                btn.classList.add('text-slate-600', 'hover:bg-slate-100');
+            });
+
+            // Show selected content
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            // Highlight selected button
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-100');
+            activeBtn.classList.add('bg-blue-100', 'text-blue-700');
+        }
+
+        // Quiz Logic
+        function checkAnswers() {
+            let score = 0;
+            const questions = document.querySelectorAll('.question-block');
+            
+            questions.forEach(q => {
+                const correctAnswer = q.dataset.answer;
+                const selectedOption = q.querySelector('input:checked');
+                const feedback = q.querySelector('.feedback');
+                
+                feedback.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
+
+                if (selectedOption) {
+                    if (selectedOption.value === correctAnswer) {
+                        score++;
+                        feedback.textContent = "✅ 正確！完全符合啟動過程組的定義。";
+                        feedback.classList.add('bg-green-100', 'text-green-800');
+                    } else {
+                        feedback.textContent = "❌ 答錯了。請回想一下「國王的詔書」比喻。";
+                        feedback.classList.add('bg-red-100', 'text-red-800');
+                    }
+                } else {
+                    feedback.textContent = "⚠️ 請選擇一個答案";
+                    feedback.classList.add('bg-yellow-100', 'text-yellow-800');
+                }
+            });
+
+            const scoreDisplay = document.getElementById('score-display');
+            const scoreValue = document.getElementById('score-value');
+            const scoreMsg = document.getElementById('score-msg');
+
+            scoreDisplay.classList.remove('hidden');
+            scoreValue.textContent = score;
+
+            if (score === 3) {
+                scoreMsg.textContent = "太棒了！你已經準備好進入「規劃過程組」了！🎉";
+            } else {
+                scoreMsg.textContent = "別氣餒，再複習一下「觀念故事」頁籤吧！💪";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理演進 - 太空探索之旅</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: #f3f4f6;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+        }
+        .phase-card {
+            backdrop-filter: blur(10px);
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .active-phase {
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #4b5563;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            transition: background 0.15s ease-in-out;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #60a5fa;
+        }
+        .nav-btn.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #60a5fa;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- 星空背景 -->
+    <div id="stars" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <!-- 主容器 -->
+    <div class="relative z-10 container mx-auto px-4 py-8" style="max-width: 1400px;">
+        
+        <!-- 標題區 -->
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-bold mb-4" style="background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                🚀 專案管理演進太空站
+            </h1>
+            <p class="text-xl text-gray-300">從軍事工程到全球商業語言的探索旅程</p>
+        </header>
+
+        <!-- 導航關卡選單 -->
+        <nav class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
+            <button onclick="showSection('timeline', this)" class="nav-btn active phase-card rounded-lg p-4 card-hover">
+                <div class="text-3xl mb-2">📅</div>
+                <div class="font-bold">時間軌道</div>
+                <div class="text-sm text-gray-400">四大發展階段</div>
+            </button>
+            <button onclick="showSection('evolution', this)" class="nav-btn phase-card rounded-lg p-4 card-hover">
+                <div class="text-3xl mb-2">🔄</div>
+                <div class="font-bold">知識演化</div>
+                <div class="text-sm text-gray-400">從9到10領域</div>
+            </button>
+            <button onclick="showSection('calculator', this)" class="nav-btn phase-card rounded-lg p-4 card-hover">
+                <div class="text-3xl mb-2">🧮</div>
+                <div class="font-bold">計算工具</div>
+                <div class="text-sm text-gray-400">實戰模擬器</div>
+            </button>
+            <button onclick="showSection('quiz', this)" class="nav-btn phase-card rounded-lg p-4 card-hover">
+                <div class="text-3xl mb-2">🎯</div>
+                <div class="font-bold">情境挑戰</div>
+                <div class="text-sm text-gray-400">測試你的理解</div>
+            </button>
+        </nav>
+
+        <!-- 內容區域 -->
+        <main id="content-area">
+            
+            <!-- 時間軌道區 -->
+            <section id="timeline" class="content-section">
+                <h2 class="text-3xl font-bold mb-8 text-center">🛸 專案管理發展四階段</h2>
+                
+                <div class="mb-8 text-center">
+                    <div class="inline-flex flex-wrap gap-4 mb-6 justify-center">
+                        <button onclick="filterPhase('all')" class="filter-btn px-6 py-2 rounded-full bg-blue-600 hover:bg-blue-700 transition">全部顯示</button>
+                        <button onclick="filterPhase('phase-1950')" class="filter-btn px-6 py-2 rounded-full bg-gray-700 hover:bg-gray-600 transition">萌芽期 1950s</button>
+                        <button onclick="filterPhase('phase-1960')" class="filter-btn px-6 py-2 rounded-full bg-gray-700 hover:bg-gray-600 transition">成長期 1960-85</button>
+                        <button onclick="filterPhase('phase-1985')" class="filter-btn px-6 py-2 rounded-full bg-gray-700 hover:bg-gray-600 transition">成熟期 1985-00</button>
+                        <button onclick="filterPhase('phase-2001')" class="filter-btn px-6 py-2 rounded-full bg-gray-700 hover:bg-gray-600 transition">全球期 2001+</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="timeline-grid">
+                    <!-- 萌芽期 -->
+                    <div class="phase-card phase-1950 rounded-xl p-6 card-hover" data-phase="phase-1950">
+                        <div class="flex items-center mb-4">
+                            <span class="text-4xl mr-4">🌱</span>
+                            <div>
+                                <h3 class="text-2xl font-bold text-blue-400">萌芽期</h3>
+                                <p class="text-gray-400">1950-1960年</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="bg-gray-800 rounded-lg p-3">
+                                <div class="font-semibold text-yellow-400">背景</div>
+                                <div class="text-sm">冷戰軍備競賽 + 太空競賽時代 (NASA & DoD需求)</div>
+                            </div>
+                            <div class="bg-gray-800 rounded-lg p-3">
+                                <div class="font-semibold text-green-400">特徵</div>
+                                <div class="text-sm">從「一般管理」進化到「系統管理」概念</div>
+                            </div>
+                            <div class="bg-gray-800 rounded-lg p-3">
+                                <div class="font-semibold text-purple-400">關鍵產物</div>
+                                <div class="text-sm">CPM 關鍵路徑法、PERT 計畫評核術<br>應用於國防、營建、航太</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 成長期 -->
+                    <div class="phase-card phase-1960 rounded-xl p-6 card-hover" data-phase="phase-1960">
+                        <div class="flex items-center mb-4">
+                            <span class="text-4xl mr-4">📈</span>
+                            <div>
+                                <h3 class="text-2xl font-bold text-green-400">成長期</h3>
+                                <p class="text-gray-400">1960-1985年</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="bg-gray-800 rounded-lg p-3">
+                                <div class="font-semibold text-yellow-400">背景</div>
+                                <div class="text-sm">科技快速發展,商業競爭日益激烈</div>
+                            </div>
+                            <div class="bg-gray-800 rounded-lg p-3">
+                                <div class="font-semibold text-green-400">特徵</div>
+                                <div class="text-sm">多產業開始重視專案管理方法</div>
+                            </div>
+                            <div class="bg-gray-800 rounded-lg p-3">
+                                <div class="font-semibold text-purple-400">關鍵產物</div>
+                                <div class="text-sm">PMI成立(1969)<br>PMBOK首次編撰(1984)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 成熟期 -->
+                    <div class="phase-card phase-1985 rounded-xl p-6 card-hover" data-phase="phase-1985">
+                        <div class="flex items-center mb-4">
+                            <span class="text-4xl mr-4">🏆</span>
+                            <div>
+                                <h3 class="text-2xl font-bold text-yellow-400">成熟期</h3>
+                                <p class="text-gray-400">1985-2000年</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="bg-gray-800 rounded-lg p-3">
+                                <div class="font-semibold text-yellow-400">背景</div>
+                                <div class="text-sm">歐美企業認知到這是「必要」而非「選項」</div>
+                            </div>
+                            <div class="bg-gray-800 rounded-lg p-3">
+                                <div class="font-semibold text-green-400">特徵</div>
+                                <div class="text-sm">軟體工具大量發展,各國標準確立</div>
+                            </div>
+                            <div class="bg-gray-800 rounded-lg p-3">
+                                <div class="font-semibold text-purple-400">關鍵產物</div>
+                                <div class="text-sm">PMBOK第1版發布(1996)<br>英國PRINCE2(1996)、ISO 10006</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 全球推動期 -->
+                    <div class="phase-card phase-2001 rounded-xl p-6 card-hover" data-phase="phase-2001">
+                        <div class="flex items-center mb-4">
+                            <span class="text-4xl mr-4">🌍</span>
+                            <div>
+                                <h3 class="text-2xl font-bold text-purple-400">全球推動期</h3>
+                                <p class="text-gray-400">2001年至今</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="bg-gray-800 rounded-lg p-3">
+                                <div class="font-semibold text-yellow-400">背景</div>
+                                <div class="text-sm">知識經濟時代 + WTO全球化來臨</div>
+                            </div>
+                            <div class="bg-gray-800 rounded-lg p-3">
+                                <div class="font-semibold text-green-400">特徵</div>
+                                <div class="text-sm">成為無國界、無產業別的「世界語言」</div>
+                            </div>
+                            <div class="bg-gray-800 rounded-lg p-3">
+                                <div class="font-semibold text-purple-400">關鍵產物</div>
+                                <div class="text-sm">全球標準被各國採納<br>PMBOK第7版革命性變革</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 烹飪比喻區 -->
+                <div class="mt-12 phase-card rounded-xl p-8">
+                    <h3 class="text-2xl font-bold mb-4 text-center">🍳 用「烹飪藝術」理解演進</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="text-center p-4 rounded-lg bg-gray-800 bg-opacity-50">
+                            <div class="text-5xl mb-3">📏</div>
+                            <div class="font-bold text-blue-400">萌芽/成長期</div>
+                            <div class="text-sm text-gray-400 mt-2">發明食譜與量具(CPM/PERT)<br>能精準複製一道菜</div>
+                        </div>
+                        <div class="text-center p-4 rounded-lg bg-gray-800 bg-opacity-50">
+                            <div class="text-5xl mb-3">🍔</div>
+                            <div class="font-bold text-green-400">成熟期</div>
+                            <div class="text-sm text-gray-400 mt-2">建立考照與SOP(PMBOK)<br>連鎖店都能標準化</div>
+                        </div>
+                        <div class="text-center p-4 rounded-lg bg-gray-800 bg-opacity-50">
+                            <div class="text-5xl mb-3">⭐</div>
+                            <div class="font-bold text-purple-400">全球/現代</div>
+                            <div class="text-sm text-gray-400 mt-2">米其林大師境界<br>靈活運用原則交付價值</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 知識演化區 -->
+            <section id="evolution" class="content-section hidden">
+                <h2 class="text-3xl font-bold mb-8 text-center">🔄 PMBOK知識體系演化</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="phase-card rounded-xl p-6">
+                        <h3 class="text-xl font-bold mb-4 text-blue-400">📊 領域擴充:從9到10</h3>
+                        <div class="space-y-4">
+                            <div class="bg-gray-800 rounded-lg p-4">
+                                <div class="font-semibold mb-2">第5版前:9大知識領域</div>
+                                <div class="text-sm text-gray-400">整合、範疇、時間、成本、品質、人力資源、溝通、風險、採購</div>
+                            </div>
+                            <div class="text-center text-3xl">⬇️</div>
+                            <div class="bg-blue-900 rounded-lg p-4 border-2 border-blue-500 bg-opacity-30">
+                                <div class="font-semibold mb-2 text-blue-300">第5版後:10大知識領域</div>
+                                <div class="text-sm text-gray-300">新增「利害關係人管理」獨立領域</div>
+                                <div class="text-xs text-blue-400 mt-2">💡 顯示對「人」與「溝通」的重視增加</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="phase-card rounded-xl p-6">
+                        <h3 class="text-xl font-bold mb-4 text-green-400">🔧 資源觀念轉變</h3>
+                        <div class="space-y-4">
+                            <div class="bg-gray-800 rounded-lg p-4">
+                                <div class="font-semibold mb-2">第6版前:人力資源管理</div>
+                                <div class="text-sm text-gray-400">主要關注「人」的管理</div>
+                            </div>
+                            <div class="text-center text-3xl">⬇️</div>
+                            <div class="bg-green-900 rounded-lg p-4 border-2 border-green-500 bg-opacity-30">
+                                <div class="font-semibold mb-2 text-green-300">第6版:資源管理</div>
+                                <div class="text-sm text-gray-300">擴展到設備、材料、基礎設施等實體資源</div>
+                                <div class="text-xs text-green-400 mt-2">💡 專案經理需整合規劃所有類型資源</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第7版革命 -->
+                <div class="phase-card rounded-xl p-8 mb-8">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-purple-400">⚡ PMBOK第7版:翻天覆地的大改變</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="rounded-lg p-6 border-2 border-red-500" style="background-color: rgba(127, 29, 29, 0.3);">
+                            <div class="text-center text-3xl mb-3">📋</div>
+                            <div class="font-bold text-center mb-3">舊思維(第6版前)</div>
+                            <ul class="space-y-2 text-sm">
+                                <li>✓ 5大流程群組</li>
+                                <li>✓ 49個過程</li>
+                                <li>✓ ITTO框架(輸入/工具/輸出)</li>
+                                <li>✓ 指令式架構</li>
+                                <li>✓ 強調「產出」(Outputs)</li>
+                            </ul>
+                        </div>
+
+                        <div class="rounded-lg p-6 border-2 border-green-500" style="background-color: rgba(20, 83, 45, 0.3);">
+                            <div class="text-center text-3xl mb-3">🎯</div>
+                            <div class="font-bold text-center mb-3">新思維(第7版)</div>
+                            <ul class="space-y-2 text-sm">
+                                <li>✓ 12項管理原則</li>
+                                <li>✓ 8項績效領域</li>
+                                <li>✓ 價值導向思維</li>
+                                <li>✓ 強調「成果」(Outcomes)</li>
+                                <li>✓ 裁適(Tailoring)概念</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="rounded-lg p-6 border-2 border-purple-500" style="background-color: rgba(88, 28, 135, 0.3);">
+                        <div class="font-bold mb-3 text-center">🎭 典範轉移:從「過程」到「原則」</div>
+                        <div class="text-sm text-gray-300 text-center">
+                            不再規範單一「正確做法」,而是提供原則讓專案經理根據情況靈活應用<br>
+                            融合預測式(Waterfall)與敏捷式(Agile)思維
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 視覺化圖表 -->
+                <div class="phase-card rounded-xl p-6">
+                    <h3 class="text-xl font-bold mb-4 text-center">📈 演進趨勢視覺化</h3>
+                    <div style="height: 300px;">
+                        <canvas id="evolutionChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 計算工具區 -->
+            <section id="calculator" class="content-section hidden">
+                <h2 class="text-3xl font-bold mb-8 text-center">🧮 專案管理計算模擬器</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- EVM計算器 -->
+                    <div class="phase-card rounded-xl p-6">
+                        <h3 class="text-xl font-bold mb-4 text-blue-400">💰 實獲值管理(EVM)計算器</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block mb-2 text-sm flex justify-between">
+                                    <span>計畫價值 (PV) - 預計應完成</span>
+                                    <span class="text-blue-400 font-bold">$<span id="pvValue">50</span>萬</span>
+                                </label>
+                                <input type="range" id="pvSlider" min="1" max="100" value="50" oninput="updateEVM()">
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm flex justify-between">
+                                    <span>實獲值 (EV) - 實際已完成</span>
+                                    <span class="text-green-400 font-bold">$<span id="evValue">40</span>萬</span>
+                                </label>
+                                <input type="range" id="evSlider" min="1" max="100" value="40" oninput="updateEVM()">
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm flex justify-between">
+                                    <span>實際成本 (AC) - 實際已花費</span>
+                                    <span class="text-red-400 font-bold">$<span id="acValue">45</span>萬</span>
+                                </label>
+                                <input type="range" id="acSlider" min="1" max="100" value="45" oninput="updateEVM()">
+                            </div>
+
+                            <div class="bg-gray-800 rounded-lg p-4 space-y-3 mt-4">
+                                <div class="flex justify-between border-b border-gray-700 pb-2">
+                                    <span class="text-gray-400">成本變異 (CV = EV-AC):</span>
+                                    <span id="cvResult" class="font-bold text-red-400">-$5萬</span>
+                                </div>
+                                <div class="flex justify-between border-b border-gray-700 pb-2">
+                                    <span class="text-gray-400">進度變異 (SV = EV-PV):</span>
+                                    <span id="svResult" class="font-bold text-red-400">-$10萬</span>
+                                </div>
+                                <div class="flex justify-between border-b border-gray-700 pb-2">
+                                    <span class="text-gray-400">成本績效指標 (CPI = EV/AC):</span>
+                                    <span id="cpiResult" class="font-bold text-red-400">0.89</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">進度績效指標 (SPI = EV/PV):</span>
+                                    <span id="spiResult" class="font-bold text-red-400">0.80</span>
+                                </div>
+                            </div>
+
+                            <div id="evmStatus" class="border-2 border-red-500 rounded-lg p-4 text-center bg-red-900 bg-opacity-30 transition-all duration-300">
+                                <div class="font-bold">專案狀態: 超支且落後</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 要徑分析 -->
+                    <div class="phase-card rounded-xl p-6">
+                        <h3 class="text-xl font-bold mb-4 text-purple-400">⏱️ 要徑法(CPM)模擬器</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block mb-2 text-sm flex justify-between">
+                                    <span>任務A時程 (天)</span>
+                                    <span class="font-bold text-blue-300"><span id="taskAValue">5</span>天</span>
+                                </label>
+                                <input type="range" id="taskA" min="1" max="20" value="5" oninput="updateCPM()">
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm flex justify-between">
+                                    <span>任務B時程 (天)</span>
+                                    <span class="font-bold text-blue-300"><span id="taskBValue">8</span>天</span>
+                                </label>
+                                <input type="range" id="taskB" min="1" max="20" value="8" oninput="updateCPM()">
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm flex justify-between">
+                                    <span>任務C時程 (天)</span>
+                                    <span class="font-bold text-blue-300"><span id="taskCValue">3</span>天</span>
+                                </label>
+                                <input type="range" id="taskC" min="1" max="20" value="3" oninput="updateCPM()">
+                            </div>
+
+                            <div class="bg-gray-800 rounded-lg p-4 text-center">
+                                <div class="mb-2 text-sm text-gray-400">路徑: A → B → C</div>
+                                <div class="text-sm mb-1">專案總時程 (要徑長度)</div>
+                                <div class="text-4xl font-bold text-purple-400"><span id="totalDuration">16</span>天</div>
+                            </div>
+
+                            <div class="bg-gray-900 rounded-lg p-2 h-48 relative border border-gray-700 flex items-center justify-center overflow-hidden">
+                                <canvas id="cpmCanvas" width="400" height="150"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 情境測驗區 -->
+            <section id="quiz" class="content-section hidden">
+                <h2 class="text-3xl font-bold mb-8 text-center">🎯 專案經理情境挑戰</h2>
+                
+                <div style="max-width: 900px;" class="mx-auto space-y-6">
+                    <!-- 問題1 -->
+                    <div class="phase-card rounded-xl p-6 border-l-4 border-blue-500">
+                        <div class="mb-4">
+                            <span class="bg-blue-600 px-3 py-1 rounded-full text-xs font-bold">情境1</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-6">
+                            你是一個軟體開發專案的PM,客戶需求經常變動。<br>
+                            根據PMBOK第7版的新思維,你應該採取什麼策略?
+                        </h3>
+                        <div class="space-y-3">
+                            <button onclick="answerQuiz(1, 'A', this)" class="quiz-option w-full text-left bg-gray-800 hover:bg-gray-700 rounded-lg p-4 transition border border-gray-700">
+                                A. 嚴格按照49個過程執行,拒絕變更
+                            </button>
+                            <button onclick="answerQuiz(1, 'B', this)" class="quiz-option w-full text-left bg-gray-800 hover:bg-gray-700 rounded-lg p-4 transition border border-gray-700">
+                                B. 根據12項原則靈活裁適,採用敏捷迭代方式交付價值
+                            </button>
+                            <button onclick="answerQuiz(1, 'C', this)" class="quiz-option w-full text-left bg-gray-800 hover:bg-gray-700 rounded-lg p-4 transition border border-gray-700">
+                                C. 只關注產出(Outputs),不管客戶是否滿意
+                            </button>
+                        </div>
+                        <div id="feedback1" class="mt-4 hidden p-4 rounded-lg"></div>
+                    </div>
+
+                    <!-- 問題2 -->
+                    <div class="phase-card rounded-xl p-6 border-l-4 border-green-500">
+                        <div class="mb-4">
+                            <span class="bg-green-600 px-3 py-1 rounded-full text-xs font-bold">情境2</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-6">
+                            專案EVM分析顯示: CPI=0.85, SPI=1.05。<br>
+                            這代表什麼狀況?
+                        </h3>
+                        <div class="space-y-3">
+                            <button onclick="answerQuiz(2, 'A', this)" class="quiz-option w-full text-left bg-gray-800 hover:bg-gray-700 rounded-lg p-4 transition border border-gray-700">
+                                A. 進度落後但成本控制良好
+                            </button>
+                            <button onclick="answerQuiz(2, 'B', this)" class="quiz-option w-full text-left bg-gray-800 hover:bg-gray-700 rounded-lg p-4 transition border border-gray-700">
+                                B. 進度超前但成本超支
+                            </button>
+                             <button onclick="answerQuiz(2, 'C', this)" class="quiz-option w-full text-left bg-gray-800 hover:bg-gray-700 rounded-lg p-4 transition border border-gray-700">
+                                C. 進度與成本皆完美符合預期
+                            </button>
+                        </div>
+                        <div id="feedback2" class="mt-4 hidden p-4 rounded-lg"></div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- JavaScript 邏輯 -->
+    <script>
+        // 初始化星空背景
+        function createStars() {
+            const container = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animationDelay = `${Math.random() * 3}s`;
+                container.appendChild(star);
+            }
+        }
+
+        // 切換區塊
+        function showSection(sectionId, btn) {
+            // 隱藏所有區塊
+            document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
+            // 顯示目標區塊
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // 更新按鈕狀態
+            if(btn) {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+
+            // 如果切換到演化區，重繪圖表以確保寬度正確
+            if(sectionId === 'evolution') {
+                setTimeout(drawEvolutionChart, 100);
+            }
+            if(sectionId === 'calculator') {
+                setTimeout(drawCPM, 100);
+            }
+        }
+
+        // 篩選階段卡片
+        function filterPhase(phaseClass) {
+            const cards = document.querySelectorAll('#timeline-grid .phase-card');
+            cards.forEach(card => {
+                if (phaseClass === 'all' || card.classList.contains(phaseClass)) {
+                    card.style.display = 'block';
+                    card.classList.add('fade-in');
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 更新按鈕樣式
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.textContent.includes(phaseClass === 'all' ? '全部' : phaseClass.replace('phase-', ''))) {
+                    btn.classList.replace('bg-gray-700', 'bg-blue-600');
+                } else {
+                    btn.classList.replace('bg-blue-600', 'bg-gray-700');
+                }
+            });
+        }
+
+        // EVM 計算機邏輯
+        function updateEVM() {
+            const pv = parseInt(document.getElementById('pvSlider').value);
+            const ev = parseInt(document.getElementById('evSlider').value);
+            const ac = parseInt(document.getElementById('acSlider').value);
+
+            document.getElementById('pvValue').innerText = pv;
+            document.getElementById('evValue').innerText = ev;
+            document.getElementById('acValue').innerText = ac;
+
+            const cv = ev - ac;
+            const sv = ev - pv;
+            const cpi = (ac === 0) ? 0 : (ev / ac).toFixed(2);
+            const spi = (pv === 0) ? 0 : (ev / pv).toFixed(2);
+
+            // Update DOM Results
+            const cvEl = document.getElementById('cvResult');
+            cvEl.innerText = (cv >= 0 ? '+' : '') + '$' + cv + '萬';
+            cvEl.className = 'font-bold ' + (cv >= 0 ? 'text-green-400' : 'text-red-400');
+
+            const svEl = document.getElementById('svResult');
+            svEl.innerText = (sv >= 0 ? '+' : '') + '$' + sv + '萬';
+            svEl.className = 'font-bold ' + (sv >= 0 ? 'text-green-400' : 'text-red-400');
+
+            const cpiEl = document.getElementById('cpiResult');
+            cpiEl.innerText = cpi;
+            cpiEl.className = 'font-bold ' + (cpi >= 1 ? 'text-green-400' : 'text-red-400');
+
+            const spiEl = document.getElementById('spiResult');
+            spiEl.innerText = spi;
+            spiEl.className = 'font-bold ' + (spi >= 1 ? 'text-green-400' : 'text-red-400');
+
+            // Update Status Box
+            const statusBox = document.getElementById('evmStatus');
+            let statusText = "專案狀態: ";
+            let colorClass = "";
+            let borderColor = "";
+
+            if (cpi >= 1 && spi >= 1) {
+                statusText += "成本節省且進度超前 (完美)";
+                colorClass = "bg-green-900";
+                borderColor = "border-green-500";
+            } else if (cpi < 1 && spi < 1) {
+                statusText += "超支且落後 (危險)";
+                colorClass = "bg-red-900";
+                borderColor = "border-red-500";
+            } else if (cpi < 1 && spi >= 1) {
+                statusText += "進度超前但超支 (趕工中?)";
+                colorClass = "bg-yellow-900";
+                borderColor = "border-yellow-500";
+            } else {
+                statusText += "成本節省但落後 (省錢但慢)";
+                colorClass = "bg-yellow-900";
+                borderColor = "border-yellow-500";
+            }
+
+            statusBox.querySelector('div').innerText = statusText;
+            statusBox.className = `border-2 ${borderColor} rounded-lg p-4 text-center ${colorClass} bg-opacity-30 transition-all duration-300`;
+        }
+
+        // CPM 計算與繪圖
+        function updateCPM() {
+            const tA = parseInt(document.getElementById('taskA').value);
+            const tB = parseInt(document.getElementById('taskB').value);
+            const tC = parseInt(document.getElementById('taskC').value);
+
+            document.getElementById('taskAValue').innerText = tA;
+            document.getElementById('taskBValue').innerText = tB;
+            document.getElementById('taskCValue').innerText = tC;
+
+            const total = tA + tB + tC;
+            document.getElementById('totalDuration').innerText = total;
+
+            drawCPM();
+        }
+
+        function drawCPM() {
+            const canvas = document.getElementById('cpmCanvas');
+            const ctx = canvas.getContext('2d');
+            const tA = parseInt(document.getElementById('taskA').value);
+            const tB = parseInt(document.getElementById('taskB').value);
+            const tC = parseInt(document.getElementById('taskC').value);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#a78bfa';
+            ctx.lineWidth = 3;
+            ctx.fillStyle = '#fff';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+
+            // Coordinates
+            const startX = 50;
+            const y = 75;
+            const gap = 100;
+            
+            // Nodes (simplified visualization)
+            // Start -> A -> B -> C -> End
+            drawNode(ctx, startX, y, 'Start');
+            drawArrow(ctx, startX + 20, y, startX + gap - 20, y);
+            
+            drawNode(ctx, startX + gap, y, 'A');
+            drawText(ctx, startX + gap, y + 35, `${tA}天`);
+            drawArrow(ctx, startX + gap + 20, y, startX + gap * 2 - 20, y);
+            
+            drawNode(ctx, startX + gap * 2, y, 'B');
+            drawText(ctx, startX + gap * 2, y + 35, `${tB}天`);
+            drawArrow(ctx, startX + gap * 2 + 20, y, startX + gap * 3 - 20, y);
+            
+            drawNode(ctx, startX + gap * 3, y, 'C');
+            drawText(ctx, startX + gap * 3, y + 35, `${tC}天`);
+        }
+
+        function drawNode(ctx, x, y, text) {
+            ctx.beginPath();
+            ctx.arc(x, y, 20, 0, 2 * Math.PI);
+            ctx.fillStyle = '#3b82f6';
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = '#fff';
+            ctx.fillText(text, x, y + 5);
+        }
+
+        function drawArrow(ctx, x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+
+        function drawText(ctx, x, y, text) {
+            ctx.fillStyle = '#ddd';
+            ctx.fillText(text, x, y);
+        }
+
+        // 測驗邏輯
+        function answerQuiz(qId, answer, btn) {
+            const feedbackEl = document.getElementById(`feedback${qId}`);
+            const parent = btn.parentElement;
+            
+            // Disable buttons
+            const buttons = parent.querySelectorAll('button');
+            buttons.forEach(b => {
+                b.disabled = true;
+                b.classList.add('opacity-50');
+            });
+
+            let isCorrect = false;
+            let explanation = "";
+
+            if (qId === 1) {
+                // Q1 Correct: B
+                isCorrect = (answer === 'B');
+                explanation = "PMBOK第7版強調「裁適」與「價值交付」，而非死守過程。";
+            } else if (qId === 2) {
+                // Q2 Correct: B (SPI>1=超前, CPI<1=超支)
+                isCorrect = (answer === 'B');
+                explanation = "SPI > 1 代表進度超前，CPI < 1 代表成本超支。";
+            }
+
+            // Highlight chosen button
+            btn.classList.remove('opacity-50');
+            
+            feedbackEl.classList.remove('hidden');
+            if (isCorrect) {
+                btn.classList.add('bg-green-600', 'border-green-400');
+                feedbackEl.className = "mt-4 p-4 rounded-lg bg-green-900 bg-opacity-50 border border-green-500 text-green-100";
+                feedbackEl.innerHTML = `<strong>✅ 答對了！</strong><br>${explanation}`;
+            } else {
+                btn.classList.add('bg-red-600', 'border-red-400');
+                feedbackEl.className = "mt-4 p-4 rounded-lg bg-red-900 bg-opacity-50 border border-red-500 text-red-100";
+                feedbackEl.innerHTML = `<strong>❌ 答錯了。</strong><br>${explanation}`;
+            }
+        }
+
+        // 演化圖表 (Chart.js)
+        let chartInstance = null;
+        function drawEvolutionChart() {
+            const ctx = document.getElementById('evolutionChart').getContext('2d');
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['萌芽期 (1950s)', '成長期 (1970s)', '成熟期 (1990s)', '全球期 (2020s)'],
+                    datasets: [{
+                        label: '對「流程/控制」的強調',
+                        data: [90, 95, 80, 50],
+                        borderColor: '#60a5fa', // Blue
+                        tension: 0.4
+                    }, {
+                        label: '對「價值/原則」的強調',
+                        data: [10, 20, 40, 95],
+                        borderColor: '#a78bfa', // Purple
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e5e7eb' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#9ca3af' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#9ca3af' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化
+        window.onload = function() {
+            createStars();
+            updateEVM();
+            updateCPM();
+            // 預設顯示時間軸
+            showSection('timeline', document.querySelector('.nav-btn'));
+        };
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRINCE2 備考懶人包：新手一頁通</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f5f5f4; /* stone-100 */
+            color: #1c1917; /* stone-900 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (max-width: 640px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background-color: #e7e5e4; /* stone-200 */
+            z-index: 0;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f5f5f4;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d6d3d1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a29e;
+        }
+    </style>
+    <!-- Chosen Palette: Warm Academia (Stone neutrals with Terracotta and Slate Blue accents) -->
+    <!-- Application Structure Plan: 
+         1. Hero Section: Quick intro and analogy (Recipes).
+         2. Identity Module: "Who is PRINCE2?" using interactive cards for definition and origin.
+         3. Comparison Dashboard: The Core of the app. A Radar Chart visualizing the "Android vs iOS" metaphor alongside a dynamic table. This helps users visualize the abstract differences.
+         4. History Timeline: Vertical interactive timeline for key dates (1989, 1996).
+         5. Quiz Section: Interactive validation of knowledge.
+         6. Memory Aid: The final mnemonic takeaway.
+         This structure follows the logical flow of: What -> How it differs -> When -> Test -> Memorize.
+    -->
+    <!-- Visualization & Content Choices:
+         1. Radar Chart (Chart.js): To visualize the qualitative differences between PMBOK and PRINCE2 (Flexibility vs Structure). Allows users to "see" the philosophy difference described in the text.
+         2. Interactive Cards: For the "Identity" section to break down the acronym and origin without wall-of-text.
+         3. Dynamic Quiz: To reinforce learning immediately.
+         4. Timeline: HTML/CSS flex layout to map the historical context clearly.
+         5. Justification: No SVGs used. Chart.js chosen for the radar chart as it handles multiple datasets (PMBOK vs PRINCE2) effectively on Canvas.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-stone-100 min-h-screen flex flex-col">
+
+    <!-- Navigation / Progress -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50 border-b border-stone-200">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-stone-800 tracking-tight">PRINCE2 <span class="text-orange-600 font-light">備考懶人包</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm font-medium text-stone-500">
+                    <a href="#intro" class="hover:text-orange-600 transition">概念</a>
+                    <a href="#comparison" class="hover:text-orange-600 transition">比較</a>
+                    <a href="#history" class="hover:text-orange-600 transition">歷史</a>
+                    <a href="#quiz" class="hover:text-orange-600 transition">測驗</a>
+                </div>
+                <div class="flex items-center bg-stone-100 rounded-full px-3 py-1">
+                    <span class="text-xs font-semibold text-stone-500 mr-2">學習進度</span>
+                    <div class="w-20 h-2 bg-stone-300 rounded-full overflow-hidden">
+                        <div id="progressBar" class="h-full bg-orange-500 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+
+        <!-- Section 1: Introduction & Identity -->
+        <section id="intro" class="scroll-mt-20">
+            <div class="text-center mb-10">
+                <h1 class="text-4xl font-extrabold text-stone-900 mb-4">PRINCE2 專案管理：<span class="text-orange-600">新手一頁通</span></h1>
+                <p class="text-lg text-stone-600 max-w-2xl mx-auto">
+                    給初學者的核心概念：專案管理就是一套「如何把事情做好」的食譜。我們這裡有兩大流派，讓我們來認識來自英國的這一位。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Definition Card -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 card-hover cursor-pointer" onclick="updateProgress(25)">
+                    <div class="flex items-center mb-4">
+                        <span class="bg-orange-100 text-orange-700 text-xl font-bold px-3 py-1 rounded mr-3">定義</span>
+                        <h2 class="text-xl font-bold text-stone-800">全名解密</h2>
+                    </div>
+                    <p class="text-stone-600 mb-4 leading-relaxed">
+                        <strong class="text-stone-900">PRINCE2</strong> 是 
+                        <br><span class="text-orange-600 font-bold text-lg">Pr</span>ojects <span class="text-orange-600 font-bold text-lg">in</span> <span class="text-orange-600 font-bold text-lg">C</span>ontrolled <span class="text-orange-600 font-bold text-lg">E</span>nvironments
+                    </p>
+                    <div class="bg-stone-50 p-3 rounded-lg border-l-4 border-orange-500">
+                        <p class="text-sm text-stone-600"><strong>記憶法：</strong>看到 <span class="text-orange-600">Controlled Environments (受控環境)</span> 就選 PRINCE2。</p>
+                    </div>
+                </div>
+
+                <!-- Origin Card -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 card-hover cursor-pointer" onclick="updateProgress(25)">
+                    <div class="flex items-center mb-4">
+                        <span class="bg-blue-100 text-blue-700 text-xl font-bold px-3 py-1 rounded mr-3">身世</span>
+                        <h2 class="text-xl font-bold text-stone-800">起源與地位</h2>
+                    </div>
+                    <ul class="space-y-3 text-stone-600">
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-2">●</span>
+                            <span><strong>富爸爸：</strong>英國政府 (CCTA)。</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-2">●</span>
+                            <span><strong>原始用途：</strong>IT 專案 (現在已適用於所有產業)。</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-2">●</span>
+                            <span><strong>地位：</strong>與 PMBOK 指南並列的全球兩大標準。</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Showdown (Comparison) -->
+        <section id="comparison" class="scroll-mt-20">
+            <div class="bg-white rounded-2xl shadow-lg border border-stone-200 overflow-hidden">
+                <div class="bg-stone-800 p-6 text-white">
+                    <h2 class="text-2xl font-bold mb-2">核心考點：超級比一比</h2>
+                    <p class="text-stone-300">利用手機系統的比喻來理解兩大流派的差異。點擊下方按鈕切換視角。</p>
+                </div>
+                
+                <div class="p-6">
+                    <div class="flex justify-center mb-6 space-x-4">
+                        <button onclick="setChartMode('metaphor')" id="btn-metaphor" class="px-4 py-2 bg-orange-600 text-white rounded-lg shadow hover:bg-orange-700 transition">手機系統比喻</button>
+                        <button onclick="setChartMode('technical')" id="btn-technical" class="px-4 py-2 bg-stone-200 text-stone-700 rounded-lg shadow hover:bg-stone-300 transition">專業術語對比</button>
+                    </div>
+
+                    <!-- 修改 Grid 比例，從 1:2 (lg:grid-cols-3) 改為 1:1 (lg:grid-cols-2)，給圖表更多空間 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <!-- Chart Column -->
+                        <div>
+                            <div class="chart-container">
+                                <canvas id="comparisonChart"></canvas>
+                            </div>
+                            <p class="text-center text-xs text-stone-400 mt-2">*此圖表為概念示意，展示兩者設計哲學的差異</p>
+                        </div>
+
+                        <!-- Text Detail Column -->
+                        <div class="space-y-4">
+                            <!-- PMBOK Block -->
+                            <div class="p-4 rounded-lg border-l-4 border-blue-500 bg-blue-50">
+                                <h3 class="font-bold text-blue-900 text-lg mb-1">PMBOK 指南 (美國派)</h3>
+                                <div class="flex items-center mb-2">
+                                    <span class="text-2xl mr-2">🤖</span>
+                                    <span class="font-bold text-blue-700">Android</span>
+                                </div>
+                                <p class="text-sm text-blue-800">
+                                    <strong>特性：</strong>開放、靈活、知識組件多。<br>
+                                    <strong>哲學：</strong>提供一個大工具箱，讓廚師自己決定怎麼用。<br>
+                                    <strong>來源：</strong>PMI (美國專案管理學會)。
+                                </p>
+                            </div>
+
+                            <!-- PRINCE2 Block -->
+                            <div class="p-4 rounded-lg border-l-4 border-orange-500 bg-orange-50">
+                                <h3 class="font-bold text-orange-900 text-lg mb-1">PRINCE2 (英國派)</h3>
+                                <div class="flex items-center mb-2">
+                                    <span class="text-2xl mr-2">🍎</span>
+                                    <span class="font-bold text-orange-700">iOS</span>
+                                </div>
+                                <p class="text-sm text-orange-800">
+                                    <strong>特性：</strong>結構化、強調「受控環境」、單一權威。<br>
+                                    <strong>哲學：</strong>提供標準作業流程 (SOP)，按部就班運作。<br>
+                                    <strong>來源：</strong>英國政府 (CCTA)。
+                                </p>
+                            </div>
+                            
+                            <div class="text-center pt-2">
+                                <p class="text-sm font-semibold text-stone-500">共同點：都是「通用性」方法，殊途同歸。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: History Timeline -->
+        <section id="history" class="scroll-mt-20">
+            <h2 class="text-2xl font-bold text-stone-900 mb-6 pl-4 border-l-4 border-stone-800">歷史時間軸 (考點：1996)</h2>
+            <div class="relative py-8">
+                <div class="timeline-line"></div>
+                
+                <!-- Event 1 -->
+                <div class="relative z-10 flex items-center mb-12 group cursor-pointer" onclick="highlightEvent(this)">
+                    <div class="w-1/2 pr-8 text-right">
+                        <h3 class="text-xl font-bold text-stone-400 group-hover:text-stone-800 transition">成熟期開始</h3>
+                        <p class="text-sm text-stone-400">專案管理的黃金年代</p>
+                    </div>
+                    <div class="w-4 h-4 bg-stone-300 rounded-full border-2 border-white shadow group-hover:bg-stone-800 transition mx-auto absolute left-0 right-0"></div>
+                    <div class="w-1/2 pl-8">
+                        <span class="text-2xl font-black text-stone-300 group-hover:text-stone-800 transition">1985</span>
+                    </div>
+                </div>
+
+                <!-- Event 2 -->
+                <div class="relative z-10 flex items-center mb-12 group cursor-pointer" onclick="highlightEvent(this)">
+                    <div class="w-1/2 pr-8 text-right">
+                        <span class="text-2xl font-black text-stone-300 group-hover:text-blue-600 transition">1989</span>
+                    </div>
+                    <div class="w-4 h-4 bg-stone-300 rounded-full border-2 border-white shadow group-hover:bg-blue-600 transition mx-auto absolute left-0 right-0"></div>
+                    <div class="w-1/2 pl-8">
+                        <h3 class="text-xl font-bold text-stone-400 group-hover:text-blue-800 transition">PRINCE 誕生</h3>
+                        <p class="text-sm text-stone-400">英國政府 IT 專案標準</p>
+                    </div>
+                </div>
+
+                <!-- Event 3 (Major) -->
+                <div class="relative z-10 flex items-center group cursor-pointer" onclick="highlightEvent(this)">
+                    <div class="w-1/2 pr-8 text-right">
+                        <h3 class="text-2xl font-bold text-orange-400 group-hover:text-orange-600 transition">PRINCE2 出版</h3>
+                        <span class="inline-block bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded mt-1">最重要考點</span>
+                    </div>
+                    <div class="w-6 h-6 bg-orange-400 rounded-full border-4 border-white shadow group-hover:scale-125 transition mx-auto absolute left-0 right-0"></div>
+                    <div class="w-1/2 pl-8">
+                        <span class="text-4xl font-black text-orange-400 group-hover:text-orange-600 transition">1996</span>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center text-stone-500 mt-6 text-sm">點擊時間點查看重點</p>
+        </section>
+
+        <!-- Section 4: Quiz -->
+        <section id="quiz" class="scroll-mt-20">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-stone-900">模擬試題練習</h2>
+                    <span id="score-display" class="text-lg font-bold text-stone-400">得分: 0/3</span>
+                </div>
+                
+                <div class="space-y-6" id="quiz-container">
+                    <!-- Questions will be injected here by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Cheat Sheet -->
+        <section class="bg-stone-800 text-stone-200 p-8 rounded-2xl text-center mb-10">
+            <h2 class="text-xl font-bold text-orange-400 mb-4">考前 1 分鐘口訣</h2>
+            <p class="text-2xl font-medium leading-loose">
+                「<span class="text-white border-b-2 border-orange-500">英國王子 (PRINCE)</span> 管很嚴 (<span class="text-orange-300">受控環境</span>)，<br>
+                原本是個 <span class="text-orange-300">IT 男</span> (IT起源)，<br>
+                <span class="text-white text-3xl font-bold mx-1">1996</span> 轉大人 (成熟期)，<br>
+                跟美國 PMBOK 變成了好兄弟。」
+            </p>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-900 text-stone-500 py-8 text-center text-sm">
+        <p>© 2024 PRINCE2 備考懶人包 SPA | 基於筆記內容生成</p>
+    </footer>
+
+    <script>
+        // Data Structures
+        const quizData = [
+            {
+                id: 1,
+                question: "Q1. 關於 PRINCE2 的敘述，下列何者錯誤？",
+                options: [
+                    "A. 最初是由英國政府為了 IT 專案所開發",
+                    "B. 其全名包含「受控環境」（Controlled Environments）",
+                    "C. 目前僅適用於英國政府的 IT 專案，不適用於其他產業",
+                    "D. 與 PMBOK 並列為全球兩大專案管理標準"
+                ],
+                correct: 2, // Index of C
+                explanation: "解析：來源資料強調「打破迷思」，現在已是通用標準，非 IT 產業也廣泛使用。"
+            },
+            {
+                id: 2,
+                question: "Q2. 專案管理發展史中，PRINCE2 正式出版並標誌方法論成熟的年份為何？",
+                options: [
+                    "A. 1989",
+                    "B. 1996",
+                    "C. 2000",
+                    "D. 1985"
+                ],
+                correct: 1, // Index of B
+                explanation: "解析：1989 是第一代，1996 是 PRINCE2 正式出版的關鍵年。"
+            },
+            {
+                id: 3,
+                question: "Q3. 若將專案管理比喻為手機系統，來源資料將 PRINCE2 比喻為哪種系統，強調其受控與結構化？",
+                options: [
+                    "A. Android",
+                    "B. Windows",
+                    "C. iOS",
+                    "D. Linux"
+                ],
+                correct: 2, // Index of C
+                explanation: "解析：PRINCE2 源自單一權威（英國政府），強調受控環境，類似 iOS。"
+            }
+        ];
+
+        // Chart Configuration
+        let comparisonChart;
+
+        function initChart() {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            
+            comparisonChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['靈活性 (Openness)', '結構化 (Structure)', '工具多樣性 (Toolbox)', '單一權威 (Authority)', '流程導向 (Process)'],
+                    datasets: [{
+                        label: 'PMBOK (Android)',
+                        data: [9, 5, 9, 4, 6],
+                        fill: true,
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)', // Blue
+                        borderColor: 'rgb(59, 130, 246)',
+                        pointBackgroundColor: 'rgb(59, 130, 246)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(59, 130, 246)'
+                    }, {
+                        label: 'PRINCE2 (iOS)',
+                        data: [4, 9, 4, 9, 9],
+                        fill: true,
+                        backgroundColor: 'rgba(234, 88, 12, 0.2)', // Orange
+                        borderColor: 'rgb(234, 88, 12)',
+                        pointBackgroundColor: 'rgb(234, 88, 12)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(234, 88, 12)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: 20 // 空間變寬後，Padding 可以調回適中數值，讓圖表變大
+                    },
+                    elements: {
+                        line: { borderWidth: 3 }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: { display: true },
+                            suggestedMin: 0,
+                            suggestedMax: 10,
+                            ticks: { display: false }, // Hide numbers for cleaner look
+                            pointLabels: {
+                                font: {
+                                    size: 12 // 稍微調整字體大小以適應手機版
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        function setChartMode(mode) {
+            const btnMeta = document.getElementById('btn-metaphor');
+            const btnTech = document.getElementById('btn-technical');
+            
+            if (mode === 'metaphor') {
+                comparisonChart.data.labels = ['自由度 (Freedom)', '系統限制 (Control)', 'App多樣性 (Variety)', '官方審核 (Strict)', '使用者體驗 (UX Flow)'];
+                comparisonChart.data.datasets[0].label = 'Android (PMBOK)';
+                comparisonChart.data.datasets[1].label = 'iOS (PRINCE2)';
+                
+                btnMeta.classList.remove('bg-stone-200', 'text-stone-700');
+                btnMeta.classList.add('bg-orange-600', 'text-white');
+                btnTech.classList.add('bg-stone-200', 'text-stone-700');
+                btnTech.classList.remove('bg-orange-600', 'text-white');
+            } else {
+                comparisonChart.data.labels = ['靈活性 (Flexibility)', '結構化 (Structure)', '工具箱 (Toolbox)', '單一標準 (Standard)', '受控環境 (Controlled)'];
+                comparisonChart.data.datasets[0].label = 'PMBOK 指南';
+                comparisonChart.data.datasets[1].label = 'PRINCE2';
+
+                btnTech.classList.remove('bg-stone-200', 'text-stone-700');
+                btnTech.classList.add('bg-orange-600', 'text-white');
+                btnMeta.classList.add('bg-stone-200', 'text-stone-700');
+                btnMeta.classList.remove('bg-orange-600', 'text-white');
+            }
+            comparisonChart.update();
+        }
+
+        // Quiz Logic
+        let score = 0;
+        let answered = new Set();
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            quizData.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'border-b border-stone-100 pb-6 last:border-0';
+                questionDiv.innerHTML = `
+                    <p class="font-bold text-lg text-stone-800 mb-4">${q.question}</p>
+                    <div class="space-y-2">
+                        ${q.options.map((opt, optIndex) => `
+                            <button onclick="checkAnswer(${index}, ${optIndex}, this)" 
+                                class="w-full text-left px-4 py-3 rounded-lg border border-stone-200 hover:bg-stone-50 transition flex items-center group option-btn-${index}">
+                                <div class="w-5 h-5 rounded-full border-2 border-stone-300 mr-3 flex items-center justify-center group-hover:border-stone-400">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-stone-300 opacity-0 group-hover:opacity-100 transition"></div>
+                                </div>
+                                <span class="text-stone-600">${opt}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="feedback-${index}" class="hidden mt-4 p-4 rounded-lg bg-stone-50 text-sm"></div>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function checkAnswer(qIndex, optIndex, btn) {
+            if (answered.has(qIndex)) return; // Prevent changing answer
+            answered.add(qIndex);
+
+            const q = quizData[qIndex];
+            const feedbackEl = document.getElementById(`feedback-${qIndex}`);
+            const allBtns = document.querySelectorAll(`.option-btn-${qIndex}`);
+
+            // Visual feedback
+            if (optIndex === q.correct) {
+                btn.classList.remove('border-stone-200', 'hover:bg-stone-50');
+                btn.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                feedbackEl.className = 'mt-4 p-4 rounded-lg bg-green-50 text-green-800 border border-green-200';
+                feedbackEl.innerHTML = `<strong>正確！</strong> ${q.explanation}`;
+                score++;
+            } else {
+                btn.classList.remove('border-stone-200', 'hover:bg-stone-50');
+                btn.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+                feedbackEl.className = 'mt-4 p-4 rounded-lg bg-red-50 text-red-800 border border-red-200';
+                feedbackEl.innerHTML = `<strong>錯誤。</strong> ${q.explanation}`;
+                
+                // Highlight correct answer
+                allBtns[q.correct].classList.add('bg-green-50', 'border-green-300');
+            }
+
+            feedbackEl.classList.remove('hidden');
+            document.getElementById('score-display').innerText = `得分: ${score}/${quizData.length}`;
+            updateProgress(75 + (answered.size / quizData.length * 25));
+        }
+
+        // UX & Progress Logic
+        function updateProgress(value) {
+            const bar = document.getElementById('progressBar');
+            const current = parseInt(bar.style.width) || 0;
+            if (value > current) {
+                bar.style.width = `${value}%`;
+            }
+        }
+
+        function highlightEvent(el) {
+            // Reset all
+            document.querySelectorAll('#history .group').forEach(div => {
+                const text = div.querySelectorAll('.text-stone-800, .text-blue-800, .text-orange-600');
+                // Simple toggle effect logic would be complex here, keeping it CSS hover based mainly
+                // But let's trigger a progress update
+            });
+            updateProgress(50);
+        }
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            renderQuiz();
+            
+            // Initial scroll progress check
+            window.addEventListener('scroll', () => {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                // Only update visual bar if it's strictly scroll based, but we are using interaction based progress.
+                // Keeping interaction based for "Gamification".
+            });
+        });
+
+    </script>
+</body>
+</html>

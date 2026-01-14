@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案監控與管理：互動學習指南</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: 'Noto Sans TC', sans-serif; 
+            background-color: #f8fafc;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 56rem;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 4rem;
+        }
+        
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            background: #dbeafe;
+            color: #1d4ed8;
+            border-radius: 9999px;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            white-space: nowrap;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-btn-active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-btn-inactive {
+            background: white;
+            color: #475569;
+        }
+        
+        .nav-btn-inactive:hover {
+            background: #f1f5f9;
+        }
+        
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0f2fe;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .card-text {
+            color: #475569;
+            margin-bottom: 1rem;
+        }
+        
+        .sim-window {
+            position: relative;
+            height: 16rem;
+            background: #0f172a;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 4px solid #334155;
+            margin-bottom: 1rem;
+        }
+        
+        .sim-grid {
+            position: absolute;
+            inset: 0;
+            opacity: 0.2;
+            background-image: linear-gradient(#4fd1c5 1px, transparent 1px), linear-gradient(90deg, #4fd1c5 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .baseline {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #22c55e;
+            opacity: 0.5;
+            border-top: 2px dashed #4ade80;
+        }
+        
+        .baseline-label {
+            position: absolute;
+            top: 50%;
+            right: 0.5rem;
+            color: #4ade80;
+            font-size: 0.75rem;
+            margin-top: -1.25rem;
+        }
+        
+        .plane {
+            position: absolute;
+            left: 25%;
+            transition: all 1s ease-in-out;
+            transform: translateY(-50%);
+        }
+        
+        .plane-icon {
+            width: 3rem;
+            height: 3rem;
+            transform: rotate(90deg);
+        }
+        
+        .plane-label {
+            color: white;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            margin-top: 0.25rem;
+        }
+        
+        .status-box {
+            position: absolute;
+            bottom: 0.5rem;
+            left: 0.5rem;
+            right: 0.5rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-family: monospace;
+            color: #4ade80;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-warning {
+            background: #fef3c7;
+            color: #a16207;
+        }
+        
+        .btn-warning:hover:not(:disabled) {
+            background: #fde68a;
+        }
+        
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #1d4ed8;
+        }
+        
+        .btn:disabled {
+            background: #f3f4f6;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .info-box {
+            margin-top: 1rem;
+            background: #dbeafe;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+        
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .study-card {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        
+        .study-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .study-card h4 {
+            font-weight: 700;
+            font-size: 1.125rem;
+            color: #1e3a8a;
+            margin-bottom: 0.5rem;
+        }
+        
+        .study-card-subtitle {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 0.5rem;
+        }
+        
+        .study-card p {
+            color: #475569;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .quiz-progress {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #94a3b8;
+        }
+        
+        .quiz-score {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #2563eb;
+        }
+        
+        .quiz-question {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .option-btn {
+            width: 100%;
+            text-align: left;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .option-btn:hover:not(.option-disabled) {
+            background: #eff6ff;
+            border-color: #93c5fd;
+        }
+        
+        .option-correct {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #166534;
+        }
+        
+        .option-wrong {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+        
+        .option-disabled {
+            background: #f9fafb;
+            border-color: #e5e7eb;
+            opacity: 0.5;
+            cursor: default;
+        }
+        
+        .explanation {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+        }
+        
+        .explanation-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 0.25rem;
+        }
+        
+        .explanation-text {
+            color: #475569;
+            font-size: 0.875rem;
+        }
+        
+        .btn-next {
+            margin-top: 1rem;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .result {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .result-emoji {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-score {
+            font-size: 1.25rem;
+            color: #2563eb;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-reset {
+            margin: 0 auto;
+        }
+        
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            padding-bottom: 2rem;
+        }
+        
+        .text-green { color: #4ade80; }
+        .text-red { color: #ef4444; }
+        .text-blue { color: #2563eb; }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div style="min-height: 100vh;">
+            <header class="header">
+                <div class="container header-content">
+                    <h1 class="header-title">
+                        🧠 專案管理新手村
+                    </h1>
+                    <span class="badge">監視與管理篇</span>
+                </div>
+            </header>
+
+            <main class="container">
+                <div class="nav">
+                    <button class="nav-btn nav-btn-active" onclick="showTab('sim')">
+                        🛫 觀念模擬 (Cockpit)
+                    </button>
+                    <button class="nav-btn nav-btn-inactive" onclick="showTab('cards')">
+                        📚 重點筆記 (Notes)
+                    </button>
+                    <button class="nav-btn nav-btn-inactive" onclick="showTab('quiz')">
+                        📝 模擬測驗 (Quiz)
+                    </button>
+                </div>
+
+                <!-- 模擬器 -->
+                <div id="tab-sim">
+                    <div class="card">
+                        <h3 class="card-title">
+                            ⚡ 核心概念模擬：飛機駕駛艙
+                        </h3>
+                        <p class="card-text">
+                            專案管理的「監視與管理」就像飛機的儀表板。請試著操作下方的模擬器。
+                        </p>
+                        
+                        <div class="sim-window">
+                            <div class="sim-grid"></div>
+                            <div class="baseline"></div>
+                            <div class="baseline-label">預定航道 (Baseline)</div>
+                            <div class="plane" id="plane" style="top: 50%;">
+                                <div class="plane-icon text-green" id="plane-icon">✈️</div>
+                                <div class="plane-label">實際績效 (Actual)</div>
+                            </div>
+                            <div class="status-box" id="status-box">
+                                &gt; SYSTEM_STATUS: 系統正常：飛機位於預定航道 (基準) 上
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button class="btn btn-warning" id="btn-wind" onclick="simulateWind()">
+                                ⚠️ 模擬：突發狀況 (產生變異)
+                            </button>
+                            
+                            <button class="btn" id="btn-correct" onclick="correctCourse()" disabled>
+                                🔄 採取更正行動 (Corrective Action)
+                            </button>
+                        </div>
+                        <div class="info-box">
+                            <strong>學習重點：</strong> 監控的核心就是「比較」基準與實際的差異，並在偏離時進行「更正」。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 重點筆記 -->
+                <div id="tab-cards" class="hidden">
+                    <div class="grid">
+                        <div class="study-card">
+                            <h4>1. 核心定位</h4>
+                            <div class="study-card-subtitle">貫穿全程的監督機制</div>
+                            <p>不是只發生在某個時間點，而是從啟動到結束，持續與「執行過程組」同步發生。就像開車時眼睛要一直看路。</p>
+                        </div>
+                        <div class="study-card">
+                            <h4>2. 核心功能</h4>
+                            <div class="study-card-subtitle">基準 (Baseline) vs. 實際 (Actual)</div>
+                            <p>透過「比較」來發現問題。找出變異 (Variance)，評估影響，然後採取行動（更正或預防）。</p>
+                        </div>
+                        <div class="study-card">
+                            <h4>3. 三大介面</h4>
+                            <div class="study-card-subtitle">組織、人員、系統</div>
+                            <p>監控不只看數據，還要看人（團隊互動）、看系統（軟硬體）、看組織（部門間溝通）。</p>
+                        </div>
+                        <div class="study-card">
+                            <h4>4. 關鍵知識領域</h4>
+                            <div class="study-card-subtitle">範疇、時間、成本 (EVM)</div>
+                            <p>最重要的是 EVM (實獲值管理)，用來算錢跟進度。也要防止範疇蔓延 (做太多不在計畫內的事)。</p>
+                        </div>
+                        <div class="study-card">
+                            <h4>5. 整合變更控制</h4>
+                            <div class="study-card-subtitle">Integrated Change Control</div>
+                            <p>發現問題或有新需求時，產出「變更請求」。必須經過 CCB (變更控制委員會) 核准才能改基準。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 測驗 -->
+                <div id="tab-quiz" class="hidden">
+                    <div class="card" id="quiz-card">
+                        <div class="quiz-header">
+                            <span class="quiz-progress" id="quiz-progress">Question 1 / 5</span>
+                            <span class="quiz-score" id="quiz-score">得分: 0</span>
+                        </div>
+                        <h3 class="quiz-question" id="question-text"></h3>
+                        <div class="options" id="options-container"></div>
+                        <div id="explanation-box" class="hidden"></div>
+                    </div>
+                    <div class="result hidden" id="result-box">
+                        <div class="result-emoji">🏆</div>
+                        <h3 class="result-title">測驗完成！</h3>
+                        <p class="result-score" id="final-score"></p>
+                        <button onclick="resetQuiz()" class="btn btn-primary btn-reset">
+                            🔄 再測一次
+                        </button>
+                    </div>
+                </div>
+            </main>
+
+            <footer class="footer">
+                <p>專為專案管理初學者設計的互動教材</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // 模擬器邏輯
+        let simStatus = 'normal';
+
+        function simulateWind() {
+            simStatus = 'warning';
+            document.getElementById('plane').style.top = '70%';
+            document.getElementById('plane-icon').className = 'plane-icon text-red';
+            document.getElementById('status-box').textContent = '> SYSTEM_STATUS: 警告：遭遇強風 (變異)，偏離基準線，請採取行動！';
+            document.getElementById('btn-wind').disabled = true;
+            document.getElementById('btn-correct').disabled = false;
+            document.getElementById('btn-correct').className = 'btn btn-primary';
+        }
+
+        function correctCourse() {
+            simStatus = 'normal';
+            document.getElementById('plane').style.top = '50%';
+            document.getElementById('plane-icon').className = 'plane-icon text-green';
+            document.getElementById('status-box').textContent = '> SYSTEM_STATUS: 更正行動成功：已修正航道，回到基準線。';
+            document.getElementById('btn-wind').disabled = false;
+            document.getElementById('btn-correct').disabled = true;
+            document.getElementById('btn-correct').className = 'btn';
+        }
+
+        // Tab 切換
+        function showTab(tabName) {
+            document.getElementById('tab-sim').className = tabName === 'sim' ? '' : 'hidden';
+            document.getElementById('tab-cards').className = tabName === 'cards' ? '' : 'hidden';
+            document.getElementById('tab-quiz').className = tabName === 'quiz' ? '' : 'hidden';
+            
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach((btn, idx) => {
+                if ((tabName === 'sim' && idx === 0) || 
+                    (tabName === 'cards' && idx === 1) || 
+                    (tabName === 'quiz' && idx === 2)) {
+                    btn.className = 'nav-btn nav-btn-active';
+                } else {
+                    btn.className = 'nav-btn nav-btn-inactive';
+                }
+            });
+        }
+
+        // 測驗邏輯
+        const questions = [
+            {
+                q: "根據來源資料，監視與管理過程組通常與哪一個過程組「同步發生」？",
+                options: ["規劃過程組", "啟動過程組", "執行過程組", "結束過程組"],
+                ans: 2,
+                explain: "來源資料強調：監視與管理過程組通常與「執行過程組」同時發生，確保一邊做一邊看。"
+            },
+            {
+                q: "專案監控的核心邏輯是將「實際執行結果」與什麼進行對照？",
+                options: ["客戶的口頭要求", "專案管理計畫書中的基準 (Baseline)", "去年的專案數據", "競爭對手的表現"],
+                ans: 1,
+                explain: "監控的基本邏輯是：實際 vs. 基準 (Baseline)。"
+            },
+            {
+                q: "當監控過程中發現需要修改計畫時，會產出什麼？",
+                options: ["新的專案章程", "變更請求 (Change Requests)", "結案報告", "發票"],
+                ans: 1,
+                explain: "當發現問題或有新要求時，產出「變更請求」，後續需經過 CCB 審核。"
+            },
+            {
+                q: "在成本管控中，來源資料提到最重要的工具是什麼？",
+                options: ["甘特圖", "魚骨圖", "實獲值管理 (EVM)", "SWOT 分析"],
+                ans: 2,
+                explain: "來源多次提及 EVM 是成本管控中最重要的工具。"
+            },
+            {
+                q: "如果將專案管理比喻為自動駕駛的客機，「監視與管理過程組」相當於什麼？",
+                options: ["塔台授權起飛", "飛機引擎", "駕駛艙內的儀表板與雷達", "預定的飛行航線"],
+                ans: 2,
+                explain: "比喻中，監視與管理就是「儀表板與雷達」，用來監測現況並與計畫對照。"
+            }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            const q = questions[currentQ];
+            document.getElementById('quiz-progress').textContent = `Question ${currentQ + 1} / ${questions.length}`;
+            document.getElementById('question-text').textContent = q.q;
+            
+            const optionsHtml = q.options.map((opt, idx) => 
+                `<button class="option-btn" onclick="selectAnswer(${idx})">${opt}</button>`
+            ).join('');
+            document.getElementById('options-container').innerHTML = optionsHtml;
+            document.getElementById('explanation-box').className = 'hidden';
+            answered = false;
+        }
+
+        function selectAnswer(idx) {
+            if (answered) return;
+            answered = true;
+            
+            const q = questions[currentQ];
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            buttons.forEach((btn, i) => {
+                if (i === q.ans) {
+                    btn.className = 'option-btn option-correct';
+                    btn.innerHTML = '✓ ' + btn.textContent;
+                } else if (i === idx) {
+                    btn.className = 'option-btn option-wrong';
+                } else {
+                    btn.className = 'option-btn option-disabled';
+                }
+            });
+            
+            if (idx === q.ans) {
+                score++;
+                document.getElementById('quiz-score').textContent = `得分: ${score}`;
+            }
+            
+            const nextText = currentQ < questions.length - 1 ? '下一題 →' : '查看結果 →';
+            document.getElementById('explanation-box').className = 'explanation';
+            document.getElementById('explanation-box').innerHTML = `
+                <p class="explanation-title">解析：</p>
+                <p class="explanation-text">${q.explain}</p>
+                <button onclick="nextQuestion()" class="btn btn-primary btn-next">${nextText}</button>
+            `;
+        }
+
+        function nextQuestion() {
+            if (currentQ < questions.length - 1) {
+                currentQ++;
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-card').className = 'card hidden';
+            document.getElementById('result-box').className = 'result';
+            document.getElementById('final-score').textContent = `你的得分：${score} / ${questions.length}`;
+        }
+
+        function resetQuiz() {
+            currentQ = 0;
+            score = 0;
+            document.getElementById('quiz-score').textContent = '得分: 0';
+            document.getElementById('quiz-card').className = 'card';
+            document.getElementById('result-box').className = 'result hidden';
+            loadQuestion();
+        }
+
+        // 初始化測驗
+        loadQuestion();
+    </script>
+</body>
+</html>

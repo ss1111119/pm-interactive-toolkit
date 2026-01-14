@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PM 武道館：專案管理修煉之路</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #e2e8f0; /* Slate 200 */
+        }
+        .card-glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .active-tab {
+            border-bottom: 2px solid #f59e0b; /* Amber 500 */
+            color: #f59e0b;
+        }
+        .slider-thumb::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #f59e0b;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 bg-slate-900/90 border-b border-slate-700 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🥋</span>
+                    <span class="font-bold text-xl tracking-wider text-white">PM 武道館</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4" id="nav-links">
+                        <button onclick="switchView('intro')" class="nav-btn hover:text-amber-400 px-3 py-2 rounded-md text-sm font-medium transition active-tab" data-target="intro">道場入門</button>
+                        <button onclick="switchView('matrix')" class="nav-btn hover:text-amber-400 px-3 py-2 rounded-md text-sm font-medium transition" data-target="matrix">外家拳譜 (流程)</button>
+                        <button onclick="switchView('tools')" class="nav-btn hover:text-amber-400 px-3 py-2 rounded-md text-sm font-medium transition" data-target="tools">兵器修煉 (工具)</button>
+                        <button onclick="switchView('quiz')" class="nav-btn hover:text-amber-400 px-3 py-2 rounded-md text-sm font-medium transition" data-target="quiz">師父試煉 (實戰)</button>
+                    </div>
+                </div>
+                <!-- Mobile menu button (Simplified) -->
+                <div class="-mr-2 flex md:hidden">
+                    <button class="bg-slate-800 p-2 rounded-md text-gray-400 hover:text-white" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="hidden md:hidden bg-slate-800" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <button onclick="switchView('intro')" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-slate-700 w-full text-left">道場入門</button>
+                <button onclick="switchView('matrix')" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-slate-700 w-full text-left">外家拳譜</button>
+                <button onclick="switchView('tools')" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-slate-700 w-full text-left">兵器修煉</button>
+                <button onclick="switchView('quiz')" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-slate-700 w-full text-left">師父試煉</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <!-- VIEW: INTRO (道場入門) -->
+        <div id="view-intro" class="fade-in">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-amber-500 mb-4">歡迎來到專案管理最高殿堂</h1>
+                <p class="text-xl text-slate-400 max-w-3xl mx-auto">《PMBOK 指南》是專案管理的「世界語言」，如同習武之人的基本功。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="card-glass p-8 rounded-2xl shadow-lg border-l-4 border-blue-500 hover:transform hover:scale-105 transition duration-300">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center"><span class="text-3xl mr-2">📘</span> 外家拳法 (第 6 版)</h2>
+                    <p class="text-slate-300 mb-4">這是學習的**「骨幹與地基」**。就像少林長拳的套路，一招一式皆有定規。</p>
+                    <ul class="list-disc list-inside text-slate-400 space-y-2">
+                        <li><strong>5 大流程群組</strong>：啟動、規劃、執行、監控、結束。</li>
+                        <li><strong>10 大知識領域</strong>：整合、範疇、時程、成本等。</li>
+                        <li><strong>ITTO</strong>：輸入、工具、輸出的精確操作。</li>
+                    </ul>
+                </div>
+                <div class="card-glass p-8 rounded-2xl shadow-lg border-l-4 border-purple-500 hover:transform hover:scale-105 transition duration-300">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center"><span class="text-3xl mr-2">🧘</span> 內家心法 (第 7 版)</h2>
+                    <p class="text-slate-300 mb-4">這是進階的**「思維典範轉移」**。不拘泥於招式，強調價值交付。</p>
+                    <ul class="list-disc list-inside text-slate-400 space-y-2">
+                        <li><strong>12 項原則</strong>：如管家精神、擁抱複雜性。</li>
+                        <li><strong>8 項績效領域</strong>：關注最終成果而非僅僅是產出。</li>
+                        <li><strong>裁適 (Tailoring)</strong>：因地制宜，無招勝有招。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-indigo-900/30 p-6 rounded-xl border border-indigo-500/30 text-center">
+                <p class="text-lg italic text-indigo-200">「必須先練好套路（流程與工具），才有能力去領悟並靈活運用心法（原則）。」</p>
+                <button onclick="switchView('matrix')" class="mt-6 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 px-8 rounded-full transition shadow-[0_0_15px_rgba(245,158,11,0.5)]">
+                    開始修煉拳譜
+                </button>
+            </div>
+        </div>
+
+        <!-- VIEW: MATRIX (外家拳譜) -->
+        <div id="view-matrix" class="hidden fade-in">
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-bold text-white mb-2">五大流程修煉矩陣</h2>
+                <p class="text-slate-400">點擊下方的流程群組，查看該階段對應的關鍵「招式」（知識領域與過程）。</p>
+            </div>
+
+            <!-- Process Group Tabs -->
+            <div class="flex flex-wrap justify-center gap-2 mb-8" id="process-buttons">
+                <!-- Buttons injected by JS -->
+            </div>
+
+            <!-- Dynamic Content Area -->
+            <div class="card-glass rounded-xl p-6 min-h-[400px]">
+                <div id="matrix-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Cards injected by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: TOOLS (兵器修煉) -->
+        <div id="view-tools" class="hidden fade-in">
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-bold text-white mb-2">實獲值管理 (EVM) 模擬器</h2>
+                <p class="text-slate-400">專案經理最重要的兵器之一。拖動滑桿模擬專案現況，判斷是否超支或落後。</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Controls -->
+                <div class="card-glass p-6 rounded-xl col-span-1">
+                    <h3 class="text-xl font-bold text-amber-500 mb-6 border-b border-slate-700 pb-2">參數設定</h3>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-slate-300 mb-2">計畫價值 (PV) - 預計要完成的工作</label>
+                        <input type="range" min="0" max="20000" step="500" value="10000" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider-thumb" id="pv-slider">
+                        <div class="flex justify-between text-xs text-slate-500 mt-1">
+                            <span>$0</span>
+                            <span id="pv-value" class="text-white font-bold">$10,000</span>
+                            <span>$20k</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-slate-300 mb-2">實獲值 (EV) - 實際完成的工作價值</label>
+                        <input type="range" min="0" max="20000" step="500" value="9000" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider-thumb" id="ev-slider">
+                        <div class="flex justify-between text-xs text-slate-500 mt-1">
+                            <span>$0</span>
+                            <span id="ev-value" class="text-white font-bold">$9,000</span>
+                            <span>$20k</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-slate-300 mb-2">實際成本 (AC) - 實際花掉的錢</label>
+                        <input type="range" min="0" max="20000" step="500" value="11000" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider-thumb" id="ac-slider">
+                        <div class="flex justify-between text-xs text-slate-500 mt-1">
+                            <span>$0</span>
+                            <span id="ac-value" class="text-white font-bold">$11,000</span>
+                            <span>$20k</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualization -->
+                <div class="card-glass p-6 rounded-xl col-span-1 lg:col-span-2 flex flex-col">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-slate-800 p-3 rounded-lg text-center">
+                            <div class="text-xs text-slate-400">時程偏差 (SV)</div>
+                            <div id="val-sv" class="text-lg font-bold">0</div>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded-lg text-center">
+                            <div class="text-xs text-slate-400">成本偏差 (CV)</div>
+                            <div id="val-cv" class="text-lg font-bold">0</div>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded-lg text-center">
+                            <div class="text-xs text-slate-400">時程績效 (SPI)</div>
+                            <div id="val-spi" class="text-lg font-bold">0</div>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded-lg text-center">
+                            <div class="text-xs text-slate-400">成本績效 (CPI)</div>
+                            <div id="val-cpi" class="text-lg font-bold">0</div>
+                        </div>
+                    </div>
+
+                    <div id="status-message" class="mb-4 p-3 rounded bg-slate-800 text-center text-sm font-bold">
+                        分析中...
+                    </div>
+
+                    <div class="flex-grow relative h-64 w-full">
+                        <canvas id="evmChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: QUIZ (師父試煉) -->
+        <div id="view-quiz" class="hidden fade-in">
+             <div class="mb-8 text-center">
+                <h2 class="text-3xl font-bold text-white mb-2">大師的考驗</h2>
+                <p class="text-slate-400">唯有理解何時該用「招式」，何時該用「心法」，方能出師。</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto">
+                <div id="quiz-container" class="card-glass p-8 rounded-2xl">
+                    <!-- Question injected by JS -->
+                </div>
+                
+                <!-- Navigation -->
+                <div class="flex justify-between mt-6">
+                    <button onclick="prevQuestion()" class="text-slate-400 hover:text-white px-4 py-2" id="btn-prev" disabled>上一題</button>
+                    <span class="text-slate-500 py-2" id="question-indicator">1 / 3</span>
+                    <button onclick="nextQuestion()" class="bg-slate-700 hover:bg-slate-600 text-white px-6 py-2 rounded-lg" id="btn-next">下一題</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 mt-12 py-8 bg-slate-900">
+        <div class="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm">
+            <p>© 2025 PM 武道館. 基於 PMBOK 指南第 6 版與第 7 版概念設計。</p>
+            <p class="mt-2">學習建議：先練好 WBS 馬步，再談價值交付心法。</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- DATA: MATRIX (Processes) ---
+        const pmbokData = {
+            'init': { 
+                label: '啟動 (Initiating)', 
+                color: 'bg-blue-600',
+                desc: '專案獲得正式授權，師父點頭答應你下山歷練。',
+                items: [
+                    { area: '整合管理', process: '發展專案章程', detail: '產出專案章程，確認專案存在。' },
+                    { area: '利害關係人', process: '辨識利害關係人', detail: '搞清楚誰是朋友，誰是敵人。' }
+                ]
+            },
+            'plan': { 
+                label: '規劃 (Planning)', 
+                color: 'bg-emerald-600',
+                desc: '擬定作戰地圖。這是招式最多、最繁瑣的階段。',
+                items: [
+                    { area: '範疇管理', process: '建立 WBS', detail: 'WBS 是馬步，將大任務拆解成小的工作包。' },
+                    { area: '時程管理', process: '發展時程 (CPM)', detail: '找出要徑 (Critical Path)，決定最短工期。' },
+                    { area: '成本管理', process: '決定預算', detail: '計算這趟旅程需要多少盤纏。' },
+                    { area: '風險管理', process: '執行定性/定量風險分析', detail: '預判路上會有什麼埋伏。' }
+                ]
+            },
+            'exec': { 
+                label: '執行 (Executing)', 
+                color: 'bg-amber-600',
+                desc: '依照計畫出招，動員資源，帶領團隊。',
+                items: [
+                    { area: '整合管理', process: '指導與管理專案工作', detail: '實際產生交付標的 (Deliverables)。' },
+                    { area: '資源管理', process: '發展團隊', detail: '提升團隊士氣與戰鬥力。' },
+                    { area: '品質管理', process: '管理品質', detail: '確保你的招式動作標準，沒有走樣。' },
+                    { area: '溝通管理', process: '管理溝通', detail: '確保情報傳遞順暢。' }
+                ]
+            },
+            'mon': { 
+                label: '監控 (Monitoring)', 
+                color: 'bg-rose-600',
+                desc: '眼觀四面，耳聽八方。隨時修正偏差。',
+                items: [
+                    { area: '整合管理', process: '執行整合變更控制', detail: '所有變更請求都必須經過審查 (CCB)。' },
+                    { area: '範疇管理', process: '驗證範疇', detail: '讓客戶點頭驗收完成的工作。' },
+                    { area: '成本管理', process: '控制成本 (EVM)', detail: '運用實獲值管理看穿專案健康度。' }
+                ]
+            },
+            'close': { 
+                label: '結束 (Closing)', 
+                color: 'bg-slate-600',
+                desc: '修煉完成，歸檔經驗，解散團隊。',
+                items: [
+                    { area: '整合管理', process: '結束專案或階段', detail: '移交最終產品，更新組織流程資產。' }
+                ]
+            }
+        };
+
+        // --- DATA: QUIZ ---
+        const quizData = [
+            {
+                q: "一位新手專案經理因為專案複雜度高而感到迷惘。他應該優先掌握什麼？",
+                options: [
+                    "直接跳過流程，專注於原則與心法。",
+                    "熟練第 6 版的流程架構（如 WBS、要徑法）作為基礎。",
+                    "尋求 PRINCE2 的幫助，放棄 PMBOK。",
+                    "只關注績效領域，不管輸入輸出。"
+                ],
+                ans: 1,
+                explain: "正確！來源資料強調：第 6 版的系統化流程架構，依然是初學者理解專案管理的堅實地基。先練套路，再談心法。"
+            },
+            {
+                q: "PMBOK 第 7 版的推出，對於第 6 版的內容有何影響？",
+                options: [
+                    "第 6 版內容作廢，不再有效。",
+                    "第 7 版完全取代了第 6 版的工具技術。",
+                    "兩者互補，舊版的流程工具仍是實務落地的必要手段。",
+                    "第 6 版變成了錯誤的示範。"
+                ],
+                ans: 2,
+                explain: "正確！第 7 版強調原則，但並不代表舊版無效。WBS、EVM 等工具依然是將工作落地的必要手段。"
+            },
+            {
+                q: "如果你想計算專案目前的成本效率，你正在使用哪一類知識？",
+                options: [
+                    "PMBOK 第 7 版的「管家精神」原則。",
+                    "PMBOK 第 6 版的「監控流程群組」與 ITTO。",
+                    "ISO 21500 的標準定義。",
+                    "敏捷開發的衝刺燃盡圖。"
+                ],
+                ans: 1,
+                explain: "正確！使用計算工具（如 EVM）屬於具體的「工具與技術」，這是第 6 版架構的核心內容。"
+            }
+        ];
+
+        // --- GLOBAL STATE ---
+        let currentTab = 'intro';
+        let currentQuizIndex = 0;
+        let evmChart = null;
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initMatrix();
+            initEVM();
+            renderQuiz();
+            
+            // Render first tab of matrix by default
+            selectProcess('plan');
+        });
+
+        // --- NAVIGATION LOGIC ---
+        function switchView(viewName) {
+            // Update Tab UI
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if(btn.dataset.target === viewName) {
+                    btn.classList.add('active-tab', 'text-amber-400');
+                    btn.classList.remove('text-slate-200');
+                } else {
+                    btn.classList.remove('active-tab', 'text-amber-400');
+                    btn.classList.add('text-slate-200');
+                }
+            });
+
+            // Hide all views
+            ['intro', 'matrix', 'tools', 'quiz'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+            });
+
+            // Show selected view
+            const target = document.getElementById(`view-${viewName}`);
+            target.classList.remove('hidden');
+            
+            // Re-trigger animation
+            target.classList.remove('fade-in');
+            void target.offsetWidth; // trigger reflow
+            target.classList.add('fade-in');
+
+            currentTab = viewName;
+        }
+
+        // --- MATRIX LOGIC ---
+        function initMatrix() {
+            const container = document.getElementById('process-buttons');
+            Object.keys(pmbokData).forEach(key => {
+                const group = pmbokData[key];
+                const btn = document.createElement('button');
+                btn.className = `process-tab-btn px-4 py-2 m-1 rounded-lg border border-slate-600 hover:border-amber-500 transition text-sm text-slate-300 bg-slate-800`;
+                btn.textContent = group.label;
+                btn.onclick = () => selectProcess(key);
+                btn.dataset.key = key;
+                container.appendChild(btn);
+            });
+        }
+
+        function selectProcess(key) {
+            // Highlight button
+            document.querySelectorAll('.process-tab-btn').forEach(btn => {
+                if(btn.dataset.key === key) {
+                    btn.classList.add('bg-slate-700', 'text-amber-400', 'border-amber-500');
+                    btn.classList.remove('bg-slate-800', 'text-slate-300');
+                } else {
+                    btn.classList.remove('bg-slate-700', 'text-amber-400', 'border-amber-500');
+                    btn.classList.add('bg-slate-800', 'text-slate-300');
+                }
+            });
+
+            const data = pmbokData[key];
+            const contentDiv = document.getElementById('matrix-content');
+            
+            // Clear and rebuild
+            contentDiv.innerHTML = '';
+            
+            // Add Description Card
+            const descCard = document.createElement('div');
+            descCard.className = 'col-span-1 md:col-span-2 lg:col-span-3 bg-slate-800/50 p-4 rounded-lg border border-dashed border-slate-600 mb-2';
+            descCard.innerHTML = `<p class="text-amber-200">💡 階段心法：${data.desc}</p>`;
+            contentDiv.appendChild(descCard);
+
+            // Add Process Cards
+            data.items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `bg-slate-800 p-5 rounded-lg border-l-4 border-${key === 'init' ? 'blue' : key === 'plan' ? 'emerald' : key === 'exec' ? 'amber' : key === 'mon' ? 'rose' : 'slate'}-500 shadow-md hover:bg-slate-750 transition`;
+                // Note: Tailwind dynamic colors in JS need safelisting or inline styles usually, but for this demo we rely on pre-existing classes or simple styles. 
+                // Let's use inline style for the border color to be safe with CDN.
+                let borderColor = '#64748b';
+                if(key==='init') borderColor='#2563eb';
+                if(key==='plan') borderColor='#10b981';
+                if(key==='exec') borderColor='#d97706';
+                if(key==='mon') borderColor='#e11d48';
+                
+                card.style.borderLeftColor = borderColor;
+
+                card.innerHTML = `
+                    <div class="text-xs text-slate-500 uppercase tracking-wide mb-1">${item.area}</div>
+                    <h3 class="text-lg font-bold text-white mb-2">${item.process}</h3>
+                    <p class="text-sm text-slate-400">${item.detail}</p>
+                `;
+                contentDiv.appendChild(card);
+            });
+        }
+
+        // --- EVM CALCULATOR LOGIC ---
+        function initEVM() {
+            const ctx = document.getElementById('evmChart').getContext('2d');
+            
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.font.family = 'Noto Sans TC';
+
+            evmChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['計畫價值 (PV)', '實獲值 (EV)', '實際成本 (AC)'],
+                    datasets: [{
+                        label: '金額 ($)',
+                        data: [10000, 9000, 11000],
+                        backgroundColor: [
+                            'rgba(148, 163, 184, 0.7)', // PV - Slate
+                            'rgba(245, 158, 11, 0.7)',  // EV - Amber
+                            'rgba(225, 29, 72, 0.7)'    // AC - Rose
+                        ],
+                        borderColor: [
+                            'rgba(148, 163, 184, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(225, 29, 72, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#334155' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            ['pv', 'ev', 'ac'].forEach(id => {
+                document.getElementById(`${id}-slider`).addEventListener('input', updateEVM);
+            });
+
+            updateEVM();
+        }
+
+        function updateEVM() {
+            const pv = parseInt(document.getElementById('pv-slider').value);
+            const ev = parseInt(document.getElementById('ev-slider').value);
+            const ac = parseInt(document.getElementById('ac-slider').value);
+
+            // Update UI Numbers
+            document.getElementById('pv-value').innerText = `$${pv.toLocaleString()}`;
+            document.getElementById('ev-value').innerText = `$${ev.toLocaleString()}`;
+            document.getElementById('ac-value').innerText = `$${ac.toLocaleString()}`;
+
+            // Calculate Formulas
+            const sv = ev - pv;
+            const cv = ev - ac;
+            const spi = pv === 0 ? 0 : (ev / pv).toFixed(2);
+            const cpi = ac === 0 ? 0 : (ev / ac).toFixed(2);
+
+            // Update Metrics UI
+            const updateMetric = (id, val, isIndex) => {
+                const el = document.getElementById(id);
+                el.innerText = val;
+                
+                // Color Logic
+                if (isIndex) { // SPI, CPI
+                    el.className = `text-lg font-bold ${val >= 1 ? 'text-emerald-400' : 'text-rose-400'}`;
+                } else { // SV, CV
+                    el.className = `text-lg font-bold ${val >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+                }
+            };
+
+            updateMetric('val-sv', sv.toLocaleString(), false);
+            updateMetric('val-cv', cv.toLocaleString(), false);
+            updateMetric('val-spi', spi, true);
+            updateMetric('val-cpi', cpi, true);
+
+            // Analysis Message
+            const statusEl = document.getElementById('status-message');
+            let msg = "";
+            let colorClass = "";
+
+            if (cpi >= 1 && spi >= 1) {
+                msg = "🏆 絕佳狀態：進度超前且預算精省！";
+                colorClass = "bg-emerald-900 text-emerald-200 border border-emerald-700";
+            } else if (cpi < 1 && spi < 1) {
+                msg = "⚠️ 危險警訊：進度落後且預算超支！需要糾正措施。";
+                colorClass = "bg-rose-900 text-rose-200 border border-rose-700";
+            } else if (cpi < 1) {
+                msg = "💸 預算超支：進度雖可，但花費過高。";
+                colorClass = "bg-orange-900 text-orange-200 border border-orange-700";
+            } else {
+                msg = "🐌 進度落後：預算控制得宜，但動作太慢。";
+                colorClass = "bg-yellow-900 text-yellow-200 border border-yellow-700";
+            }
+            
+            statusEl.innerText = msg;
+            statusEl.className = `mb-4 p-3 rounded text-center text-sm font-bold shadow-lg ${colorClass}`;
+
+            // Update Chart
+            evmChart.data.datasets[0].data = [pv, ev, ac];
+            evmChart.update();
+        }
+
+        // --- QUIZ LOGIC ---
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            const data = quizData[currentQuizIndex];
+
+            // Reset buttons
+            document.getElementById('btn-prev').disabled = currentQuizIndex === 0;
+            document.getElementById('btn-next').disabled = currentQuizIndex === quizData.length - 1;
+            document.getElementById('question-indicator').innerText = `${currentQuizIndex + 1} / ${quizData.length}`;
+
+            container.innerHTML = `
+                <h3 class="text-xl font-bold text-white mb-6">問題 ${currentQuizIndex + 1}: ${data.q}</h3>
+                <div class="space-y-3">
+                    ${data.options.map((opt, idx) => `
+                        <button onclick="checkAnswer(${idx})" 
+                            class="quiz-opt w-full text-left p-4 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition relative" 
+                            id="opt-${idx}">
+                            <span class="font-bold mr-2 text-slate-500">${String.fromCharCode(65+idx)}.</span> ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="feedback-area" class="hidden mt-6 p-4 rounded-lg bg-slate-800 border-l-4"></div>
+            `;
+        }
+
+        function checkAnswer(selectedIdx) {
+            const data = quizData[currentQuizIndex];
+            const feedback = document.getElementById('feedback-area');
+            const btns = document.querySelectorAll('.quiz-opt');
+
+            // Disable all buttons
+            btns.forEach(btn => btn.disabled = true);
+
+            // Highlight correct/incorrect
+            if (selectedIdx === data.ans) {
+                document.getElementById(`opt-${selectedIdx}`).classList.add('bg-emerald-900', 'border-emerald-500');
+                feedback.className = "mt-6 p-4 rounded-lg bg-emerald-900/30 border-l-4 border-emerald-500 text-emerald-200 fade-in";
+                feedback.innerHTML = `<strong>✅ 正確！</strong><br>${data.explain}`;
+            } else {
+                document.getElementById(`opt-${selectedIdx}`).classList.add('bg-rose-900', 'border-rose-500');
+                document.getElementById(`opt-${data.ans}`).classList.add('bg-emerald-900', 'border-emerald-500'); // Show correct one
+                feedback.className = "mt-6 p-4 rounded-lg bg-rose-900/30 border-l-4 border-rose-500 text-rose-200 fade-in";
+                feedback.innerHTML = `<strong>❌ 招式未精。</strong><br>${data.explain}`;
+            }
+
+            feedback.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            if (currentQuizIndex < quizData.length - 1) {
+                currentQuizIndex++;
+                renderQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuizIndex > 0) {
+                currentQuizIndex--;
+                renderQuiz();
+            }
+        }
+
+    </script>
+</body>
+</html>

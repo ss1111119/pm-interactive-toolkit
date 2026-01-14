@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理計畫書學習模擬器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <!-- Load Lucide icons (Vanilla JS version) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f9ff;
+        }
+        .card-flip {
+            perspective: 1000px;
+        }
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card-flip.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            backface-visibility: hidden;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        .animate-slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Revised Icon component to prevent React reconciliation errors
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const elementRef = useRef(null);
+
+            useEffect(() => {
+                // Ensure lucide is loaded
+                if (!window.lucide || !elementRef.current) return;
+
+                const lucide = window.lucide;
+                
+                // Find icon definition. 
+                // Lucide structure can be lucide.icons[Name] or lucide[Name] depending on version
+                const iconKey = name;
+                const iconDef = (lucide.icons && lucide.icons[iconKey]) ? lucide.icons[iconKey] : lucide[iconKey];
+
+                if (iconDef && typeof lucide.createElement === 'function') {
+                    // Create SVG element using Lucide's API
+                    const svg = lucide.createElement(iconDef);
+                    
+                    // Set attributes manually to ensure they are applied
+                    svg.setAttribute('width', size);
+                    svg.setAttribute('height', size);
+                    
+                    // Handle class names
+                    if (className) {
+                        svg.setAttribute('class', className);
+                    }
+
+                    // Clear previous content and append new SVG
+                    // This keeps React happy as it only manages the container span
+                    elementRef.current.innerHTML = '';
+                    elementRef.current.appendChild(svg);
+                }
+            }, [name, size, className]);
+
+            return <span ref={elementRef} style={{ display: 'inline-flex', verticalAlign: 'middle' }}></span>;
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('analogy');
+            
+            // Removed the global lucide.createIcons() call which caused the conflict
+
+            return (
+                <div className="min-h-screen bg-slate-50 flex flex-col items-center py-8 px-4">
+                    <header className="w-full max-w-5xl bg-white rounded-xl shadow-lg p-6 mb-8 border-l-8 border-blue-600 flex justify-between items-center">
+                        <div>
+                            <h1 className="text-3xl font-bold text-slate-800 mb-2">專案管理整合學習系統 v2.0</h1>
+                            <p className="text-slate-600">主題：發展專案管理計畫書 (Develop Project Management Plan)</p>
+                        </div>
+                        <div className="hidden md:block text-right">
+                            <span className="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">PMBOK 學習指南</span>
+                        </div>
+                    </header>
+
+                    <nav className="w-full max-w-5xl flex flex-wrap gap-2 mb-6">
+                        <TabButton id="analogy" label="火星任務譬喻" icon="Rocket" activeTab={activeTab} setActiveTab={setActiveTab} />
+                        <TabButton id="structure" label="計畫書解剖" icon="Layers" activeTab={activeTab} setActiveTab={setActiveTab} />
+                        <TabButton id="knowledge" label="十大領域重點" icon="LayoutGrid" activeTab={activeTab} setActiveTab={setActiveTab} />
+                        <TabButton id="quiz" label="情境模擬考題" icon="HelpCircle" activeTab={activeTab} setActiveTab={setActiveTab} />
+                    </nav>
+
+                    <main className="w-full max-w-5xl bg-white rounded-xl shadow-md min-h-[600px] p-6 relative overflow-hidden">
+                        {activeTab === 'analogy' && <AnalogyView />}
+                        {activeTab === 'structure' && <StructureView />}
+                        {activeTab === 'knowledge' && <KnowledgeView />}
+                        {activeTab === 'quiz' && <QuizView />}
+                    </main>
+
+                    <footer className="mt-8 text-slate-500 text-sm text-center">
+                        <p>專為專案管理初學者設計的互動指南 | 包含各知識領域重點整理</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        const TabButton = ({ id, label, icon, activeTab, setActiveTab }) => (
+            <button 
+                onClick={() => setActiveTab(id)}
+                className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                    activeTab === id 
+                    ? 'bg-blue-600 text-white shadow-md transform scale-105' 
+                    : 'bg-white text-slate-600 hover:bg-blue-50 border border-transparent hover:border-blue-100'
+                }`}
+            >
+                <Icon name={icon} size={20} />
+                {label}
+            </button>
+        );
+
+        const AnalogyView = () => {
+            const [selectedPart, setSelectedPart] = useState(null);
+
+            const parts = [
+                {
+                    id: 'charter',
+                    title: '專案章程 (Project Charter)',
+                    analogy: '政府下達的「登火星授權書」',
+                    desc: '這是起點。沒有這張紙，任務就不存在。它提供了高層級的目標與專案經理的授權。',
+                    icon: 'BookOpen',
+                    color: 'bg-yellow-50 border-yellow-500 text-yellow-900'
+                },
+                {
+                    id: 'plan',
+                    title: '專案管理計畫書',
+                    analogy: '飛行操作手冊 (The Bible)',
+                    desc: '唯一的指揮基準。包含所有規則：怎麼飛(範疇)、飛多久(時程)、花多少油(成本)。所有人都必須看這本。',
+                    icon: 'BookOpen',
+                    color: 'bg-blue-50 border-blue-500 text-blue-900'
+                },
+                {
+                    id: 'integration',
+                    title: '整合管理',
+                    analogy: '地面指揮中心',
+                    desc: '負責協調一切的大腦。把各個子系統（引擎、通訊、維生）整合在一起，確保飛船不會解體。',
+                    icon: 'Brain',
+                    color: 'bg-purple-50 border-purple-500 text-purple-900'
+                },
+                {
+                    id: 'change',
+                    title: '變更控制',
+                    analogy: '應對沙塵暴',
+                    desc: '飛行途中遇到變數，必須修改手冊。不能隨便改，要經過「變更控制委員會 (CCB)」評估與核准。',
+                    icon: 'GitMerge',
+                    color: 'bg-red-50 border-red-500 text-red-900'
+                }
+            ];
+
+            return (
+                <div className="h-full flex flex-col md:flex-row gap-6 animate-slide-up">
+                    <div className="flex-1 space-y-4">
+                        <h2 className="text-2xl font-bold text-slate-800 mb-4">如果你要登陸火星...</h2>
+                        <div className="relative h-64 md:h-96 bg-slate-900 rounded-xl overflow-hidden shadow-inner flex items-center justify-center group select-none">
+                            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop')] bg-cover opacity-50"></div>
+                            
+                            <button 
+                                onClick={() => setSelectedPart(parts[0])}
+                                className="absolute top-4 left-4 p-2 bg-yellow-500 rounded-full hover:scale-110 transition shadow-lg text-white font-bold text-xs z-10"
+                            >授權書</button>
+                            
+                            <button 
+                                onClick={() => setSelectedPart(parts[2])}
+                                className="absolute bottom-4 left-4 p-3 bg-purple-600 rounded-full hover:scale-110 transition shadow-lg flex items-center gap-2 text-white z-10"
+                            >
+                                <Icon name="Brain" size={20} /> 指揮中心
+                            </button>
+
+                            <button 
+                                onClick={() => setSelectedPart(parts[1])}
+                                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 bg-blue-600 rounded-lg hover:scale-110 transition shadow-xl border-2 border-white text-white flex flex-col items-center z-10"
+                            >
+                                <Icon name="BookOpen" size={32} />
+                                <span className="text-sm font-bold mt-1">飛行手冊</span>
+                            </button>
+
+                            <button 
+                                onClick={() => setSelectedPart(parts[3])}
+                                className="absolute top-10 right-10 p-2 bg-red-500 rounded-full hover:scale-110 transition shadow-lg text-white animate-pulse z-10"
+                            >
+                                <Icon name="AlertTriangle" size={20} />
+                            </button>
+                        </div>
+                        <p className="text-slate-500 text-sm text-center">點擊圖中的元素來查看對應的專案管理概念</p>
+                    </div>
+
+                    <div className="flex-1">
+                        {selectedPart ? (
+                            <div className={`h-full p-6 rounded-xl border-l-4 shadow-sm ${selectedPart.color}`}>
+                                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                                    <Icon name={selectedPart.icon} />
+                                    {selectedPart.title}
+                                </h3>
+                                <div className="mb-6">
+                                    <span className="text-xs font-bold uppercase tracking-wider opacity-60 block mb-1">情境譬喻</span>
+                                    <p className="text-lg font-medium leading-relaxed">{selectedPart.analogy}</p>
+                                </div>
+                                <div>
+                                    <span className="text-xs font-bold uppercase tracking-wider opacity-60 block mb-1">PMBOK 核心概念</span>
+                                    <p className="leading-relaxed">{selectedPart.desc}</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="h-full flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-300 rounded-xl text-slate-400 bg-slate-50">
+                                <Icon name="Target" size={48} className="mb-4 text-slate-300"/>
+                                <p className="font-medium">請點擊左側圖示開始學習</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const StructureView = () => {
+            const [activeLayer, setActiveLayer] = useState(0);
+            
+            const layers = [
+                {
+                    title: "大腦：統一架構 (Integration)",
+                    content: "這不是普通的Word檔，它是規劃階段「唯一」的產出。它是所有行動的依據。如果各子計畫有衝突（例如品質太高導致成本過高），必須在這裡進行權衡 (Trade-off)。",
+                    keyPoint: "關鍵字：權衡 (Trade-offs)、整合、指導與管理"
+                },
+                {
+                    title: "骨架：三大基準 (Baselines)",
+                    content: "計畫書裡最重要的尺規，一但確定就不能隨意更改。包含：1. 範疇基準 (做什麼)、2. 時程基準 (何時做完)、3. 成本基準 (花多少錢)。",
+                    keyPoint: "關鍵字：S-Curve (S曲線)、績效衡量基準 (PMB)"
+                },
+                {
+                    title: "肌肉：子計畫 (Subsidiary Plans)",
+                    content: "各知識領域的具體執行細節。包含風險管理計畫、品質管理計畫、溝通管理計畫等。它們告訴我們「如何 (How)」管理該領域。",
+                    keyPoint: "關鍵字：How to plan, manage, and control"
+                },
+                {
+                    title: "神經：生命週期與開發方法",
+                    content: "決定專案是採用「預測式 (瀑布)」、「敏捷式 (Agile)」還是「混合式」。這決定了計畫書的詳細程度與變更頻率。",
+                    keyPoint: "關鍵字：開發生命週期、漸進明細"
+                }
+            ];
+
+            return (
+                <div className="flex flex-col h-full animate-slide-up">
+                    <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <Icon name="Layers" className="text-blue-600"/>
+                        解剖計畫書的層次
+                    </h2>
+                    
+                    <div className="flex flex-col md:flex-row gap-8">
+                        {/* Interactive Layer Visual */}
+                        <div className="flex-1 flex flex-col gap-3">
+                            {layers.map((layer, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => setActiveLayer(index)}
+                                    className={`p-5 rounded-lg border-l-4 text-left transition-all duration-300 group ${
+                                        activeLayer === index 
+                                        ? 'border-blue-600 bg-white shadow-md translate-x-2' 
+                                        : 'border-transparent bg-slate-100 hover:bg-slate-200 text-slate-500'
+                                    }`}
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <span className={`font-bold text-lg ${activeLayer === index ? 'text-blue-800' : 'text-slate-600'}`}>
+                                            {layer.title.split('：')[0]}
+                                        </span>
+                                        {activeLayer === index && <Icon name="ArrowRight" className="text-blue-600" size={20} />}
+                                    </div>
+                                    <span className={`text-sm ${activeLayer === index ? 'text-blue-600' : 'text-slate-400'}`}>
+                                        {layer.title.split('：')[1]}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Content Display */}
+                        <div className="flex-1 bg-white border border-slate-200 rounded-xl p-8 shadow-sm relative flex flex-col justify-center">
+                            <div className="absolute top-0 right-0 p-4 opacity-10">
+                                <Icon name="Layers" size={100} />
+                            </div>
+                            <h3 className="text-2xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 relative z-10">
+                                {layers[activeLayer].title}
+                            </h3>
+                            <p className="text-slate-600 mb-6 text-lg leading-relaxed relative z-10">
+                                {layers[activeLayer].content}
+                            </p>
+                            <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 relative z-10">
+                                <span className="text-xs font-bold text-yellow-700 uppercase tracking-wide block mb-1">
+                                    <Icon name="Target" size={14} className="inline mr-1"/>
+                                    考試重點 Key Point
+                                </span>
+                                <p className="text-yellow-900 font-medium">
+                                    {layers[activeLayer].keyPoint}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const KnowledgeView = () => {
+            // Data for the 9 subsidiary knowledge areas (excluding integration which is the container)
+            const areas = [
+                { id: 1, name: '範疇 Scope', icon: 'Target', color: 'text-emerald-600', bg: 'bg-emerald-50', points: ['需求收集', 'WBS (工作分解結構)', '範疇基準'] },
+                { id: 2, name: '時程 Schedule', icon: 'Clock', color: 'text-orange-600', bg: 'bg-orange-50', points: ['定義活動', '要徑法 (CPM)', '甘特圖'] },
+                { id: 3, name: '成本 Cost', icon: 'Coins', color: 'text-yellow-600', bg: 'bg-yellow-50', points: ['成本估算', '預算編列', '實獲值 (EVM)'] },
+                { id: 4, name: '品質 Quality', icon: 'ShieldCheck', color: 'text-indigo-600', bg: 'bg-indigo-50', points: ['品質政策', '品質指標', '檢核表'] },
+                { id: 5, name: '資源 Resource', icon: 'Users', color: 'text-pink-600', bg: 'bg-pink-50', points: ['RACI 矩陣', '團隊章程', '資源行事曆'] },
+                { id: 6, name: '溝通 Comm.', icon: 'MessageSquare', color: 'text-cyan-600', bg: 'bg-cyan-50', points: ['溝通矩陣', '訊息流向', '回報頻率'] },
+                { id: 7, name: '風險 Risk', icon: 'AlertTriangle', color: 'text-red-600', bg: 'bg-red-50', points: ['風險登錄表', '機率衝擊矩陣', '回應策略'] },
+                { id: 8, name: '採購 Procure.', icon: 'ShoppingCart', color: 'text-blue-600', bg: 'bg-blue-50', points: ['自製外購分析', '合約類型', '招標文件'] },
+                { id: 9, name: '利害關係人 Stakeholder', icon: 'Eye', color: 'text-purple-600', bg: 'bg-purple-50', points: ['權力利益方格', '參與度評估', '參與策略'] },
+            ];
+
+            return (
+                <div className="h-full animate-slide-up overflow-y-auto">
+                    <div className="mb-6">
+                        <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                            <Icon name="LayoutGrid" className="text-blue-600"/>
+                            十大知識領域重點 (Subsidiary Plans)
+                        </h2>
+                        <p className="text-slate-500 text-sm mt-1">這些是計畫書的「肌肉」，每個領域都有一份子計畫 (Management Plan) 包含在總計畫書中。</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {areas.map((area) => (
+                            <div key={area.id} className="border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow bg-white group">
+                                <div className={`flex items-center gap-3 mb-3 pb-3 border-b border-slate-100`}>
+                                    <div className={`p-2 rounded-lg ${area.bg} ${area.color}`}>
+                                        <Icon name={area.icon} size={20} />
+                                    </div>
+                                    <h3 className="font-bold text-slate-700">{area.name}</h3>
+                                </div>
+                                <ul className="space-y-2">
+                                    {area.points.map((point, idx) => (
+                                        <li key={idx} className="text-sm text-slate-600 flex items-start gap-2">
+                                            <span className={`w-1.5 h-1.5 rounded-full mt-1.5 ${area.color.replace('text', 'bg')}`}></span>
+                                            {point}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const QuizView = () => {
+            const [currentQ, setCurrentQ] = useState(0);
+            const [showResult, setShowResult] = useState(false);
+            const [score, setScore] = useState(0);
+            const [answered, setAnswered] = useState(false);
+
+            const questions = [
+                {
+                    q: "在整合管理中，哪一份文件被視為將所有管理意圖轉化為具體行動基準的核心流程？",
+                    options: ["專案章程 (Charter)", "專案管理計畫書 (PMP)", "風險登記冊 (Risk Register)", "變更請求 (Change Request)"],
+                    correct: 1,
+                    explanation: "專案管理計畫書是整合管理在規劃過程組中的唯一展現，整合了所有子計畫與基準，作為後續執行及控管的指導方針。"
+                },
+                {
+                    q: "關於「基準 (Baselines)」，下列何者不屬於專案管理計畫書中的三大基準？",
+                    options: ["範疇基準 (Scope Baseline)", "時程基準 (Schedule Baseline)", "品質基準 (Quality Baseline)", "成本基準 (Cost Baseline)"],
+                    correct: 2,
+                    explanation: "三大基準只有：範疇、時程、成本。品質雖然有標準，但在 PMBOK 定義中不稱為「品質基準」，而是品質管理計畫的一部分。"
+                },
+                {
+                    q: "如果你是「地面指揮中心」，當發現火星沙塵暴變強（環境變異）需要修改計畫時，你應該怎麼做？",
+                    options: ["直接通知太空人修改路徑", "忽略它，按照原計畫進行", "進行整合變更控制，評估衝擊後再發布更新", "重新撰寫專案章程"],
+                    correct: 2,
+                    explanation: "計畫書一旦成為基準，任何修改都必須透過「執行整合變更控制 (Perform Integrated Change Control)」流程，確保變更對所有領域（如燃料、氧氣）的衝擊都經過評估。"
+                },
+                {
+                    q: "在「範疇管理計畫」中，最重要的基準產出文件包含了範疇說明書、WBS 以及什麼？",
+                    options: ["WBS 字典 (WBS Dictionary)", "活動清單 (Activity List)", "利害關係人登記冊", "需求追溯矩陣"],
+                    correct: 0,
+                    explanation: "範疇基準 (Scope Baseline) = 範疇說明書 + WBS + WBS 字典。這三者缺一不可。"
+                }
+            ];
+
+            const handleAnswer = (index) => {
+                if (answered) return;
+                setAnswered(true);
+                if (index === questions[currentQ].correct) {
+                    setScore(score + 1);
+                }
+            };
+
+            const nextQuestion = () => {
+                if (currentQ < questions.length - 1) {
+                    setCurrentQ(currentQ + 1);
+                    setAnswered(false);
+                } else {
+                    setShowResult(true);
+                }
+            };
+
+            const resetQuiz = () => {
+                setCurrentQ(0);
+                setScore(0);
+                setShowResult(false);
+                setAnswered(false);
+            };
+
+            if (showResult) {
+                return (
+                    <div className="h-full flex flex-col items-center justify-center text-center p-8 animate-slide-up">
+                        <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+                            <Icon name="ShieldCheck" size={48} className="text-blue-600" />
+                        </div>
+                        <h2 className="text-3xl font-bold text-slate-800 mb-2">測驗完成！</h2>
+                        <p className="text-xl text-slate-600 mb-6">你的得分：<span className="font-bold text-blue-600 text-3xl">{score}</span> / {questions.length}</p>
+                        
+                        <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 max-w-md w-full mb-8">
+                            {score === questions.length ? (
+                                <div>
+                                    <p className="text-green-600 font-bold mb-2 flex items-center justify-center gap-2">
+                                        <Icon name="CheckCircle" size={20}/> 太棒了！
+                                    </p>
+                                    <p className="text-slate-600">你已經掌握了整合管理與各子計畫的核心概念。</p>
+                                </div>
+                            ) : (
+                                <div>
+                                    <p className="text-orange-500 font-bold mb-2 flex items-center justify-center gap-2">
+                                        <Icon name="Target" size={20}/> 再接再厲
+                                    </p>
+                                    <p className="text-slate-600">建議回到「計畫書解剖」與「十大領域重點」複習一下喔！</p>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <button 
+                            onClick={resetQuiz}
+                            className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                        >
+                            重新測驗
+                        </button>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="max-w-2xl mx-auto h-full flex flex-col justify-center animate-slide-up">
+                    <div className="mb-8">
+                        <div className="flex justify-between items-center text-sm text-slate-500 font-medium mb-2">
+                            <span>Question {currentQ + 1} of {questions.length}</span>
+                            <span>Score: {score}</span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-2.5">
+                            <div className="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style={{ width: `${((currentQ + 1) / questions.length) * 100}%` }}></div>
+                        </div>
+                    </div>
+
+                    <h3 className="text-xl md:text-2xl font-bold text-slate-800 mb-6 leading-relaxed">
+                        {questions[currentQ].q}
+                    </h3>
+
+                    <div className="space-y-3 mb-8">
+                        {questions[currentQ].options.map((opt, index) => (
+                            <button
+                                key={index}
+                                onClick={() => handleAnswer(index)}
+                                disabled={answered}
+                                className={`w-full p-4 rounded-lg border-2 text-left font-medium transition-all relative ${
+                                    answered 
+                                        ? index === questions[currentQ].correct 
+                                            ? 'bg-green-50 border-green-500 text-green-900'
+                                            : index === questions[currentQ].options.indexOf(opt) && index !== questions[currentQ].correct // Highlight wrong selected
+                                                ? 'bg-red-50 border-red-300 opacity-60'
+                                                : 'bg-slate-50 border-slate-200 opacity-50'
+                                        : 'bg-white border-slate-200 hover:border-blue-400 hover:bg-blue-50 hover:shadow-sm'
+                                }`}
+                            >
+                                <span className="inline-block w-6 h-6 rounded-full bg-white border border-slate-300 text-center text-xs leading-6 mr-3 text-slate-500 shadow-sm">
+                                    {String.fromCharCode(65 + index)}
+                                </span>
+                                {opt}
+                                {answered && index === questions[currentQ].correct && (
+                                    <Icon name="CheckCircle" className="absolute right-4 top-4 text-green-600" />
+                                )}
+                            </button>
+                        ))}
+                    </div>
+
+                    {answered && (
+                        <div className="animate-slide-up">
+                            <div className="bg-blue-50 p-5 rounded-lg mb-6 border-l-4 border-blue-500 shadow-sm">
+                                <h4 className="font-bold text-blue-800 mb-1 flex items-center gap-2">
+                                    <Icon name="BookOpen" size={18}/> 解析
+                                </h4>
+                                <p className="text-blue-900 leading-relaxed">{questions[currentQ].explanation}</p>
+                            </div>
+                            <button 
+                                onClick={nextQuestion}
+                                className="w-full py-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                            >
+                                {currentQ < questions.length - 1 ? '下一題' : '查看結果'} <Icon name="ArrowRight" size={20} />
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

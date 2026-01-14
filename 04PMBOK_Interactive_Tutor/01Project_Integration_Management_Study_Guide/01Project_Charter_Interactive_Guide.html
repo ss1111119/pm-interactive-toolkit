@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案章程學習指南：航海特許狀</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 0.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem; }
+        .flip-card-back { transform: rotateY(180deg); background-color: #3b82f6; color: white; }
+        .tab-active { border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: bold; }
+        .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold"><i class="fas fa-ship mr-2"></i>專案章程 (Project Charter) 學習儀表板</h1>
+            <span class="text-sm bg-blue-700 px-3 py-1 rounded-full">備考模式</span>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto p-4">
+        
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-300 mb-6 bg-white rounded-t-lg shadow-sm">
+            <button onclick="switchTab('metaphor')" id="tab-metaphor" class="flex-1 py-4 text-center hover:bg-gray-50 transition tab-active">
+                <i class="fas fa-compass mr-2"></i>觀念比喻
+            </button>
+            <button onclick="switchTab('core')" id="tab-core" class="flex-1 py-4 text-center hover:bg-gray-50 transition">
+                <i class="fas fa-book-open mr-2"></i>核心重點
+            </button>
+            <button onclick="switchTab('quiz')" id="tab-quiz" class="flex-1 py-4 text-center hover:bg-gray-50 transition">
+                <i class="fas fa-pencil-alt mr-2"></i>模擬測驗
+            </button>
+        </div>
+
+        <!-- Tab 1: Metaphor View -->
+        <div id="content-metaphor" class="animate-fade-in space-y-6">
+            <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+                <h2 class="text-2xl font-bold mb-4 text-blue-900">核心隱喻：航海特許狀</h2>
+                <p class="mb-4 text-lg">如果不把專案當工作，而是當作一次**「跨海冒險」**，一切都好懂了。</p>
+                
+                <div class="grid md:grid-cols-3 gap-4 mt-8">
+                    <!-- Role 1 -->
+                    <div class="bg-blue-50 p-4 rounded-lg text-center transform hover:scale-105 transition duration-300">
+                        <div class="text-4xl text-yellow-600 mb-2"><i class="fas fa-crown"></i></div>
+                        <h3 class="font-bold text-lg">發起人 (Sponsor)</h3>
+                        <p class="text-sm text-gray-600">就像「國王」</p>
+                        <hr class="my-2 border-blue-200">
+                        <p class="text-xs">只有他有錢、有權，能簽署這份文件。他是專案的靠山。</p>
+                    </div>
+
+                    <!-- The Doc -->
+                    <div class="bg-yellow-50 p-4 rounded-lg text-center transform hover:scale-105 transition duration-300 border-2 border-yellow-200 shadow-xl">
+                        <div class="text-4xl text-gray-700 mb-2"><i class="fas fa-scroll"></i></div>
+                        <h3 class="font-bold text-lg">專案章程</h3>
+                        <p class="text-sm text-gray-600">就是「特許狀」</p>
+                        <hr class="my-2 border-yellow-200">
+                        <ul class="text-xs text-left list-disc pl-4 space-y-1">
+                            <li>正式承認船隊存在 (合法性)</li>
+                            <li>任命你為船長 (PM 權力)</li>
+                            <li>標註目的地 (高層級目標)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Role 2 -->
+                    <div class="bg-blue-50 p-4 rounded-lg text-center transform hover:scale-105 transition duration-300">
+                        <div class="text-4xl text-blue-600 mb-2"><i class="fas fa-user-tie"></i></div>
+                        <h3 class="font-bold text-lg">專案經理 (PM)</h3>
+                        <p class="text-sm text-gray-600">就是「船長」</p>
+                        <hr class="my-2 border-blue-200">
+                        <p class="text-xs">拿到特許狀後，你才能指揮水手、動用倉庫裡的糧食 (組織資源)。</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-gray-100 p-4 rounded text-sm text-gray-700">
+                    <div class="flex items-start">
+                        <i class="fas fa-lightbulb text-yellow-500 mr-2 mt-1"></i>
+                        <div>
+                            <strong>考試記憶點：</strong> 
+                            <ul class="list-disc pl-4 mt-1">
+                                <li>如果題目問「誰賦予 PM 動用資源的權力？」，請聯想「國王給船長特許狀」，答案就是<strong>專案章程</strong>。</li>
+                                <li>船長出海前會先寫下對天氣和路線的初步判斷，這就是伴隨章程產出的<strong>「假設日誌 (Assumption Log)」</strong>。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Core Concepts (Flashcards) -->
+        <div id="content-core" class="hidden animate-fade-in">
+            <h2 class="text-xl font-bold mb-4 text-center">點擊卡片翻轉查看詳細說明</h2>
+            <!-- Updated to grid-cols-3 to accommodate more cards -->
+            <div class="grid md:grid-cols-3 gap-6">
+                
+                <!-- Card 1 -->
+                <div class="flip-card h-48 cursor-pointer" onclick="flipCard(this)">
+                    <div class="flip-card-inner shadow-md rounded-lg bg-white">
+                        <div class="flip-card-front bg-white border border-gray-200">
+                            <i class="fas fa-certificate text-4xl text-red-500 mb-3"></i>
+                            <h3 class="font-bold text-lg">主要目的與授權</h3>
+                            <p class="text-gray-500 text-xs mt-2">點擊翻看答案</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3 class="font-bold border-b border-white/30 pb-2 mb-2">正式授權</h3>
+                            <p class="text-xs px-2">1. 確立專案的「合法地位」。<br>2. 正式指派 PM。<br>3. 授權 PM 動用資源。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="flip-card h-48 cursor-pointer" onclick="flipCard(this)">
+                    <div class="flip-card-inner shadow-md rounded-lg bg-white">
+                        <div class="flip-card-front bg-white border border-gray-200">
+                            <i class="fas fa-briefcase text-4xl text-green-600 mb-3"></i>
+                            <h3 class="font-bold text-lg">策略連結</h3>
+                            <p class="text-gray-500 text-xs mt-2">點擊翻看答案</p>
+                        </div>
+                        <div class="flip-card-back bg-green-600">
+                            <h3 class="font-bold border-b border-white/30 pb-2 mb-2">策略一致性</h3>
+                            <p class="text-xs px-2">輸入：商務個案 (Business Case)<br>目的：確保專案為組織創造商業價值。</p>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Card 3 (New: Outputs) -->
+                 <div class="flip-card h-48 cursor-pointer" onclick="flipCard(this)">
+                    <div class="flip-card-inner shadow-md rounded-lg bg-white">
+                        <div class="flip-card-front bg-white border border-gray-200">
+                            <i class="fas fa-file-export text-4xl text-indigo-500 mb-3"></i>
+                            <h3 class="font-bold text-lg">關鍵產出 (Outputs)</h3>
+                            <p class="text-gray-500 text-xs mt-2">除了章程還有什麼？</p>
+                        </div>
+                        <div class="flip-card-back bg-indigo-600">
+                            <h3 class="font-bold border-b border-white/30 pb-2 mb-2">兩個主要產出</h3>
+                            <p class="text-xs px-2">1. 專案章程 (Project Charter)<br>2. <strong>假設日誌 (Assumption Log)</strong>：記錄初步的高層級假設與限制。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 (New: Content details) -->
+                <div class="flip-card h-48 cursor-pointer" onclick="flipCard(this)">
+                    <div class="flip-card-inner shadow-md rounded-lg bg-white">
+                        <div class="flip-card-front bg-white border border-gray-200">
+                            <i class="fas fa-list-check text-4xl text-teal-500 mb-3"></i>
+                            <h3 class="font-bold text-lg">章程核心內容</h3>
+                            <p class="text-gray-500 text-xs mt-2">點擊翻看答案</p>
+                        </div>
+                        <div class="flip-card-back bg-teal-600">
+                            <h3 class="font-bold border-b border-white/30 pb-2 mb-2">高層級資訊</h3>
+                            <p class="text-xs px-2">包含專案目的、高層級需求、<strong>成功標準 (Success Criteria)</strong>、以及委任的專案經理。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="flip-card h-48 cursor-pointer" onclick="flipCard(this)">
+                    <div class="flip-card-inner shadow-md rounded-lg bg-white">
+                        <div class="flip-card-front bg-white border border-gray-200">
+                            <i class="fas fa-users text-4xl text-purple-500 mb-3"></i>
+                            <h3 class="font-bold text-lg">溝通意義</h3>
+                            <p class="text-gray-500 text-xs mt-2">點擊翻看答案</p>
+                        </div>
+                        <div class="flip-card-back bg-purple-600">
+                            <h3 class="font-bold border-b border-white/30 pb-2 mb-2">回答四個問題</h3>
+                            <p class="text-xs px-2">1. 問題是什麼？<br>2. 解決方案是什麼？<br>3. 誰來做 (PM)？<br>4. 組織決心 (Sponsor)。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="flip-card h-48 cursor-pointer" onclick="flipCard(this)">
+                    <div class="flip-card-inner shadow-md rounded-lg bg-white">
+                        <div class="flip-card-front bg-white border border-gray-200">
+                            <i class="fas fa-tools text-4xl text-orange-500 mb-3"></i>
+                            <h3 class="font-bold text-lg">工具與技術</h3>
+                            <p class="text-gray-500 text-xs mt-2">點擊翻看答案</p>
+                        </div>
+                        <div class="flip-card-back bg-orange-600">
+                            <h3 class="font-bold border-b border-white/30 pb-2 mb-2">整合智慧</h3>
+                            <p class="text-xs px-2">專家判斷、資料蒐集 (腦力激盪、焦點小組、訪談)、人際關係技巧 (會議、衝突管理)。</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Tab 3: Quiz -->
+        <div id="content-quiz" class="hidden animate-fade-in">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div id="quiz-container">
+                    <!-- Quiz Header -->
+                    <div class="flex justify-between items-center mb-6 border-b pb-4">
+                        <h2 class="text-xl font-bold text-gray-800">專案章程小測驗</h2>
+                        <span id="score-display" class="font-bold text-blue-600 text-lg"></span>
+                    </div>
+
+                    <!-- Question Container -->
+                    <div id="question-box" class="space-y-4">
+                        <!-- Questions will be injected here by JS -->
+                    </div>
+
+                    <!-- Result Message -->
+                    <div id="result-message" class="hidden mt-6 p-4 rounded bg-gray-100 text-center"></div>
+                    
+                    <button onclick="resetQuiz()" id="retry-btn" class="hidden w-full mt-4 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">重新測驗</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-gray-500 py-6 text-sm">
+        <p>基於 NotebookLM 分析之「專案管理知識體系」內容製作</p>
+    </footer>
+
+    <script>
+        // --- Tab Switching Logic ---
+        function switchTab(tabName) {
+            // Hide all contents
+            ['metaphor', 'core', 'quiz'].forEach(id => {
+                document.getElementById(`content-${id}`).classList.add('hidden');
+                document.getElementById(`tab-${id}`).classList.remove('tab-active');
+            });
+            // Show selected
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabName}`).classList.add('tab-active');
+        }
+
+        // --- Flip Card Logic ---
+        function flipCard(element) {
+            element.classList.toggle('flipped');
+        }
+
+        // --- Quiz Logic ---
+        const questions = [
+            {
+                q: "在專案整合管理中，專案章程的主要作用是什麼？",
+                options: [
+                    "詳細規劃專案的時程與成本",
+                    "正式授權專案成立並賦予專案經理權力",
+                    "測試產品的功能是否正常",
+                    "計算專案的詳細利潤"
+                ],
+                correct: 1, // Index
+                explanation: "專案章程是「起點」與「基石」，最核心功能是賦予合法地位與 PM 權力。"
+            },
+            {
+                q: "若使用「航海」作為比喻，專案章程相當於什麼？",
+                options: [
+                    "船長",
+                    "海浪",
+                    "航行特許狀",
+                    "船上的水手"
+                ],
+                correct: 2,
+                explanation: "章程是由發起人（國王）簽署，允許船長出海的文件。"
+            },
+            {
+                q: "關於發展專案章程，下列敘述何者正確？",
+                options: [
+                    "它是規劃階段的最後一個流程",
+                    "專案經理需要自己簽署章程來授權自己",
+                    "它需要輸入商務個案(Business Case)以連結組織策略",
+                    "專案章程一旦發布，專案的所有細節都不能更改"
+                ],
+                correct: 2,
+                explanation: "章程需要依據商務個案，確保專案目標符合組織商業價值。"
+            },
+            {
+                q: "發展專案章程這個流程，除了產出章程外，通常還會產出哪份文件？",
+                options: [
+                    "詳細預算表 (Detailed Budget)",
+                    "假設日誌 (Assumption Log)",
+                    "風險登錄表 (Risk Register)",
+                    "變更請求 (Change Requests)"
+                ],
+                correct: 1,
+                explanation: "在識別高層級限制與假設的過程中，會產出「假設日誌」。風險登錄表是後續規劃階段的產出。"
+            },
+            {
+                q: "下列哪一項**不是**專案章程中通常包含的內容？",
+                options: [
+                    "專案目的與成功標準",
+                    "關鍵利害關係人",
+                    "高層級的限制與假設",
+                    "每日詳細的工作分派表"
+                ],
+                correct: 3,
+                explanation: "章程是「高層級」文件，詳細的每日工作分派屬於後續規劃階段的範疇。"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function loadQuiz() {
+            const container = document.getElementById('question-box');
+            container.innerHTML = ''; // Clear
+
+            questions.forEach((item, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = "mb-8 p-4 border rounded-lg bg-gray-50";
+                
+                let optionsHtml = '';
+                item.options.forEach((opt, optIndex) => {
+                    optionsHtml += `
+                        <label class="flex items-center space-x-3 p-3 rounded cursor-pointer hover:bg-white border border-transparent hover:border-gray-200 transition">
+                            <input type="radio" name="q${index}" value="${optIndex}" class="form-radio text-blue-600 h-5 w-5">
+                            <span>${opt}</span>
+                        </label>
+                    `;
+                });
+
+                qDiv.innerHTML = `
+                    <h3 class="font-bold text-lg mb-3">${index + 1}. ${item.q}</h3>
+                    <div class="space-y-2 flex flex-col">${optionsHtml}</div>
+                    <div id="feedback-${index}" class="hidden mt-3 text-sm p-2 rounded"></div>
+                `;
+                container.appendChild(qDiv);
+            });
+
+            // Add Submit Button
+            const submitBtn = document.createElement('button');
+            submitBtn.innerText = "提交答案";
+            submitBtn.className = "w-full bg-blue-600 text-white font-bold py-3 rounded-lg shadow hover:bg-blue-700 transition mt-4";
+            submitBtn.onclick = checkAnswers;
+            submitBtn.id = "submit-quiz-btn";
+            container.appendChild(submitBtn);
+        }
+
+        function checkAnswers() {
+            let correctCount = 0;
+            
+            questions.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const feedbackDiv = document.getElementById(`feedback-${index}`);
+                feedbackDiv.classList.remove('hidden');
+
+                if (selected) {
+                    const val = parseInt(selected.value);
+                    if (val === item.correct) {
+                        correctCount++;
+                        feedbackDiv.className = "mt-3 text-sm p-3 rounded bg-green-100 text-green-800 border-l-4 border-green-500";
+                        feedbackDiv.innerHTML = `<i class="fas fa-check-circle mr-1"></i> 正確！ ${item.explanation}`;
+                    } else {
+                        feedbackDiv.className = "mt-3 text-sm p-3 rounded bg-red-100 text-red-800 border-l-4 border-red-500";
+                        feedbackDiv.innerHTML = `<i class="fas fa-times-circle mr-1"></i> 錯誤。正確答案是：${item.options[item.correct]}。<br><span class="text-xs opacity-75">${item.explanation}</span>`;
+                    }
+                } else {
+                    feedbackDiv.className = "mt-3 text-sm p-3 rounded bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500";
+                    feedbackDiv.innerHTML = `<i class="fas fa-exclamation-triangle mr-1"></i> 未作答。`;
+                }
+            });
+
+            // Update UI
+            document.getElementById('score-display').innerText = `得分：${correctCount} / ${questions.length}`;
+            document.getElementById('submit-quiz-btn').classList.add('hidden');
+            document.getElementById('retry-btn').classList.remove('hidden');
+            
+            const resultMsg = document.getElementById('result-message');
+            resultMsg.classList.remove('hidden');
+            
+            if(correctCount === questions.length) {
+                resultMsg.innerHTML = `<h3 class="text-xl font-bold text-green-600">太棒了！船長！</h3><p>你已經完全掌握了專案章程的核心概念，準備好出航了！</p>`;
+            } else {
+                resultMsg.innerHTML = `<h3 class="text-xl font-bold text-blue-600">學習中！</h3><p>別氣餒，複習一下錯誤的題目，再次挑戰！</p>`;
+            }
+            
+            // Scroll to top of quiz
+            document.getElementById('content-quiz').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetQuiz() {
+            document.getElementById('score-display').innerText = "";
+            document.getElementById('result-message').classList.add('hidden');
+            document.getElementById('retry-btn').classList.add('hidden');
+            loadQuiz();
+        }
+
+        // Initialize
+        loadQuiz();
+
+    </script>
+</body>
+</html>

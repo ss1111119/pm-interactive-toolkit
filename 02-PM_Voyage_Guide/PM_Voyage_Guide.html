@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理備考指南：航海圖</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f9ff; /* Light Ocean Blue */
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 1rem;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <!-- Navigation -->
+    <nav class="bg-slate-800 text-white sticky top-0 z-50 shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="font-bold text-xl flex items-center gap-2">
+                <i class="fas fa-compass text-sky-400"></i> PM 航海備考指南
+            </div>
+            <div class="text-sm hidden md:flex gap-4">
+                <a href="#env" class="hover:text-sky-300">環境 (海洋)</a>
+                <a href="#org" class="hover:text-sky-300">組織 (船艦)</a>
+                <a href="#pm" class="hover:text-sky-300">經理 (船長)</a>
+                <a href="#quiz" class="bg-sky-600 px-3 py-1 rounded hover:bg-sky-500 transition">模擬考題</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-gradient-to-b from-sky-800 to-sky-600 text-white py-16 px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">專案管理知識體系：三大支柱</h1>
+        <p class="text-xl max-w-2xl mx-auto opacity-90 mb-8">
+            把專案管理想像成一次航海。掌握<span class="text-yellow-300 font-bold">環境</span>、<span class="text-yellow-300 font-bold">組織</span>與<span class="text-yellow-300 font-bold">專案經理</span>的角色，你就掌握了考試的核心。
+        </p>
+        <div class="flex justify-center gap-4 text-sm">
+            <div class="bg-white/20 px-4 py-2 rounded-full"><i class="fas fa-water mr-2"></i>環境 = 限制與資產</div>
+            <div class="bg-white/20 px-4 py-2 rounded-full"><i class="fas fa-ship mr-2"></i>組織 = 權力結構</div>
+            <div class="bg-white/20 px-4 py-2 rounded-full"><i class="fas fa-user-captain mr-2"></i>PM = 整合者</div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-12 space-y-20">
+
+        <!-- 1. 環境 Section -->
+        <section id="env" class="scroll-mt-20">
+            <div class="flex items-center gap-3 mb-6 border-b-2 border-sky-200 pb-2">
+                <div class="bg-sky-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">1</div>
+                <h2 class="text-3xl font-bold text-slate-800">專案環境：海洋與天氣</h2>
+            </div>
+            
+            <p class="text-lg mb-6">啟動與規劃專案時，首先要看「天氣圖」。來源將環境分為兩類：一個是你**不能控制**的限制，一個是你可以**利用**的資產。</p>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- EEFs -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-red-400">
+                    <div class="p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                            <h3 class="text-xl font-bold">企業環境因素 (EEFs)</h3>
+                        </div>
+                        <p class="text-sm text-slate-500 font-bold mb-2 uppercase tracking-wide">不可控的限制 / 海洋天氣</p>
+                        <p class="mb-4">專案團隊通常無法控制，但會對專案產生重大影響、限制或指示。</p>
+                        
+                        <div class="bg-red-50 p-4 rounded-lg space-y-2 text-sm">
+                            <p><strong class="text-red-700">內部：</strong> 組織文化、設施、現有資源。</p>
+                            <p><strong class="text-red-700">外部：</strong> 市場條件、法律、政府標準、商業資料庫。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OPAs -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-green-400">
+                    <div class="p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <i class="fas fa-book-open text-green-600 text-2xl"></i>
+                            <h3 class="text-xl font-bold">組織流程資產 (OPAs)</h3>
+                        </div>
+                        <p class="text-sm text-slate-500 font-bold mb-2 uppercase tracking-wide">可利用的智慧 / 航海圖與SOP</p>
+                        <p class="mb-4">執行組織特有的資產，是專案成功的加速器，讓你不用從零開始。</p>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg space-y-2 text-sm">
+                            <p><strong class="text-green-700">流程與程序：</strong> SOP、範本、標準表格。</p>
+                            <p><strong class="text-green-700">共享知識庫：</strong> 歷史資訊、經驗學習檔案 (Lessons Learned)。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mini Interaction -->
+            <div class="mt-8 bg-slate-100 p-6 rounded-xl">
+                <h4 class="font-bold mb-4 text-center">考點快問快答：點擊卡片翻面</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 h-32">
+                    <!-- Card 1 -->
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front bg-white shadow-sm border border-slate-200">
+                                <span class="font-bold text-sky-600">市場條件改變</span>
+                            </div>
+                            <div class="flip-card-back bg-red-100 text-red-800 border border-red-200">
+                                <span class="font-bold text-sm">EEF (外部)</span>
+                                <span class="text-xs">這是不可控的環境限制</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front bg-white shadow-sm border border-slate-200">
+                                <span class="font-bold text-sky-600">歷史專案檔案</span>
+                            </div>
+                            <div class="flip-card-back bg-green-100 text-green-800 border border-green-200">
+                                <span class="font-bold text-sm">OPA (知識庫)</span>
+                                <span class="text-xs">這是可利用的前人智慧</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front bg-white shadow-sm border border-slate-200">
+                                <span class="font-bold text-sky-600">政府法規</span>
+                            </div>
+                            <div class="flip-card-back bg-red-100 text-red-800 border border-red-200">
+                                <span class="font-bold text-sm">EEF (外部)</span>
+                                <span class="text-xs">法律限制必須遵守</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front bg-white shadow-sm border border-slate-200">
+                                <span class="font-bold text-sky-600">專案範本 (Templates)</span>
+                            </div>
+                            <div class="flip-card-back bg-green-100 text-green-800 border border-green-200">
+                                <span class="font-bold text-sm">OPA (流程)</span>
+                                <span class="text-xs">組織提供的加速工具</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 組織 Section -->
+        <section id="org" class="scroll-mt-20">
+            <div class="flex items-center gap-3 mb-6 border-b-2 border-indigo-200 pb-2">
+                <div class="bg-indigo-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">2</div>
+                <h2 class="text-3xl font-bold text-slate-800">組織結構：船的種類</h2>
+            </div>
+            
+            <p class="text-lg mb-6">組織結構決定了「誰說了算」。這是一個權力的光譜，從 PM 完全沒權力到擁有絕對權力。</p>
+
+            <!-- Spectrum Visualization -->
+            <div class="relative py-8">
+                <div class="h-4 bg-gradient-to-r from-gray-300 via-indigo-300 to-indigo-600 rounded-full mb-8"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <!-- Functional -->
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-gray-400 card-hover group">
+                        <h4 class="font-bold text-gray-700 mb-2">功能式<br><span class="text-xs font-normal">Functional</span></h4>
+                        <div class="text-sm text-gray-600">
+                            <p class="mb-1"><i class="fas fa-ship text-gray-400"></i> 貨輪</p>
+                            <p class="mb-1"><strong>PM 權力：</strong>極小/無</p>
+                            <p class="mb-1"><strong>角色：</strong>聯絡員/促進者</p>
+                            <p class="text-xs bg-gray-100 p-1 rounded mt-2">負責跑腿，無權管資源。功能經理說了算。</p>
+                        </div>
+                    </div>
+
+                    <!-- Weak Matrix -->
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-indigo-300 card-hover">
+                        <h4 class="font-bold text-indigo-800 mb-2">弱矩陣<br><span class="text-xs font-normal">Weak Matrix</span></h4>
+                        <div class="text-sm text-gray-600">
+                            <p class="mb-1"><i class="fas fa-ship text-indigo-300"></i> 混合編隊 (偏功能)</p>
+                            <p class="mb-1"><strong>PM 權力：</strong>低</p>
+                            <p class="mb-1"><strong>特徵：</strong>類似功能式，PM 角色依然弱勢。</p>
+                        </div>
+                    </div>
+
+                    <!-- Balanced Matrix -->
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-indigo-400 card-hover transform md:-translate-y-4 md:border-t-4 md:border-l-0">
+                        <h4 class="font-bold text-indigo-800 mb-2">平衡矩陣<br><span class="text-xs font-normal">Balanced Matrix</span></h4>
+                        <div class="text-sm text-gray-600">
+                            <p class="mb-1"><i class="fas fa-balance-scale text-indigo-500"></i> 權力平衡</p>
+                            <p class="mb-1"><strong>PM 權力：</strong>中等</p>
+                            <p class="mb-1"><strong>風險：</strong>雙重匯報（聽 PM 的還是聽功能經理的？容易吵架）。</p>
+                        </div>
+                    </div>
+
+                    <!-- Strong Matrix -->
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-indigo-500 card-hover">
+                        <h4 class="font-bold text-indigo-800 mb-2">強矩陣<br><span class="text-xs font-normal">Strong Matrix</span></h4>
+                        <div class="text-sm text-gray-600">
+                            <p class="mb-1"><i class="fas fa-ship text-indigo-500"></i> 混合編隊 (偏專案)</p>
+                            <p class="mb-1"><strong>PM 權力：</strong>中~高</p>
+                            <p class="mb-1"><strong>特徵：</strong>有全職的 PM 和專案行政人員。</p>
+                        </div>
+                    </div>
+
+                    <!-- Projectized -->
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-indigo-700 card-hover">
+                        <h4 class="font-bold text-indigo-900 mb-2">專案式<br><span class="text-xs font-normal">Projectized</span></h4>
+                        <div class="text-sm text-gray-600">
+                            <p class="mb-1"><i class="fas fa-fighter-jet text-indigo-700"></i> 戰艦</p>
+                            <p class="mb-1"><strong>PM 權力：</strong>高/全權</p>
+                            <p class="mb-1"><strong>風險：</strong>成員「無家可歸」（專案結束即解散）。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PMO Detail -->
+            <div class="bg-indigo-50 rounded-xl p-6 mt-6 border border-indigo-100">
+                <h3 class="font-bold text-xl text-indigo-900 mb-4"><i class="fas fa-building"></i> PMO (專案管理辦公室)</h3>
+                <p class="mb-4 text-sm">PMO 是組織內負責標準化與資源協調的單位。考點在於它的「控制程度」：</p>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="bg-white p-3 rounded shadow-sm">
+                        <span class="block font-bold text-green-600">支援型 (Supportive)</span>
+                        <span class="text-xs text-slate-500">控制力：低</span>
+                        <p class="text-sm mt-1">提供範本、最佳實務。像圖書館或顧問。</p>
+                    </div>
+                    <div class="bg-white p-3 rounded shadow-sm">
+                        <span class="block font-bold text-yellow-600">控制型 (Controlling)</span>
+                        <span class="text-xs text-slate-500">控制力：中</span>
+                        <p class="text-sm mt-1">要求依循框架、使用特定工具。像交通警察。</p>
+                    </div>
+                    <div class="bg-white p-3 rounded shadow-sm">
+                        <span class="block font-bold text-red-600">指令型 (Directive)</span>
+                        <span class="text-xs text-slate-500">控制力：高</span>
+                        <p class="text-sm mt-1">直接管理專案，PM 向 PMO 匯報。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. PM Section -->
+        <section id="pm" class="scroll-mt-20">
+            <div class="flex items-center gap-3 mb-6 border-b-2 border-yellow-300 pb-2">
+                <div class="bg-yellow-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">3</div>
+                <h2 class="text-3xl font-bold text-slate-800">專案經理：整合者與船長</h2>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+                <div class="flex-1">
+                    <p class="text-lg mb-4">PM 的核心任務是<strong>「整合」</strong>。你不需要是最厲害的技術人員，但你必須是最好的協調者。</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check-circle text-yellow-500 mt-1"></i>
+                            <span><strong>整合者 (Integrator)：</strong>在範疇、時間、成本、品質等競爭需求中取得平衡。</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check-circle text-yellow-500 mt-1"></i>
+                            <span><strong>溝通者 (Communicator)：</strong>花費 75%~90% 的時間在溝通。</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Talent Triangle Visualization -->
+                <div class="flex-1 w-full max-w-sm">
+                    <div class="relative bg-white p-6 rounded-xl shadow-lg border border-yellow-200 text-center">
+                        <h3 class="font-bold text-lg mb-4 text-slate-700">PMI 人才三角 (Talent Triangle)</h3>
+                        <div class="relative h-48 w-full flex justify-center">
+                             <!-- Triangle CSS Shape -->
+                             <div class="absolute top-0 w-0 h-0 border-l-[100px] border-l-transparent border-r-[100px] border-r-transparent border-b-[170px] border-b-slate-100"></div>
+                             
+                             <!-- Tech -->
+                             <div class="absolute bottom-2 left-4 text-xs font-bold text-slate-600 w-24 text-center cursor-pointer hover:scale-110 transition bg-blue-100 p-1 rounded" onclick="alert('技術專案管理：掌握排程、成本估算、風險管理等 PMBOK 硬實力。')">
+                                1. 技術管理<br>(工具/流程)
+                             </div>
+                             
+                             <!-- Leadership -->
+                             <div class="absolute bottom-2 right-4 text-xs font-bold text-slate-600 w-24 text-center cursor-pointer hover:scale-110 transition bg-yellow-100 p-1 rounded" onclick="alert('領導統御：激勵團隊、處理衝突、談判與人際關係。')">
+                                2. 領導統御<br>(人/團隊)
+                             </div>
+                             
+                             <!-- Strategy -->
+                             <div class="absolute top-8 text-xs font-bold text-slate-600 w-24 text-center cursor-pointer hover:scale-110 transition bg-green-100 p-1 rounded" onclick="alert('策略與商業管理：理解商業價值，確保專案能幫公司賺錢，與策略一致。')">
+                                3. 策略商業<br>(價值/目標)
+                             </div>
+                             
+                             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-4 text-sm font-bold text-slate-400">
+                                點擊角落查看
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Quiz Section -->
+        <section id="quiz" class="scroll-mt-20 bg-white p-8 rounded-2xl shadow-xl border-t-8 border-sky-600">
+            <h2 class="text-3xl font-bold text-center mb-8"><i class="fas fa-pencil-alt text-sky-600"></i> 船長執照模擬考</h2>
+            
+            <div id="quiz-container" class="max-w-2xl mx-auto">
+                <!-- Question Area -->
+                <div id="question-box" class="mb-6">
+                    <h3 id="question-text" class="text-xl font-bold mb-4 text-slate-800">題目載入中...</h3>
+                    <div id="options-container" class="space-y-3">
+                        <!-- Options will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Feedback Area -->
+                <div id="feedback-box" class="hidden p-4 rounded-lg mb-4">
+                    <p id="feedback-text" class="font-bold"></p>
+                    <p id="feedback-detail" class="text-sm mt-2"></p>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex justify-between items-center mt-6 pt-6 border-t border-slate-100">
+                    <span id="score-display" class="font-bold text-slate-500">得分: 0</span>
+                    <button id="next-btn" class="bg-sky-600 text-white px-6 py-2 rounded-lg hover:bg-sky-700 transition hidden" onclick="nextQuestion()">下一題</button>
+                    <button id="retry-btn" class="bg-slate-600 text-white px-6 py-2 rounded-lg hover:bg-slate-700 transition hidden" onclick="initQuiz()">重新測驗</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-slate-400 py-8 text-center mt-12">
+        <p>祝你考試順利！就像一位偉大的船長一樣乘風破浪。</p>
+        <p class="text-xs mt-2">基於 NotebookLM 資料分析產出</p>
+    </footer>
+
+    <!-- JavaScript for Quiz Logic -->
+    <script>
+        const questions = [
+            {
+                q: "1. 專案經理小明發現公司內部有一個「過往專案經驗學習資料庫」，這可以幫助他避免重蹈覆徹。請問這屬於哪一種分類？",
+                options: ["企業環境因素 (EEF)", "組織流程資產 (OPA)", "專案管理計畫書", "組織結構"],
+                answer: 1, // Index of correct answer
+                detail: "正確！「共享知識庫」和「經驗學習檔案」是組織累積的智慧，屬於 OPA (資產)。"
+            },
+            {
+                q: "2. 在哪一種組織結構中，專案經理的權力最大，且成員在專案結束後可能會面臨「無家可歸」的狀況？",
+                options: ["功能式組織", "弱矩陣組織", "平衡矩陣組織", "專案式組織"],
+                answer: 3,
+                detail: "正確！專案式組織(Projectized)像是一艘戰艦，PM 擁有全權，但成員沒有功能部門作為歸屬。"
+            },
+            {
+                q: "3. 根據 PMI 人才三角，專案經理需要具備三種核心能力。如果你正在學習「如何激勵團隊士氣」與「談判」，這是屬於哪一個面向？",
+                options: ["技術專案管理", "策略與商業管理", "領導統御", "整合管理"],
+                answer: 2,
+                detail: "正確！領導統御 (Leadership) 關注的是人、團隊激勵與人際關係。"
+            },
+            {
+                q: "4. 專案必須遵守當地的政府法規與市場條件限制。這些屬於？",
+                options: ["內部 EEF", "外部 EEF", "流程與程序 OPA", "共享知識庫 OPA"],
+                answer: 1,
+                detail: "正確！市場條件與政府標準是組織外部的限制，屬於外部 EEF。"
+            },
+            {
+                q: "5. 小華在一個組織中擔任 PM，但他發現自己其實更像是「聯絡員」，幾乎沒有權力分派資源，必須聽命於功能經理。這是哪種組織？",
+                options: ["專案式", "強矩陣", "平衡矩陣", "功能式"],
+                answer: 3,
+                detail: "正確！功能式組織中，PM 權力極小，常被稱為 Project Expeditor (促進者) 或聯絡員。"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function initQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('retry-btn').classList.add('hidden');
+            document.getElementById('next-btn').classList.remove('hidden');
+            updateScore();
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const qData = questions[currentQuestionIndex];
+            document.getElementById('question-text').textContent = qData.q;
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden'); // Hide next until answered
+            
+            const optsContainer = document.getElementById('options-container');
+            optsContainer.innerHTML = '';
+
+            qData.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-3 rounded border border-slate-300 hover:bg-sky-50 transition bg-white";
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            // Disable all buttons
+            const buttons = document.getElementById('options-container').querySelectorAll('button');
+            buttons.forEach(b => b.disabled = true);
+
+            const qData = questions[currentQuestionIndex];
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackText = document.getElementById('feedback-text');
+            const feedbackDetail = document.getElementById('feedback-detail');
+
+            feedbackBox.classList.remove('hidden');
+            
+            if (selectedIndex === qData.answer) {
+                // Correct
+                btnElement.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                feedbackBox.className = "bg-green-50 border border-green-200 p-4 rounded-lg mb-4";
+                feedbackText.textContent = "✅ 答對了！";
+                feedbackText.className = "font-bold text-green-700";
+                score++;
+            } else {
+                // Incorrect
+                btnElement.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+                // Highlight correct answer
+                buttons[qData.answer].classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                
+                feedbackBox.className = "bg-red-50 border border-red-200 p-4 rounded-lg mb-4";
+                feedbackText.textContent = "❌ 答錯了...";
+                feedbackText.className = "font-bold text-red-700";
+            }
+            
+            feedbackDetail.textContent = qData.detail;
+            updateScore();
+            
+            // Show next button or finish
+            if (currentQuestionIndex < questions.length - 1) {
+                document.getElementById('next-btn').classList.remove('hidden');
+            } else {
+                document.getElementById('next-btn').classList.add('hidden');
+                document.getElementById('retry-btn').classList.remove('hidden');
+                feedbackDetail.textContent += ` (測驗結束！總分：${score}/${questions.length})`;
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function updateScore() {
+            document.getElementById('score-display').textContent = `得分: ${score}`;
+        }
+
+        // Start Quiz on Load
+        initQuiz();
+    </script>
+</body>
+</html>

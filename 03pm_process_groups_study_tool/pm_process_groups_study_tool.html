@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理五大過程組 - 互動學習工具</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Microsoft JhengHei, sans-serif;
+            background-color: #f3f4f6;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Data based on user's input
+        const processGroups = [
+            {
+                id: 'initiating',
+                name: '啟動過程組 (Initiating)',
+                icon: 'flag',
+                color: 'bg-yellow-100 text-yellow-800',
+                border: 'border-yellow-400',
+                definition: '專案的「起點」，目的是獲得正式授權。',
+                coreTask: '定義高層級目標，識別利害關係人，指派專案經理。',
+                output: '專案章程 (Project Charter)',
+                analogy: '家庭會議決定「今年要去日本玩」，獲得父母（金主）同意預算。'
+            },
+            {
+                id: 'planning',
+                name: '規劃過程組 (Planning)',
+                icon: 'map',
+                color: 'bg-blue-100 text-blue-800',
+                border: 'border-blue-400',
+                definition: '專案的「地圖」。隨進展不斷更新（滾動式規劃）。',
+                coreTask: '定義範疇、目標、行動方案 (時程/成本/風險)。',
+                output: '專案管理計畫書',
+                analogy: '訂機票、飯店，排每日行程表，並查好雨天備案。'
+            },
+            {
+                id: 'executing',
+                name: '執行過程組 (Executing)',
+                icon: 'hammer',
+                color: 'bg-green-100 text-green-800',
+                border: 'border-green-400',
+                definition: '專案的「實作」。耗費最多資源與預算。',
+                coreTask: '協調人員與資源，按計畫執行工作。',
+                output: '可交付成果 (Deliverables)',
+                analogy: '實際搭飛機、入住飯店、去迪士尼樂園玩。'
+            },
+            {
+                id: 'monitoring',
+                name: '監視和管理過程組 (M&C)',
+                icon: 'activity',
+                color: 'bg-red-100 text-red-800',
+                border: 'border-red-400',
+                definition: '專案的「儀表板」。與執行並行，貫穿全程。',
+                coreTask: '追蹤差異（實際 vs 計畫），採取更正行動或變更請求。',
+                output: '變更請求、工作績效報告',
+                analogy: '每晚檢查錢包剩多少錢，看天氣決定明天要不要改行程。'
+            },
+            {
+                id: 'closing',
+                name: '結束過程組 (Closing)',
+                icon: 'check-circle',
+                color: 'bg-gray-100 text-gray-800',
+                border: 'border-gray-400',
+                definition: '專案的「終點」。',
+                coreTask: '確認驗收，釋放資源，整理經驗學習。',
+                output: '經驗學習檔案 (Lessons Learned)',
+                analogy: '平安回家，整理照片，討論哪裡好玩、哪裡踩雷，下次改進。'
+            }
+        ];
+
+        const quizQuestions = [
+            {
+                question: "哪一個階段產出的關鍵文件是「專案章程」？",
+                options: ["啟動過程組", "規劃過程組", "執行過程組", "結束過程組"],
+                answer: 0,
+                explanation: "啟動階段的核心是獲得正式授權，產出「專案章程」。"
+            },
+            {
+                question: "在全家旅遊的比喻中，「每天晚上檢查錢包還剩多少錢」屬於哪個過程組？",
+                options: ["規劃過程組", "執行過程組", "監視和管理過程組", "結束過程組"],
+                answer: 2,
+                explanation: "這是監控成本與進度，屬於監視和管理過程組。"
+            },
+            {
+                question: "哪一個過程組通常「耗費最多資源與預算」？",
+                options: ["啟動過程組", "規劃過程組", "執行過程組", "監視和管理過程組"],
+                answer: 2,
+                explanation: "執行過程組涉及實際的人力與物力投入，因此資源消耗最大。"
+            },
+            {
+                question: "PDCA 循環中的 Do (執行) 對應哪個過程組？",
+                options: ["啟動過程組", "規劃過程組", "執行過程組", "結束過程組"],
+                answer: 2,
+                explanation: "直接對應：Plan→規劃, Do→執行, Check/Act→監控。"
+            },
+            {
+                question: "為了未來的專案參考，整理「經驗學習檔案」是在哪個階段？",
+                options: ["監控過程組", "執行過程組", "規劃過程組", "結束過程組"],
+                answer: 3,
+                explanation: "結束過程組的最重要任務之一就是整理經驗學習 (Lessons Learned)。"
+            }
+        ];
+
+        // Custom Components
+        const Icon = ({ name, size = 24 }) => {
+            if (name === 'flag') return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>;
+            if (name === 'map') return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>;
+            if (name === 'hammer') return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L12 9"/><path d="M17.64 15 22 10.64"/><path d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25V7.86c0-.55-.45-1-1-1H14.14c-.83 0-1.64.32-2.25.92L12 7.71"/><path d="m21.38 11.38 1.25 1.25"/></svg>;
+            if (name === 'activity') return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>;
+            if (name === 'check-circle') return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>;
+            return null;
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('learn');
+            const [currentQuiz, setCurrentQuiz] = useState(0);
+            const [showAnswer, setShowAnswer] = useState(false);
+            const [score, setScore] = useState(0);
+            const [quizFinished, setQuizFinished] = useState(false);
+            const [matchGameItems, setMatchGameItems] = useState([]);
+            const [selectedItem, setSelectedItem] = useState(null);
+            const [matchFeedback, setMatchFeedback] = useState("");
+
+            useEffect(() => {
+                initMatchGame();
+            }, []);
+
+            const initMatchGame = () => {
+                // Simplified matching game items
+                const items = [
+                    { id: 1, term: "專案章程", group: "initiating" },
+                    { id: 2, term: "可交付成果", group: "executing" },
+                    { id: 3, term: "滾動式規劃", group: "planning" },
+                    { id: 4, term: "經驗學習檔案", group: "closing" },
+                    { id: 5, term: "比較實際與計畫", group: "monitoring" }
+                ];
+                // Shuffle
+                setMatchGameItems(items.sort(() => Math.random() - 0.5));
+                setMatchFeedback("");
+            };
+
+            const handleQuizAnswer = (index) => {
+                if (showAnswer) return;
+                if (index === quizQuestions[currentQuiz].answer) {
+                    setScore(score + 1);
+                }
+                setShowAnswer(true);
+            };
+
+            const nextQuestion = () => {
+                if (currentQuiz < quizQuestions.length - 1) {
+                    setCurrentQuiz(currentQuiz + 1);
+                    setShowAnswer(false);
+                } else {
+                    setQuizFinished(true);
+                }
+            };
+
+            const resetQuiz = () => {
+                setCurrentQuiz(0);
+                setShowAnswer(false);
+                setScore(0);
+                setQuizFinished(false);
+            };
+
+            const handleMatchClick = (group) => {
+                if (!selectedItem) {
+                    setMatchFeedback("請先點選上方的卡片關鍵字！");
+                    return;
+                }
+                if (selectedItem.group === group) {
+                    setMatchFeedback("答對了！🎉");
+                    setMatchGameItems(matchGameItems.filter(i => i.id !== selectedItem.id));
+                    setSelectedItem(null);
+                } else {
+                    setMatchFeedback("不對喔，再試試看！❌");
+                }
+            };
+
+            const renderContent = () => {
+                switch (activeTab) {
+                    case 'learn':
+                        return (
+                            <div className="space-y-6 fade-in">
+                                <div className="bg-white p-6 rounded-lg shadow-sm">
+                                    <h2 className="text-2xl font-bold mb-4 text-gray-800">專案管理五大過程組 (PMBOK)</h2>
+                                    <p className="text-gray-600 mb-4">
+                                        這五大過程組並非單純的線性步驟，而是一套確保專案能從「概念」轉化為「成果」的邏輯循環系統。
+                                        試著將專案想像成一場<b>「全家出國旅遊」</b>。
+                                    </p>
+                                    <div className="flex gap-2 flex-wrap">
+                                        <span className="px-3 py-1 bg-gray-200 rounded-full text-sm font-semibold text-gray-700">📌 PDCA 循環</span>
+                                        <span className="px-3 py-1 bg-gray-200 rounded-full text-sm font-semibold text-gray-700">🔄 滾動式規劃</span>
+                                        <span className="px-3 py-1 bg-gray-200 rounded-full text-sm font-semibold text-gray-700">🏗️ 矩陣式架構</span>
+                                    </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                                    {processGroups.map((group) => (
+                                        <div key={group.id} className={`p-5 rounded-lg border-l-4 shadow-sm bg-white ${group.border} card-hover transition-all`}>
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <div className={`p-2 rounded-full ${group.color}`}>
+                                                    <Icon name={group.icon} />
+                                                </div>
+                                                <h3 className="text-xl font-bold text-gray-800">{group.name}</h3>
+                                            </div>
+                                            
+                                            <div className="grid md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <p className="text-sm font-bold text-gray-500 uppercase">定義與任務</p>
+                                                    <p className="text-gray-700 mb-2">{group.definition}</p>
+                                                    <p className="text-gray-600 text-sm">{group.coreTask}</p>
+                                                    <div className="mt-2 text-sm font-semibold text-indigo-600">
+                                                        產出：{group.output}
+                                                    </div>
+                                                </div>
+                                                <div className="bg-gray-50 p-3 rounded border border-gray-100">
+                                                    <p className="text-sm font-bold text-gray-500 uppercase mb-1">✈️ 旅遊比喻</p>
+                                                    <p className="text-gray-700 italic">"{group.analogy}"</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Advanced Concepts Section - Added to cover all source material */}
+                                <div className="bg-indigo-50 p-6 rounded-lg border border-indigo-100 mt-8">
+                                    <h3 className="text-xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>
+                                        進階觀念與背景補充
+                                    </h3>
+                                    
+                                    <div className="grid md:grid-cols-3 gap-6">
+                                        <div>
+                                            <h4 className="font-bold text-indigo-800 mb-2">1. 與 PDCA 的對應</h4>
+                                            <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                                                <li><span className="font-semibold">Plan:</span> 規劃過程組</li>
+                                                <li><span className="font-semibold">Do:</span> 執行過程組</li>
+                                                <li><span className="font-semibold">Check & Act:</span> 監視和管理過程組</li>
+                                                <li className="text-gray-500 text-xs mt-1">*啟動與結束分別為入口與出口</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-indigo-800 mb-2">2. 矩陣式架構</h4>
+                                            <p className="text-sm text-gray-700">
+                                                專案管理是由「5 大過程組」與「10 大知識領域」（如範疇、時間、成本）交織而成。
+                                            </p>
+                                            <p className="text-xs text-indigo-600 mt-2 bg-white p-2 rounded">
+                                                💡 <strong>整合管理</strong>是唯一貫穿所有 5 個過程組的知識領域。
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-indigo-800 mb-2">3. 新舊版演進</h4>
+                                            <ul className="text-sm text-gray-700 space-y-2">
+                                                <li>
+                                                    <span className="font-semibold text-gray-900">第 6 版 (舊):</span> 強調「5大過程組」的指令式架構。
+                                                </li>
+                                                <li>
+                                                    <span className="font-semibold text-gray-900">第 7 版 (新):</span> 轉向「12項原則」，但五大過程組仍是有效的邏輯骨幹。
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    case 'game':
+                        return (
+                            <div className="fade-in space-y-8">
+                                <div className="bg-white p-6 rounded-lg shadow-sm text-center">
+                                    <h3 className="text-xl font-bold mb-2">配對小遊戲</h3>
+                                    <p className="text-gray-600 mb-4">點擊上方的「關鍵字」，再點擊下方對應的「過程組」。</p>
+                                    
+                                    {/* Items to match */}
+                                    <div className="flex flex-wrap gap-3 justify-center min-h-[60px] mb-6">
+                                        {matchGameItems.length === 0 ? (
+                                            <div className="text-green-600 font-bold text-lg">太棒了！全部答對！🎉 <button onClick={initMatchGame} className="text-sm underline ml-2 text-blue-600">重玩</button></div>
+                                        ) : (
+                                            matchGameItems.map(item => (
+                                                <button
+                                                    key={item.id}
+                                                    onClick={() => {
+                                                        setSelectedItem(item);
+                                                        setMatchFeedback("請選擇下方的歸屬...");
+                                                    }}
+                                                    className={`px-4 py-2 rounded-full shadow-sm border-2 font-bold transition-all ${selectedItem?.id === item.id ? 'bg-indigo-100 border-indigo-500 text-indigo-700 scale-105' : 'bg-white border-gray-200 hover:border-indigo-300'}`}
+                                                >
+                                                    {item.term}
+                                                </button>
+                                            ))
+                                        )}
+                                    </div>
+                                    
+                                    <div className="h-6 text-indigo-600 font-semibold mb-4">{matchFeedback}</div>
+
+                                    {/* Buckets */}
+                                    <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                                        {processGroups.map(group => (
+                                            <div 
+                                                key={group.id}
+                                                onClick={() => handleMatchClick(group.id)}
+                                                className={`p-4 rounded-lg border-2 border-dashed cursor-pointer hover:bg-gray-50 transition-colors flex flex-col items-center justify-center text-center h-32 ${group.border.replace('border-', 'border-opacity-50 ')}`}
+                                            >
+                                                <div className={`mb-2 p-1 rounded-full ${group.color}`}>
+                                                    <Icon name={group.icon} size={20} />
+                                                </div>
+                                                <span className="text-xs font-bold text-gray-700">{group.name.split(' ')[0]}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    case 'quiz':
+                        if (quizFinished) {
+                            return (
+                                <div className="bg-white p-8 rounded-lg shadow-lg text-center fade-in">
+                                    <div className="text-6xl mb-4">🏆</div>
+                                    <h2 className="text-2xl font-bold mb-2">測驗完成！</h2>
+                                    <p className="text-lg mb-6">你的得分：<span className="font-bold text-indigo-600">{score}</span> / {quizQuestions.length}</p>
+                                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                                        <div className="bg-indigo-600 h-2.5 rounded-full" style={{width: `${(score/quizQuestions.length)*100}%`}}></div>
+                                    </div>
+                                    <button 
+                                        onClick={resetQuiz}
+                                        className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition-colors"
+                                    >
+                                        重新測驗
+                                    </button>
+                                </div>
+                            );
+                        }
+
+                        const question = quizQuestions[currentQuiz];
+                        return (
+                            <div className="bg-white p-6 rounded-lg shadow-sm max-w-2xl mx-auto fade-in">
+                                <div className="flex justify-between items-center mb-4">
+                                    <span className="text-sm font-semibold text-gray-500">問題 {currentQuiz + 1} / {quizQuestions.length}</span>
+                                    <span className="text-sm font-semibold text-indigo-600">得分: {score}</span>
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-800 mb-6">{question.question}</h3>
+                                
+                                <div className="space-y-3">
+                                    {question.options.map((option, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => handleQuizAnswer(idx)}
+                                            disabled={showAnswer}
+                                            className={`w-full text-left p-4 rounded border transition-all ${
+                                                showAnswer 
+                                                    ? idx === question.answer 
+                                                        ? 'bg-green-100 border-green-500 text-green-800'
+                                                        : idx === question.options.indexOf(option) && idx !== question.answer // if selected wrong
+                                                            ? 'opacity-50' 
+                                                            : 'opacity-50'
+                                                    : 'hover:bg-indigo-50 border-gray-200 hover:border-indigo-300'
+                                            }`}
+                                        >
+                                            <div className="flex items-center">
+                                                <div className={`w-6 h-6 rounded-full border flex items-center justify-center mr-3 ${
+                                                    showAnswer && idx === question.answer ? 'bg-green-500 border-green-500 text-white' : 'border-gray-400'
+                                                }`}>
+                                                    {showAnswer && idx === question.answer ? '✓' : String.fromCharCode(65 + idx)}
+                                                </div>
+                                                {option}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {showAnswer && (
+                                    <div className="mt-6 p-4 bg-blue-50 rounded text-blue-800 border-l-4 border-blue-400 fade-in">
+                                        <p className="font-bold mb-1">解析：</p>
+                                        <p>{question.explanation}</p>
+                                        <div className="mt-4 text-right">
+                                            <button 
+                                                onClick={nextQuestion}
+                                                className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
+                                            >
+                                                {currentQuiz === quizQuestions.length - 1 ? "查看結果" : "下一題"}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    default:
+                        return null;
+                }
+            };
+
+            return (
+                <div className="min-h-screen pb-12">
+                    {/* Header */}
+                    <header className="bg-indigo-600 text-white p-6 shadow-md">
+                        <div className="max-w-4xl mx-auto">
+                            <h1 className="text-2xl font-bold flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                                專案管理新手村
+                            </h1>
+                            <p className="text-indigo-100 mt-1">PMBOK 五大過程組互動指南</p>
+                        </div>
+                    </header>
+
+                    {/* Navigation */}
+                    <div className="max-w-4xl mx-auto px-4 py-6">
+                        <div className="flex space-x-1 bg-white p-1 rounded-lg shadow-sm mb-8 inline-flex">
+                            <button 
+                                onClick={() => setActiveTab('learn')}
+                                className={`px-6 py-2 rounded-md font-medium transition-all ${activeTab === 'learn' ? 'bg-indigo-100 text-indigo-700 shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`}
+                            >
+                                學習觀念
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab('game')}
+                                className={`px-6 py-2 rounded-md font-medium transition-all ${activeTab === 'game' ? 'bg-indigo-100 text-indigo-700 shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`}
+                            >
+                                配對練習
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab('quiz')}
+                                className={`px-6 py-2 rounded-md font-medium transition-all ${activeTab === 'quiz' ? 'bg-indigo-100 text-indigo-700 shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`}
+                            >
+                                模擬測驗
+                            </button>
+                        </div>
+
+                        {renderContent()}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

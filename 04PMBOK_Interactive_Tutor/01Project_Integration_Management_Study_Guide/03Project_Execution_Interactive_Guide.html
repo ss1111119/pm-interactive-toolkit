@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>指導與管理專案執行 - 互動學習指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+            cursor: pointer;
+            height: 320px; /* Increased height for more content */
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .flip-card-front {
+            background-color: white;
+            color: #1f2937;
+        }
+        .flip-card-back {
+            background-color: #3b82f6; /* Blue-500 */
+            color: white;
+            transform: rotateY(180deg);
+            overflow-y: auto; /* Allow scrolling if content is long */
+        }
+        .correct-anim {
+            animation: pulse-green 0.5s ease-in-out;
+        }
+        .wrong-anim {
+            animation: shake-red 0.5s ease-in-out;
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+        @keyframes shake-red {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-800 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold"><i class="fas fa-tasks mr-2"></i>專案執行大師 (PMP入門)</h1>
+            <div class="text-sm hidden md:block">指導與管理專案執行</div>
+        </div>
+    </nav>
+
+    <!-- Hero Section / Analogy -->
+    <header class="bg-white p-8 mb-6 shadow-sm">
+        <div class="container mx-auto text-center">
+            <h2 class="text-3xl font-bold text-blue-900 mb-4">如果專案是一場交響樂...</h2>
+            <p class="text-lg text-gray-600 mb-8">「指導與管理專案執行」就是正式演出的當下。</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+                <!-- Role 1 -->
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 transform hover:scale-105 transition duration-300">
+                    <div class="text-4xl text-blue-600 mb-3"><i class="fas fa-user-tie"></i></div>
+                    <h3 class="font-bold text-lg">專案經理 (PM)</h3>
+                    <div class="h-1 w-12 bg-blue-300 mx-auto my-2"></div>
+                    <p class="text-sm font-semibold text-blue-800">指揮家 (靈魂人物)</p>
+                    <p class="text-xs text-gray-500 mt-2">負責動態協調資源，領導團隊，對成敗負責。</p>
+                </div>
+                <!-- Role 2 -->
+                <div class="bg-green-50 p-4 rounded-xl border border-green-100 transform hover:scale-105 transition duration-300">
+                    <div class="text-4xl text-green-600 mb-3"><i class="fas fa-book-open"></i></div>
+                    <h3 class="font-bold text-lg">專案計畫書</h3>
+                    <div class="h-1 w-12 bg-green-300 mx-auto my-2"></div>
+                    <p class="text-sm font-semibold text-green-800">交響樂總譜</p>
+                    <p class="text-xs text-gray-500 mt-2">主要的輸入來源，包含範疇、時程、成本等附屬計畫。</p>
+                </div>
+                <!-- Role 3 -->
+                <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 transform hover:scale-105 transition duration-300">
+                    <div class="text-4xl text-purple-600 mb-3"><i class="fas fa-music"></i></div>
+                    <h3 class="font-bold text-lg">可交付成果</h3>
+                    <div class="h-1 w-12 bg-purple-300 mx-auto my-2"></div>
+                    <p class="text-sm font-semibold text-purple-800">演出的音樂</p>
+                    <p class="text-xs text-gray-500 mt-2">具體產出的價值，可以是實體產品、服務或訓練計畫。</p>
+                </div>
+                <!-- Role 4 -->
+                <div class="bg-red-50 p-4 rounded-xl border border-red-100 transform hover:scale-105 transition duration-300">
+                    <div class="text-4xl text-red-600 mb-3"><i class="fas fa-chart-line"></i></div>
+                    <h3 class="font-bold text-lg">工作績效數據</h3>
+                    <div class="h-1 w-12 bg-red-300 mx-auto my-2"></div>
+                    <p class="text-sm font-semibold text-red-800">音準與節拍</p>
+                    <p class="text-xs text-gray-500 mt-2">原始的觀測值（實際成本、工期進度），是監控的血液。</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content: ITTO Cards -->
+    <section class="container mx-auto px-4 mb-12">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-l-4 border-blue-600 pl-4">重點記憶卡 (點擊翻牌)</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Card 1: Input -->
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front border-2 border-yellow-400">
+                        <div class="text-5xl text-yellow-500 mb-4"><i class="fas fa-file-import"></i></div>
+                        <h3 class="text-xl font-bold">關鍵輸入 (Inputs)</h3>
+                        <p class="text-gray-500 mt-2">我要拿什麼來開始工作？</p>
+                        <p class="text-xs text-gray-400 mt-4">(點擊看答案)</p>
+                    </div>
+                    <div class="flip-card-back bg-yellow-500 text-white">
+                        <h3 class="text-lg font-bold mb-2">主要輸入項目</h3>
+                        <ul class="text-left text-sm list-disc pl-5 space-y-2">
+                            <li><strong>專案管理計畫書</strong>：所有附屬計畫的集合。</li>
+                            <li>
+                                <strong>已核准的變更請求</strong> (重點)：
+                                <ul class="list-circle pl-4 text-xs mt-1 text-yellow-100">
+                                    <li>修正行動 (Corrective)</li>
+                                    <li>預防措施 (Preventive)</li>
+                                    <li>缺陷修復 (Defect Repair)</li>
+                                </ul>
+                            </li>
+                            <li><strong>EEFs & OPAs</strong>：環境因素與組織資產。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Tools -->
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front border-2 border-gray-400">
+                        <div class="text-5xl text-gray-600 mb-4"><i class="fas fa-tools"></i></div>
+                        <h3 class="text-xl font-bold">工具與技術 (Tools)</h3>
+                        <p class="text-gray-500 mt-2">我用什麼方法來管理？</p>
+                        <p class="text-xs text-gray-400 mt-4">(點擊看答案)</p>
+                    </div>
+                    <div class="flip-card-back bg-gray-600">
+                        <h3 class="text-lg font-bold mb-2">關鍵工具</h3>
+                        <ul class="text-left text-sm list-disc pl-5 space-y-2">
+                            <li><strong>專家判斷</strong>：技術細節與管理決策。</li>
+                            <li>
+                                <strong>PMIS (資訊系統)</strong>：
+                                <span class="text-xs block text-gray-300 mt-1">不僅是軟體，還包含排程、預算分配、績效分析等功能。</span>
+                            </li>
+                            <li><strong>會議</strong>：審查會議、技術會議，確保資訊傳遞。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Output -->
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front border-2 border-green-400">
+                        <div class="text-5xl text-green-500 mb-4"><i class="fas fa-box-open"></i></div>
+                        <h3 class="text-xl font-bold">關鍵產出 (Outputs)</h3>
+                        <p class="text-gray-500 mt-2">做完會得到什麼？</p>
+                        <p class="text-xs text-gray-400 mt-4">(點擊看答案)</p>
+                    </div>
+                    <div class="flip-card-back bg-green-600">
+                        <h3 class="text-lg font-bold mb-2">主要產出項目</h3>
+                        <ul class="text-left text-sm list-disc pl-5 space-y-2">
+                            <li><strong>可交付成果</strong>：實體產品或無形服務(如訓練)。</li>
+                            <li><strong>工作績效數據</strong>：最原始的觀測值。</li>
+                            <li><strong>議題日誌</strong>：紀錄困難與問題的溝通工具。</li>
+                            <li><strong>變更請求</strong>：執行中發現偏差，提出新請求。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Deep Dive Section -->
+    <section class="container mx-auto px-4 mb-12">
+        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-6 rounded-r-lg">
+            <h3 class="text-xl font-bold text-indigo-900 mb-3"><i class="fas fa-lightbulb mr-2"></i>來源資料重點補充 (必讀！)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-bold text-indigo-800 mb-2">1. 關於「變更請求」的輪迴</h4>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        這是一個「雞生蛋、蛋生雞」的過程：<br>
+                        (1) <strong>輸入</strong>：你需要「已核准的變更請求」才能開始修正工作。<br>
+                        (2) <strong>產出</strong>：在執行過程中，如果你發現計畫與實際有落差，你會產出新的「變更請求」（尚未核准），回饋給變更控制流程去審核。
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-indigo-800 mb-2">2. 專案經理 (PM) 的職責</h4>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        來源資料強調 PM 是專案的「靈魂」。你的工作不只是監工，而是<strong>「動態協調」</strong>。必須整合必要的人力與資源，使活動依照規劃進行，並對最終成敗負責。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiz Section -->
+    <section class="container mx-auto px-4 py-8 bg-white rounded-xl shadow-sm mb-12">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-l-4 border-red-600 pl-4">PMP 考點模擬測驗</h2>
+        <div id="quiz-container" class="space-y-6">
+            <!-- Questions will be injected here by JS -->
+        </div>
+        <div id="score-area" class="mt-8 hidden text-center">
+            <h3 class="text-2xl font-bold text-blue-800">測驗結果</h3>
+            <p id="score-text" class="text-xl mt-2"></p>
+            <button onclick="resetQuiz()" class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">重新測驗</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-6 text-center">
+        <p class="text-sm opacity-75">Designed for Learning. Based on PMP "Direct and Manage Project Work" Concept.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                question: "在執行專案時，團隊發現了一個產品缺陷。專案經理決定進行「缺陷修復」。請問這個「缺陷修復」通常源自於哪一種輸入文件？",
+                options: [
+                    "A. 專案章程 (Project Charter)",
+                    "B. 變更請求 (Change Requests)",
+                    "C. 已核准的變更請求 (Approved Change Requests)",
+                    "D. 議題日誌 (Issue Log)"
+                ],
+                correct: 2, // Index C
+                explanation: "正確答案 C。來源資料強調，凡是修正行動、預防措施或缺陷修復，都必須經過核准（成為已核准的變更請求）後，才能在指導與管理專案執行流程中被實施。"
+            },
+            {
+                id: 2,
+                question: "下列關於「工作績效數據」與「PMIS」的敘述，何者最符合來源資料的觀點？",
+                options: [
+                    "A. PMIS 僅用於儲存文件，與績效分析無關。",
+                    "B. 工作績效數據是經過分析後的整合報告。",
+                    "C. PMIS 是協助 PM 進行排程、預算分配及績效分析的重要利器。",
+                    "D. 工作績效數據僅包含成本資訊，不包含工期進度。"
+                ],
+                correct: 2, // Index C
+                explanation: "正確答案 C。來源資料明確指出，PMIS 能自動化收集資訊，並協助 PM 進行排程、預算及績效分析。選項 B 錯誤，因為數據是原始觀測值，不是報告。"
+            },
+            {
+                id: 3,
+                question: "在整合管理的脈絡中，專案經理的角色被比喻為什麼？其主要職責為何？",
+                options: [
+                    "A. 警察；負責抓出錯誤。",
+                    "B. 靈魂；負責指導執行並動態協調資源。",
+                    "C. 記錄員；負責記錄會議紀錄。",
+                    "D. 旁觀者；讓團隊自我管理。"
+                ],
+                correct: 1, // Index B
+                explanation: "正確答案 B。來源資料視 PM 為專案的「靈魂」，負責領導團隊、落實計畫，並對專案成敗負最終責任。"
+            }
+        ];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            
+            questions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'border-b border-gray-200 pb-6 last:border-0';
+                
+                let optionsHtml = '';
+                q.options.forEach((opt, optIndex) => {
+                    optionsHtml += `
+                        <label class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                            <input type="radio" name="q${index}" value="${optIndex}" class="form-radio h-5 w-5 text-blue-600" onchange="checkAnswer(${index}, ${optIndex})">
+                            <span class="text-gray-700">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                qDiv.innerHTML = `
+                    <h3 class="font-bold text-lg mb-3 text-gray-900">${index + 1}. ${q.question}</h3>
+                    <div class="space-y-1 mb-3">
+                        ${optionsHtml}
+                    </div>
+                    <div id="feedback-${index}" class="hidden p-4 rounded-lg text-sm mt-2"></div>
+                `;
+                container.appendChild(qDiv);
+            });
+        }
+
+        function checkAnswer(qIndex, selectedOptIndex) {
+            const feedbackEl = document.getElementById(`feedback-${qIndex}`);
+            const q = questions[qIndex];
+            
+            // Disable all radios for this question
+            const radios = document.getElementsByName(`q${qIndex}`);
+            radios.forEach(r => r.disabled = true);
+
+            feedbackEl.classList.remove('hidden');
+            
+            if (selectedOptIndex === q.correct) {
+                feedbackEl.className = 'block p-4 rounded-lg text-sm mt-2 bg-green-100 text-green-800 border border-green-200 correct-anim';
+                feedbackEl.innerHTML = `<i class="fas fa-check-circle mr-2"></i><strong>答對了！</strong><br>${q.explanation}`;
+            } else {
+                feedbackEl.className = 'block p-4 rounded-lg text-sm mt-2 bg-red-100 text-red-800 border border-red-200 wrong-anim';
+                feedbackEl.innerHTML = `<i class="fas fa-times-circle mr-2"></i><strong>答錯了。</strong><br>${q.explanation}`;
+            }
+            
+            checkCompletion();
+        }
+
+        function checkCompletion() {
+            // Count how many radios are checked
+            let checkedCount = 0;
+            questions.forEach((_, i) => {
+                const radios = document.getElementsByName(`q${i}`);
+                for(let r of radios) {
+                    if(r.checked) checkedCount++;
+                }
+            });
+
+            if(checkedCount === questions.length) {
+                document.getElementById('score-area').classList.remove('hidden');
+                document.getElementById('score-text').innerText = "恭喜完成練習！請回顧所有的解析以加深印象。";
+            }
+        }
+
+        function resetQuiz() {
+            document.getElementById('score-area').classList.add('hidden');
+            renderQuiz();
+        }
+
+        // Init
+        renderQuiz();
+    </script>
+</body>
+</html>

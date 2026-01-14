@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理 EEF 備考特訓</title>
+    <!-- 引入 Tailwind CSS 進行樣式設計 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* 自定義動畫 */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tab-active {
+            color: #2563eb; /* blue-600 */
+            border-bottom: 4px solid #2563eb;
+        }
+        .tab-inactive {
+            color: #6b7280; /* gray-500 */
+        }
+        .tab-inactive:hover {
+            color: #374151; /* gray-700 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-700 to-teal-600 text-white p-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold flex items-center gap-3">
+                <i data-lucide="book-open" class="w-8 h-8"></i>
+                專案管理：企業環境因素 (EEFs)
+            </h1>
+            <p class="mt-2 text-blue-100">備考衝刺站：從衝浪比喻看懂環境限制</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto p-4 md:p-6">
+        
+        <!-- Navigation Tabs -->
+        <div class="flex gap-4 mb-8 border-b border-gray-200">
+            <button id="btn-tab-study" onclick="switchTab('study')" class="pb-3 px-4 font-semibold text-lg transition-colors tab-active">
+                重點筆記整理
+            </button>
+            <button id="btn-tab-quiz" onclick="switchTab('quiz')" class="pb-3 px-4 font-semibold text-lg transition-colors tab-inactive">
+                模擬測驗 (5題)
+            </button>
+        </div>
+
+        <!-- Section: Study Content -->
+        <div id="section-study" class="space-y-8 fade-in">
+            
+            <!-- 1. Core Definition -->
+            <section class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-yellow-400">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
+                    <i data-lucide="brain" class="w-6 h-6 text-yellow-500"></i>
+                    1. 核心觀念：EEFs 是什麼？
+                </h2>
+                <p class="text-lg font-medium text-gray-700 mb-4">企業環境因素 (EEFs) 是專案運行的「客觀邊界」與「限制條件」。</p>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="bg-yellow-50 p-3 rounded-lg text-sm text-gray-700 border border-yellow-100">定位：通常是「輸入 (Input)」，必須在規劃前讀取。</div>
+                    <div class="bg-yellow-50 p-3 rounded-lg text-sm text-gray-700 border border-yellow-100">本質：專案團隊「無法控制」的現狀。</div>
+                    <div class="bg-yellow-50 p-3 rounded-lg text-sm text-gray-700 border border-yellow-100">後果：若忽視 EEFs，計畫將只是「紙上談兵」，無法落地。</div>
+                </div>
+            </section>
+
+            <!-- 2. Internal vs External -->
+            <section class="grid md:grid-cols-2 gap-6">
+                <!-- Internal -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-blue-500">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i data-lucide="shield" class="w-6 h-6 text-blue-500"></i>
+                        <h3 class="text-xl font-bold text-blue-800">內部環境因素 (Internal EEFs)</h3>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4">組織內部的現狀，雖然是內部，但 PM 難以撼動。</p>
+                    <ul class="space-y-3">
+                        <li class="bg-blue-50 p-3 rounded-md">
+                            <span class="font-bold text-blue-700 block">組織文化與結構</span>
+                            <span class="text-sm text-gray-600">公司的價值觀、願景，以及最重要的「組織結構」（決定 PM 權力大小）。</span>
+                        </li>
+                        <li class="bg-blue-50 p-3 rounded-md">
+                            <span class="font-bold text-blue-700 block">基礎設施</span>
+                            <span class="text-sm text-gray-600">現有的設施、設備、硬體環境。</span>
+                        </li>
+                        <li class="bg-blue-50 p-3 rounded-md">
+                            <span class="font-bold text-blue-700 block">資源可用性</span>
+                            <span class="text-sm text-gray-600">現有員工的能力、人力資源狀況。</span>
+                        </li>
+                        <li class="bg-blue-50 p-3 rounded-md">
+                            <span class="font-bold text-blue-700 block">IT 軟體系統</span>
+                            <span class="text-sm text-gray-600">既有的排程軟體、組態管理系統。</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- External -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-teal-500">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i data-lucide="waves" class="w-6 h-6 text-teal-500"></i>
+                        <h3 class="text-xl font-bold text-teal-800">外部環境因素 (External EEFs)</h3>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4">來自組織之外的大環境壓力，完全不可控。</p>
+                    <ul class="space-y-3">
+                        <li class="bg-teal-50 p-3 rounded-md">
+                            <span class="font-bold text-teal-700 block">市場條件</span>
+                            <span class="text-sm text-gray-600">競爭對手、市場份額、品牌認知。</span>
+                        </li>
+                        <li class="bg-teal-50 p-3 rounded-md">
+                            <span class="font-bold text-teal-700 block">法律與政府標準</span>
+                            <span class="text-sm text-gray-600">法規限制、勞工法規、行業標準。</span>
+                        </li>
+                        <li class="bg-teal-50 p-3 rounded-md">
+                            <span class="font-bold text-teal-700 block">商業資料庫</span>
+                            <span class="text-sm text-gray-600">標竿數據、風險資料庫、標準化成本數據（估算成本用）。</span>
+                        </li>
+                        <li class="bg-teal-50 p-3 rounded-md">
+                            <span class="font-bold text-teal-700 block">社會/實體環境</span>
+                            <span class="text-sm text-gray-600">政治氛圍、氣候、地理位置。</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 3. Comparison Table -->
+            <section class="bg-white p-6 rounded-xl shadow-sm">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <i data-lucide="scale" class="w-6 h-6 text-purple-500"></i>
+                    3. EEFs (限制) vs OPAs (資產)
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-4 rounded-l-lg">比較項目</th>
+                                <th class="py-3 px-4 text-red-600 font-bold">EEFs (企業環境因素)</th>
+                                <th class="py-3 px-4 text-green-600 font-bold rounded-r-lg">OPAs (組織流程資產)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700 text-sm">
+                            <tr class="border-b border-gray-100 hover:bg-gray-50"><td class="py-3 px-4 font-semibold">定義</td><td class="py-3 px-4 text-red-800 bg-red-50/50">限制條件、客觀環境</td><td class="py-3 px-4 text-green-800 bg-green-50/50">累積的資產、智慧</td></tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50"><td class="py-3 px-4 font-semibold">PM 的控制權</td><td class="py-3 px-4 text-red-800 bg-red-50/50">不可控，只能適應</td><td class="py-3 px-4 text-green-800 bg-green-50/50">可利用、可裁減、可更新</td></tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50"><td class="py-3 px-4 font-semibold">關鍵字判斷</td><td class="py-3 px-4 text-red-800 bg-red-50/50">「規則」、「現狀」、「法規」</td><td class="py-3 px-4 text-green-800 bg-green-50/50">「範本」、「歷史資訊」、「SOP」</td></tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50"><td class="py-3 px-4 font-semibold">例子</td><td class="py-3 px-4 text-red-800 bg-red-50/50">排程軟體系統、勞工法</td><td class="py-3 px-4 text-green-800 bg-green-50/50">過往專案的排程檔案、經驗教訓</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+             <!-- 4. Impact Section -->
+             <section class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
+                    <i data-lucide="target" class="w-6 h-6 text-green-600"></i>
+                    4. 具體衝擊：EEFs 對各領域的影響
+                </h2>
+                <p class="text-gray-600 mb-4">EEFs 滲透在專案的各個知識領域中，直接影響規劃結果：</p>
+                <div class="grid gap-4 md:grid-cols-3">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                        <h3 class="font-bold text-lg text-gray-800 mb-2 border-b border-gray-200 pb-2">成本管理 (Cost)</h3>
+                        <div class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">關鍵因素: 市場環境 (外) & 組織文化 (內)</div>
+                        <p class="text-sm text-gray-700 leading-relaxed">「市場環境」決定資源單價；「組織文化」決定對預算超支的容忍度。</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                        <h3 class="font-bold text-lg text-gray-800 mb-2 border-b border-gray-200 pb-2">溝通管理 (Communication)</h3>
+                        <div class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">關鍵因素: 基礎設施 (內) & 地理分佈 (內/外)</div>
+                        <p class="text-sm text-gray-700 leading-relaxed">現有設施（如有無視訊系統）與利害關係人的位置，決定溝通技術的選擇。</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                        <h3 class="font-bold text-lg text-gray-800 mb-2 border-b border-gray-200 pb-2">採購管理 (Procurement)</h3>
+                        <div class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">關鍵因素: 市場條件 (外)</div>
+                        <p class="text-sm text-gray-700 leading-relaxed">市場供需狀況直接決定了「採購策略」與適合的「合約類型」。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Surfing Analogy -->
+            <section class="bg-gradient-to-br from-indigo-900 to-blue-800 p-8 rounded-xl text-white shadow-lg">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <i data-lucide="waves" class="w-8 h-8 text-cyan-300"></i>
+                    5. 終極記憶法：衝浪比喻
+                </h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-white/10 p-2 rounded-lg text-cyan-300 font-bold w-12 text-center shrink-0">1</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-cyan-200">海浪與風向</h4>
+                                <div class="text-sm font-semibold bg-white/20 inline-block px-2 py-0.5 rounded text-white my-1">= 外部 EEFs</div>
+                                <p class="text-blue-100 text-sm">無法控制浪高風向，只能觀察並利用。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="bg-white/10 p-2 rounded-lg text-cyan-300 font-bold w-12 text-center shrink-0">2</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-cyan-200">衝浪板與體能</h4>
+                                <div class="text-sm font-semibold bg-white/20 inline-block px-2 py-0.5 rounded text-white my-1">= 內部 EEFs</div>
+                                <p class="text-blue-100 text-sm">下水前註定的裝備與條件，當下難以改變。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="bg-white/10 p-2 rounded-lg text-cyan-300 font-bold w-12 text-center shrink-0">3</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-cyan-200">教學手冊/前人經驗</h4>
+                                <div class="text-sm font-semibold bg-white/20 inline-block px-2 py-0.5 rounded text-white my-1">= OPAs</div>
+                                <p class="text-blue-100 text-sm">參考它來決定怎麼站得更穩。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="bg-white/10 p-2 rounded-lg text-cyan-300 font-bold w-12 text-center shrink-0">4</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-cyan-200">衝浪動作</h4>
+                                <div class="text-sm font-semibold bg-white/20 inline-block px-2 py-0.5 rounded text-white my-1">= 專案績效</div>
+                                <p class="text-blue-100 text-sm">在上述限制下，展現出的成果。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center bg-white/5 rounded-lg p-4 border border-white/10">
+                        <div class="text-center">
+                            <div class="text-6xl mb-4">🏄</div>
+                            <p class="font-bold text-lg">專案經理 (PM)</p>
+                            <p class="text-sm text-blue-200 mt-2">
+                                無法改變浪 (EEF-外)<br/>
+                                很難換衝浪板 (EEF-內)<br/>
+                                但能讀衝浪指南 (OPA)<br/>
+                                來做出完美動作 (Deliverables)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Section: Quiz Content -->
+        <div id="section-quiz" class="hidden max-w-2xl mx-auto fade-in">
+            <!-- Quiz Card -->
+            <div id="quiz-card" class="bg-white p-8 rounded-2xl shadow-md border-t-4 border-blue-600">
+                <div class="flex justify-between items-center mb-6 text-sm text-gray-500">
+                    <span id="quiz-progress">Question 1 of 5</span>
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold">單選題</span>
+                </div>
+                
+                <h3 id="quiz-question" class="text-xl font-bold text-gray-800 mb-6 leading-relaxed">
+                    題目載入中...
+                </h3>
+
+                <div id="quiz-options" class="space-y-3">
+                    <!-- Options generated by JS -->
+                </div>
+
+                <div id="quiz-feedback" class="hidden mt-6 fade-in">
+                    <div id="feedback-box" class="p-4 rounded-lg mb-4 flex items-start gap-2">
+                        <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5"></i>
+                        <div>
+                            <p id="feedback-title" class="font-bold mb-1"></p>
+                            <p id="feedback-text" class="text-sm leading-relaxed"></p>
+                        </div>
+                    </div>
+                    <button id="btn-next" onclick="nextQuestion()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        下一題 <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Score Card (Hidden by default) -->
+            <div id="score-card" class="hidden text-center bg-white p-10 rounded-2xl shadow-lg border-t-8 border-yellow-400">
+                <i data-lucide="trophy" class="w-20 h-20 mx-auto text-yellow-500 mb-6"></i>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">測驗完成！</h2>
+                <p class="text-gray-500 mb-8">你的得分是：</p>
+                <div class="text-6xl font-black text-blue-600 mb-8">
+                    <span id="final-score">0</span> <span class="text-2xl text-gray-400 font-medium">/ 5</span>
+                </div>
+                
+                <div class="bg-gray-50 p-6 rounded-xl mb-8 text-left">
+                    <h4 class="font-bold text-gray-700 mb-2">學習建議：</h4>
+                    <p id="score-message" class="text-blue-600">訊息載入中...</p>
+                </div>
+
+                <button onclick="resetQuiz()" class="bg-gray-800 hover:bg-black text-white font-bold py-3 px-8 rounded-full transition-all flex items-center gap-2 mx-auto">
+                    <i data-lucide="refresh-ccw" class="w-5 h-5"></i>
+                    重新測驗
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // 初始化 Icons
+        lucide.createIcons();
+
+        // --- 狀態變數 ---
+        let currentTab = 'study';
+        let currentQuizIndex = 0;
+        let score = 0;
+        let selectedAnswer = null;
+
+        // --- 測驗資料 ---
+        const quizQuestions = [
+            {
+                question: "在專案管理的輸入與輸出邏輯中，企業環境因素 (EEFs) 通常扮演什麼角色？",
+                options: [
+                    "輸出 (Output)：專案結束後的產出",
+                    "工具與技術 (Tools)：用來執行專案的方法",
+                    "輸入 (Input)：規劃前必須讀取的限制條件",
+                    "更新 (Updates)：專案執行中的變更"
+                ],
+                correct: 2,
+                explanation: "EEFs 是專案的「現狀」與「邊界」，在開始規劃文件或估算時，必須先作為「輸入」讀取，否則計畫無法落地。"
+            },
+            {
+                question: "專案經理正在進行成本估算，他查閱了外部的「標準化成本估算數據」來參考單價。這屬於哪一種因素？",
+                options: [
+                    "內部企業環境因素",
+                    "外部企業環境因素",
+                    "組織流程資產 (OPAs)",
+                    "專案管理計畫書"
+                ],
+                correct: 1,
+                explanation: "「商業資料庫」與「標準化成本數據」來自組織外部的市場資訊，屬於外部 EEFs。"
+            },
+            {
+                question: "以下哪一項屬於「內部」企業環境因素，且直接影響專案經理的權力大小？",
+                options: [
+                    "市場份額",
+                    "組織結構",
+                    "政府法規",
+                    "氣候與地理位置"
+                ],
+                correct: 1,
+                explanation: "「組織結構」（如矩陣式、功能式）是公司內部的現狀，它直接決定了 PM 能掌握多少資源與權力，屬於內部 EEFs。"
+            },
+            {
+                question: "關於 EEFs 與 OPAs 的區別，下列何者正確？",
+                options: [
+                    "EEFs 是可以被專案團隊更新的",
+                    "OPAs 是必須遵守的限制，如法律法規",
+                    "EEFs 通常視為「限制」，OPAs 視為「資產」",
+                    "公司規定的上班打卡軟體屬於 OPAs"
+                ],
+                correct: 2,
+                explanation: "EEFs 是不可控的「限制」（氣候地形）；OPAs 是可利用的「資產」（經驗手冊）。公司規定的軟體通常視為基礎設施（內部 EEF），因為你必須使用它，無法改變。"
+            },
+            {
+                question: "在「採購管理」中，哪一個 EEF 最直接影響合約類型的選擇？",
+                options: [
+                    "組織的排程軟體 (內部)",
+                    "市場條件供需狀況 (外部)",
+                    "歷史專案的經驗教訓 (OPA)",
+                    "員工的體能狀況 (內部)"
+                ],
+                correct: 1,
+                explanation: "根據資料，外部的「市場條件」決定了供需，進而影響採購策略與合約類型（例如賣方強勢市場可能需要不同合約）。"
+            }
+        ];
+
+        // --- Tab 切換功能 ---
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // 按鈕樣式
+            const btnStudy = document.getElementById('btn-tab-study');
+            const btnQuiz = document.getElementById('btn-tab-quiz');
+            
+            if(tabName === 'study') {
+                btnStudy.classList.add('tab-active');
+                btnStudy.classList.remove('tab-inactive');
+                btnQuiz.classList.add('tab-inactive');
+                btnQuiz.classList.remove('tab-active');
+                
+                document.getElementById('section-study').classList.remove('hidden');
+                document.getElementById('section-quiz').classList.add('hidden');
+            } else {
+                btnQuiz.classList.add('tab-active');
+                btnQuiz.classList.remove('tab-inactive');
+                btnStudy.classList.add('tab-inactive');
+                btnStudy.classList.remove('tab-active');
+                
+                document.getElementById('section-study').classList.add('hidden');
+                document.getElementById('section-quiz').classList.remove('hidden');
+                
+                // 初始化測驗（如果是第一次切換）
+                if(currentQuizIndex === 0 && selectedAnswer === null) {
+                    renderQuestion();
+                }
+            }
+        }
+
+        // --- 測驗功能 ---
+        function renderQuestion() {
+            const q = quizQuestions[currentQuizIndex];
+            
+            document.getElementById('quiz-progress').textContent = `Question ${currentQuizIndex + 1} of ${quizQuestions.length}`;
+            document.getElementById('quiz-question').textContent = q.question;
+            
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = ''; // 清空選項
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-between border-gray-200 hover:border-blue-400 hover:bg-blue-50`;
+                btn.innerHTML = `<span class="font-medium text-gray-700">${opt}</span>`;
+                btn.onclick = () => handleAnswer(idx, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            // 隱藏回饋區，重置下一題按鈕文字
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            const nextBtn = document.getElementById('btn-next');
+            nextBtn.innerHTML = (currentQuizIndex < quizQuestions.length - 1) 
+                ? '下一題 <i data-lucide="arrow-right" class="w-5 h-5"></i>' 
+                : '查看成績 <i data-lucide="trophy" class="w-5 h-5"></i>';
+            lucide.createIcons();
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            if (selectedAnswer !== null) return; // 防止重複點擊
+            selectedAnswer = selectedIndex;
+            
+            const q = quizQuestions[currentQuizIndex];
+            const isCorrect = selectedIndex === q.correct;
+            
+            if (isCorrect) score++;
+
+            // 更新選項樣式
+            const buttons = document.getElementById('quiz-options').children;
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].disabled = true;
+                buttons[i].classList.add('opacity-50');
+                
+                // 標示正確答案
+                if (i === q.correct) {
+                    buttons[i].classList.remove('border-gray-200', 'hover:border-blue-400', 'hover:bg-blue-50', 'opacity-50');
+                    buttons[i].classList.add('border-green-500', 'bg-green-50');
+                    buttons[i].innerHTML += `<i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>`;
+                }
+                // 標示選錯的答案
+                if (i === selectedIndex && !isCorrect) {
+                    buttons[i].classList.remove('border-gray-200', 'hover:border-blue-400', 'hover:bg-blue-50', 'opacity-50');
+                    buttons[i].classList.add('border-red-500', 'bg-red-50');
+                    buttons[i].innerHTML += `<i data-lucide="x-circle" class="w-5 h-5 text-red-600"></i>`;
+                }
+            }
+
+            // 顯示詳解
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackText = document.getElementById('feedback-text');
+            
+            if (isCorrect) {
+                feedbackBox.className = "p-4 rounded-lg mb-4 flex items-start gap-2 bg-green-100 border border-green-200 text-green-800";
+                feedbackTitle.textContent = "答對了！";
+            } else {
+                feedbackBox.className = "p-4 rounded-lg mb-4 flex items-start gap-2 bg-red-50 border border-red-200 text-red-800";
+                feedbackTitle.textContent = "再想一下...";
+            }
+            feedbackText.textContent = q.explanation;
+            
+            document.getElementById('quiz-feedback').classList.remove('hidden');
+            lucide.createIcons(); // 重繪 icon
+        }
+
+        function nextQuestion() {
+            if (currentQuizIndex < quizQuestions.length - 1) {
+                currentQuizIndex++;
+                selectedAnswer = null;
+                renderQuestion();
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function showFinalScore() {
+            document.getElementById('quiz-card').classList.add('hidden');
+            document.getElementById('score-card').classList.remove('hidden');
+            document.getElementById('final-score').textContent = score;
+            
+            const msgEl = document.getElementById('score-message');
+            if (score === quizQuestions.length) {
+                msgEl.textContent = "太棒了！你已經完全掌握了 EEFs 的概念，可以準備進入下一個章節了。";
+                msgEl.className = "text-green-600";
+            } else if (score > 2) {
+                msgEl.textContent = "表現不錯！建議回顧一下「內部 vs 外部」的分類細節，就能拿滿分囉。";
+                msgEl.className = "text-blue-600";
+            } else {
+                msgEl.textContent = "建議重新閱讀「重點筆記整理」分頁，特別是「衝浪比喻」的部分，會更有感覺喔！";
+                msgEl.className = "text-red-500";
+            }
+        }
+
+        function resetQuiz() {
+            score = 0;
+            currentQuizIndex = 0;
+            selectedAnswer = null;
+            document.getElementById('score-card').classList.add('hidden');
+            document.getElementById('quiz-card').classList.remove('hidden');
+            renderQuestion();
+        }
+    </script>
+</body>
+</html>

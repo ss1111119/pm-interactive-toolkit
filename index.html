@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理學習資源導航</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            border-bottom: 2px solid #ddd;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        p.subtitle {
+            color: #666;
+            margin-top: 10px;
+        }
+
+        /* 搜尋框樣式 */
+        .search-box {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            display: block;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
+        }
+
+        /* 模組區塊樣式 */
+        .module-section {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .module-header {
+            background: #ecf0f1;
+            padding: 15px 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .file-list li {
+            border-bottom: 1px solid #eee;
+        }
+
+        .file-list li:last-child {
+            border-bottom: none;
+        }
+
+        .file-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: background 0.2s;
+        }
+
+        .file-link:hover {
+            background-color: #f8f9fa;
+            color: var(--accent-color);
+        }
+
+        .file-icon {
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .file-info {
+            flex-grow: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            display: block;
+        }
+
+        .file-path {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .badge {
+            background: var(--accent-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            margin-left: 10px;
+        }
+
+        /* 處理巢狀結構 (Module 04) */
+        .sub-module {
+            margin: 10px 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        
+        .sub-module-header {
+            padding: 10px 15px;
+            font-weight: bold;
+            background-color: #e8e8e8;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        @media (max-width: 600px) {
+            .file-link {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .file-icon {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>專案管理學習資源導航</h1>
+        <p class="subtitle">互動式學習工具與學習指南總覽</p>
+        <input type="text" id="searchInput" class="search-box" placeholder="輸入關鍵字搜尋課程...">
+    </header>
+
+    <div class="module-section">
+        <div class="module-header">
+            01. 專案管理概論 (Intro)
+        </div>
+        <ul class="file-list">
+            <li>
+                <a href="01-pm-intro/pm-intro.html" class="file-link">
+                    <span class="file-icon">🏠</span>
+                    <div class="file-info">
+                        <span class="file-name">概論主頁 (PM Intro)</span>
+                        <span class="file-path">01-pm-intro/pm-intro.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="01-pm-intro/01Project_Management_Dojo.html" class="file-link">
+                    <span class="file-icon">🥋</span>
+                    <div class="file-info">
+                        <span class="file-name">專案管理道場 (Dojo)</span>
+                        <span class="file-path">01-pm-intro/01Project_Management_Dojo.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="01-pm-intro/02PRINCE2_Exam_Prep_App.html" class="file-link">
+                    <span class="file-icon">📝</span>
+                    <div class="file-info">
+                        <span class="file-name">PRINCE2 備考 App</span>
+                        <span class="file-path">01-pm-intro/02PRINCE2_Exam_Prep_App.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="01-pm-intro/03ProjectManagementEvolution_StudyApp.html" class="file-link">
+                    <span class="file-icon">⏳</span>
+                    <div class="file-info">
+                        <span class="file-name">專案管理演進史</span>
+                        <span class="file-path">01-pm-intro/03ProjectManagementEvolution_StudyApp.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="01-pm-intro/03project_management_prep.html" class="file-link">
+                    <span class="file-icon">📚</span>
+                    <div class="file-info">
+                        <span class="file-name">專案管理準備 (Prep)</span>
+                        <span class="file-path">01-pm-intro/03project_management_prep.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="01-pm-intro/04pmp_sprint_notes.html" class="file-link">
+                    <span class="file-icon">🏃</span>
+                    <div class="file-info">
+                        <span class="file-name">PMP 衝刺筆記 (Sprint Notes)</span>
+                        <span class="file-path">01-pm-intro/04pmp_sprint_notes.html</span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="module-section">
+        <div class="module-header">
+            02. PM 航行指南 (Voyage Guide)
+        </div>
+        <ul class="file-list">
+            <li>
+                <a href="02-PM_Voyage_Guide/PM_Voyage_Guide.html" class="file-link">
+                    <span class="file-icon">⛵</span>
+                    <div class="file-info">
+                        <span class="file-name">航行指南主頁</span>
+                        <span class="file-path">02-PM_Voyage_Guide/PM_Voyage_Guide.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="02-PM_Voyage_Guide/01EEF_Exam_Master.html" class="file-link">
+                    <span class="file-icon">🏢</span>
+                    <div class="file-info">
+                        <span class="file-name">企業環境因素 (EEF)</span>
+                        <span class="file-path">02-PM_Voyage_Guide/01EEF_Exam_Master.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="02-PM_Voyage_Guide/02OPA_Mountaineering_Guide.html" class="file-link">
+                    <span class="file-icon">🏔️</span>
+                    <div class="file-info">
+                        <span class="file-name">組織過程資產 (OPA)</span>
+                        <span class="file-path">02-PM_Voyage_Guide/02OPA_Mountaineering_Guide.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="02-PM_Voyage_Guide/03PM_Organizational_Structures_Study_Guide.html" class="file-link">
+                    <span class="file-icon">🏗️</span>
+                    <div class="file-info">
+                        <span class="file-name">組織結構指南</span>
+                        <span class="file-path">02-PM_Voyage_Guide/03PM_Organizational_Structures_Study_Guide.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="02-PM_Voyage_Guide/04PM_Foundations_Study_Guide.html" class="file-link">
+                    <span class="file-icon">🏛️</span>
+                    <div class="file-info">
+                        <span class="file-name">PM 基礎知識</span>
+                        <span class="file-path">02-PM_Voyage_Guide/04PM_Foundations_Study_Guide.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="02-PM_Voyage_Guide/05pmo_interactive_learning.html" class="file-link">
+                    <span class="file-icon">🤝</span>
+                    <div class="file-info">
+                        <span class="file-name">專案管理辦公室 (PMO)</span>
+                        <span class="file-path">02-PM_Voyage_Guide/05pmo_interactive_learning.html</span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="module-section">
+        <div class="module-header">
+            03. 五大流程群組 (Process Groups)
+        </div>
+        <ul class="file-list">
+            <li>
+                <a href="03pm_process_groups_study_tool/pm_process_groups_study_tool.html" class="file-link">
+                    <span class="file-icon">🔄</span>
+                    <div class="file-info">
+                        <span class="file-name">流程群組學習工具主頁</span>
+                        <span class="file-path">03pm_process_groups_study_tool/pm_process_groups_study_tool.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="03pm_process_groups_study_tool/01initiating-process-group-study-guide.html" class="file-link">
+                    <span class="file-icon">🚀</span>
+                    <div class="file-info">
+                        <span class="file-name">啟動流程群組 (Initiating)</span>
+                        <span class="file-path">03pm_process_groups_study_tool/01initiating-process-group-study-guide.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="03pm_process_groups_study_tool/02project_planning_process_interactive.html" class="file-link">
+                    <span class="file-icon">🗺️</span>
+                    <div class="file-info">
+                        <span class="file-name">規劃流程群組 (Planning)</span>
+                        <span class="file-path">03pm_process_groups_study_tool/02project_planning_process_interactive.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="03pm_process_groups_study_tool/03pm_execution_study_guide.html" class="file-link">
+                    <span class="file-icon">⚙️</span>
+                    <div class="file-info">
+                        <span class="file-name">執行流程群組 (Execution)</span>
+                        <span class="file-path">03pm_process_groups_study_tool/03pm_execution_study_guide.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="03pm_process_groups_study_tool/04project_monitoring_study_guide.html" class="file-link">
+                    <span class="file-icon">📊</span>
+                    <div class="file-info">
+                        <span class="file-name">監控流程群組 (Monitoring)</span>
+                        <span class="file-path">03pm_process_groups_study_tool/04project_monitoring_study_guide.html</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="03pm_process_groups_study_tool/05project_closing_study_guide.html" class="file-link">
+                    <span class="file-icon">🏁</span>
+                    <div class="file-info">
+                        <span class="file-name">結束流程群組 (Closing)</span>
+                        <span class="file-path">03pm_process_groups_study_tool/05project_closing_study_guide.html</span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="module-section">
+        <div class="module-header">
+            04. PMBOK 互動導師 (Interactive Tutor)
+        </div>
+        <ul class="file-list">
+            <li>
+                <a href="04PMBOK_Interactive_Tutor/PMBOK_Interactive_Tutor.html" class="file-link">
+                    <span class="file-icon">👨‍🏫</span>
+                    <div class="file-info">
+                        <span class="file-name">PMBOK 導師主頁</span>
+                        <span class="file-path">04PMBOK_Interactive_Tutor/PMBOK_Interactive_Tutor.html</span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sub-module">
+            <div class="sub-module-header">📂 專案整合管理 (Integration Management)</div>
+            <ul class="file-list">
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/01Project_Integration_Management_Study_Guide/Project_Integration_Management_Study_Guide.html" class="file-link">
+                        <span class="file-icon">🧩</span>
+                        <div class="file-info">
+                            <span class="file-name">整合管理主頁</span>
+                            <span class="file-path">.../Project_Integration_Management_Study_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/01Project_Integration_Management_Study_Guide/01Project_Charter_Interactive_Guide.html" class="file-link">
+                        <span class="file-icon">📜</span>
+                        <div class="file-info">
+                            <span class="file-name">專案章程 (Project Charter)</span>
+                            <span class="file-path">.../01Project_Charter_Interactive_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/01Project_Integration_Management_Study_Guide/02Project_Management_Plan_Study_Tool.html" class="file-link">
+                        <span class="file-icon">📑</span>
+                        <div class="file-info">
+                            <span class="file-name">專案管理計畫書</span>
+                            <span class="file-path">.../02Project_Management_Plan_Study_Tool.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/01Project_Integration_Management_Study_Guide/03Project_Execution_Interactive_Guide.html" class="file-link">
+                        <span class="file-icon">🔨</span>
+                        <div class="file-info">
+                            <span class="file-name">指導與管理專案工作</span>
+                            <span class="file-path">.../03Project_Execution_Interactive_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/01Project_Integration_Management_Study_Guide/04Integrated_Change_Control_Study_Tool.html" class="file-link">
+                        <span class="file-icon">🔀</span>
+                        <div class="file-info">
+                            <span class="file-name">整合變更控制</span>
+                            <span class="file-path">.../04Integrated_Change_Control_Study_Tool.html</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // 簡單的搜尋功能
+    document.getElementById('searchInput').addEventListener('keyup', function(e) {
+        const searchText = e.target.value.toLowerCase();
+        const modules = document.querySelectorAll('.module-section');
+        
+        modules.forEach(module => {
+            const links = module.querySelectorAll('li');
+            let hasVisibleLinks = false;
+
+            links.forEach(link => {
+                const text = link.innerText.toLowerCase();
+                if(text.includes(searchText)) {
+                    link.style.display = 'block';
+                    hasVisibleLinks = true;
+                } else {
+                    link.style.display = 'none';
+                }
+            });
+
+            // 如果該區塊內沒有符合的連結，則隱藏整個區塊（除非是標題本身符合搜尋？）
+            // 這裡簡單處理：只要該模組內有連結符合，就顯示模組
+            if(hasVisibleLinks) {
+                module.style.display = 'block';
+            } else {
+                module.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

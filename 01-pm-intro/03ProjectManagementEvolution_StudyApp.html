@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理演進：廚房裡的進化史</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #FDFBF7; /* Warm neutral background */
+            color: #4A4A4A;
+        }
+
+        /* Custom Chart Container Styles - Mandatory */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Utility for transitions */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .active-stage {
+            background-color: #E67E22; /* Carrot Orange */
+            color: white;
+            border-color: #E67E22;
+        }
+
+        .inactive-stage {
+            background-color: white;
+            color: #7F8C8D;
+            border-color: #BDC3C7;
+        }
+        
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+    <!-- Chosen Palette: Warm Culinary (Cream background, Charcoal text, Carrot Orange accents, Sage Green success states) - Minimalistic and harmonious. -->
+    <!-- Application Structure Plan: 
+         1. Hero Section: Sets the "Cooking" metaphor context.
+         2. Timeline Kitchen (Historical Evolution): Interactive timeline. Clicking a stage reveals details (Context, Keywords, Products) and updates a Chart.js visualization showing the shift in focus (Hard Skills vs. Soft Skills).
+         3. The Recipe Book (PMBOK Evolution): A comparative view (Old vs. New) using interactive cards to explain the paradigm shifts (e.g., Output vs. Outcome).
+         4. Pantry of Terms: A filterable definition list for quick revision of acronyms.
+         5. The Taste Test (Quiz): Interactive simulation of the exam questions provided in the source notes.
+         Reasoning: This structure breaks the dense text into digestible, interactive chunks, allowing the user to explore the "story" of PM chronologically first, then conceptually, and finally testing their knowledge. 
+    -->
+    <!-- Visualization & Content Choices:
+         1. Interactive Timeline: HTML/JS. Goal: Organize history. Justification: Linear progression is best understood spatially.
+         2. "Evolution of Focus" Chart: Chart.js Line Chart. Goal: Inform/Change. Visualizes the qualitative shift from "Math/Scheduling" to "Value/Principles" described in the text.
+         3. Comparison Cards: HTML Grid. Goal: Compare. Side-by-side comparison of PMBOK versions clarifies the "Before/After" concepts.
+         4. Quiz Module: HTML/JS Forms. Goal: Engagement/Testing. Active recall is essential for exam prep.
+         Library: Chart.js for the trend visualization. Tailwind for layout.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Header / Hero -->
+    <header class="bg-white border-b border-gray-200 py-6 px-4 md:px-8">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0 text-center md:text-left">
+                <h1 class="text-3xl font-bold text-gray-800 tracking-tight">專案管理演進：考試速成廚房 🍳</h1>
+                <p class="text-gray-500 mt-2 text-sm">將枯燥的歷史轉化為美味的烹飪故事</p>
+            </div>
+            <div class="text-sm bg-orange-50 text-orange-800 px-4 py-2 rounded-full border border-orange-100">
+                考試重點：配對題 & 演變趨勢
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-6xl mx-auto px-4 py-8 space-y-12">
+
+        <!-- SECTION 1: HISTORICAL TIMELINE -->
+        <section id="history-section">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-orange-500 pl-3">第一部分：歷史分期的「烹飪演進史」</h2>
+                <p class="mt-2 text-gray-600">
+                    本區塊將四個歷史時期比喻為烹飪藝術的發展。點擊下方的時間軸按鈕，查看每個時期的關鍵考點、情境背景以及該時期的管理重心。觀察下方的圖表，了解管理焦點如何隨時間轉移。
+                </p>
+            </div>
+
+            <!-- Interactive Timeline Controls -->
+            <div class="flex flex-col md:flex-row justify-between gap-2 mb-8" id="timeline-controls">
+                <!-- Buttons injected by JS -->
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Content Display -->
+                <div id="stage-content" class="bg-white p-6 rounded-xl card-shadow border border-gray-100 fade-in h-full flex flex-col justify-between">
+                    <!-- Content injected by JS -->
+                </div>
+
+                <!-- Visualization: Focus Shift -->
+                <div class="bg-white p-6 rounded-xl card-shadow border border-gray-100 flex flex-col justify-center items-center">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4 w-full text-center">管理焦點趨勢圖</h3>
+                    <div class="chart-container">
+                        <canvas id="evolutionChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-gray-400 mt-2">示意圖：展示硬技術（數學/工具）與軟實力（人/價值）的權重變化</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: PMBOK EVOLUTION -->
+        <section id="evolution-section" class="bg-stone-50 p-6 rounded-2xl border border-stone-200">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-orange-500 pl-3">第二部分：版本更新日誌 (Old vs New)</h2>
+                <p class="mt-2 text-gray-600">
+                    考試常考「以前是什麼，現在變什麼」。此區塊整理了 PMBOK 指南的關鍵變革。重點在於從「剛性流程」轉向「彈性價值」。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1: Knowledge Areas -->
+                <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-100 transition hover:shadow-md">
+                    <div class="text-2xl mb-2">🧠 知識領域</div>
+                    <div class="flex justify-between items-center text-sm text-gray-400 mb-2 font-mono">
+                        <span>舊版 (9大)</span>
+                        <span>→</span>
+                        <span>新版 (10大)</span>
+                    </div>
+                    <h4 class="font-bold text-gray-800 mb-2">誰被獨立出來？</h4>
+                    <p class="text-gray-600 text-sm">
+                        <span class="font-bold text-orange-600">利害關係人 (Stakeholders)</span>。
+                        <br><br>
+                        <span class="text-xs bg-gray-100 p-1 rounded">記憶點</span> 因為單純的溝通管理已不足以應對人的複雜性。
+                    </p>
+                </div>
+
+                <!-- Card 2: Resource Management -->
+                <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-100 transition hover:shadow-md">
+                    <div class="text-2xl mb-2">🧱 資源管理</div>
+                    <div class="flex justify-between items-center text-sm text-gray-400 mb-2 font-mono">
+                        <span>人力資源</span>
+                        <span>→</span>
+                        <span>資源管理</span>
+                    </div>
+                    <h4 class="font-bold text-gray-800 mb-2">管什麼？</h4>
+                    <p class="text-gray-600 text-sm">
+                        從只管「人」擴展到<span class="font-bold text-orange-600">實體資源</span>（設備、材料、基礎設施）。
+                        <br><br>
+                        <span class="text-xs bg-gray-100 p-1 rounded">記憶點</span> 廚師不只要管助手，還要管烤箱和麵粉。
+                    </p>
+                </div>
+
+                <!-- Card 3: Success Definition -->
+                <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-100 transition hover:shadow-md">
+                    <div class="text-2xl mb-2">🏆 成功定義</div>
+                    <div class="flex justify-between items-center text-sm text-gray-400 mb-2 font-mono">
+                        <span>產出 (Outputs)</span>
+                        <span>→</span>
+                        <span>成果/價值 (Outcomes)</span>
+                    </div>
+                    <h4 class="font-bold text-gray-800 mb-2">重點在哪？</h4>
+                    <p class="text-gray-600 text-sm">
+                        做完事情 (Output) 不重要，對客戶產生<span class="font-bold text-orange-600">價值 (Outcome)</span> 才重要。
+                        <br><br>
+                        <span class="text-xs bg-gray-100 p-1 rounded">記憶點</span> 菜做好了(Output)沒用，客人覺得好吃(Outcome)才算數。
+                    </p>
+                </div>
+
+                <!-- Card 4: Structure -->
+                <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-100 transition hover:shadow-md md:col-span-3">
+                    <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
+                        <div class="text-3xl">📐</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-gray-800">PMBOK 第 7 版大變革：從流程到原則</h4>
+                            <p class="text-gray-600 text-sm mt-1">
+                                舊架構是「5大流程群組、49個過程」，像死板的食譜。<br>
+                                新架構是 <span class="font-bold text-orange-600">「12 項原則、8 項績效領域」</span>，強調根據情況進行 <span class="font-bold text-orange-600">「裁適 (Tailoring)」</span>，就像米其林大師靈活運用技法。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: VOCABULARY PANTRY -->
+        <section id="terms-section">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-orange-500 pl-3">第三部分：專用術語儲藏室</h2>
+                <p class="mt-2 text-gray-600">
+                    這些詞彙是考試的關鍵字，看到它們要能反射出正確的含義。
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="pantry-grid">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- SECTION 4: EXAM SIMULATION -->
+        <section id="quiz-section" class="mb-12">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-orange-500 pl-3">第四部分：模擬考題 (Taste Test)</h2>
+                <p class="mt-2 text-gray-600">
+                    自我測試時間。點擊選項即可立即查看解析。請嘗試遮住答案回答。
+                </p>
+            </div>
+
+            <div class="space-y-6" id="quiz-container">
+                <!-- Quiz Injected via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-300 py-8 text-center mt-auto">
+        <p class="text-sm">專案管理概論學習工具</p>
+        <p class="text-xs text-gray-500 mt-2">Based on Provided NotebookLM Analysis</p>
+    </footer>
+
+    <script>
+        // --- DATA STORAGE ---
+
+        // 1. History Stages Data
+        const historyData = [
+            {
+                id: 'stage1',
+                period: '1950~1960',
+                name: '萌芽期',
+                metaphor: '發明量具與食譜',
+                icon: '📏',
+                context: '冷戰、軍備競賽、太空競賽 (NASA, DoD)',
+                focus: '「一般管理」無法滿足複雜需求，發展出「系統管理」。',
+                keywords: ['CPM (關鍵路徑法)', 'PERT (計畫評核術)', '國防航太'],
+                chartData: { math: 90, process: 40, people: 10, value: 10 } // Estimated qualitative values
+            },
+            {
+                id: 'stage2',
+                period: '1960~1985',
+                name: '成長期',
+                metaphor: '成立廚師協會',
+                icon: '🤝',
+                context: '科技發展，商業競爭激烈，需要推廣。',
+                focus: '專案管理開始受到產業重視，PMI 成立。',
+                keywords: ['PMI (1969年成立)', 'PMBOK首版 (1984)', '商業競爭'],
+                chartData: { math: 70, process: 80, people: 30, value: 20 }
+            },
+            {
+                id: 'stage3',
+                period: '1985~2000',
+                name: '成熟期',
+                metaphor: '連鎖店 SOP',
+                icon: '🍔',
+                context: '歐美企業認知到這是「必要手段」(Must have)。',
+                focus: '標準化、軟體工具大量發展。',
+                keywords: ['PRINCE2', 'ISO 10006', '軟體工具', '標準化'],
+                chartData: { math: 50, process: 95, people: 50, value: 40 }
+            },
+            {
+                id: 'stage4',
+                period: '2001~現在',
+                name: '全球推動期',
+                metaphor: '米其林大師',
+                icon: '🌍',
+                context: '知識經濟、WTO、無國界。',
+                focus: '強調價值交付、裁適、原則導向。',
+                keywords: ['裁適 (Tailoring)', '價值交付', '世界語言', '第7版變革'],
+                chartData: { math: 30, process: 60, people: 90, value: 100 }
+            }
+        ];
+
+        // 2. Terminology Data
+        const termsData = [
+            { term: 'CPM / PERT', desc: '最早期的排程技術，用數學算時間的。源於軍事需求。', tag: '工具' },
+            { term: 'PMBOK', desc: '專案管理知識體系指南，考試的標準依據。1984首版。', tag: '標準' },
+            { term: 'PMIS', desc: '專案管理資訊系統。現代用軟體算數據，取代手算。', tag: '工具' },
+            { term: '裁適 (Tailoring)', desc: '第7版核心精神。不只要照食譜(流程)，更要看情況調整。', tag: '觀念' }
+        ];
+
+        // 3. Quiz Data
+        const quizQuestions = [
+            {
+                q: "根據專案管理發展史，關鍵路徑法 (CPM) 與計畫評核術 (PERT) 主要是在哪個時期為了滿足國防與軍事需求而發展出來的？",
+                options: ["全球推動期", "成熟期", "萌芽期", "成長期"],
+                correct: 2, // Index of correct answer
+                hint: "關鍵字：軍事、冷戰、數學工具 = 最早期"
+            },
+            {
+                q: "關於 PMBOK 指南演進的敘述，下列何者正確？",
+                options: [
+                    "第6版將「資源管理」縮減為僅管理「人力資源」",
+                    "第5版以後將「利害關係人管理」獨立出來，變成10大知識領域",
+                    "專案管理一直維持 9 大知識領域不變",
+                    "現代專案管理只重視「產出 (Output)」，不重視「成果 (Outcome)」"
+                ],
+                correct: 1,
+                hint: "人與溝通太重要了，所以被獨立出來。"
+            },
+            {
+                q: "現代專案管理（如 PMBOK 第7版）的思維發生了重大典範轉移，主要特徵為何？",
+                options: [
+                    "從「原則導向」轉回「嚴格的流程控制」",
+                    "強調單一標準做法，不可更改",
+                    "從強調「交付標的 (Outputs)」轉向強調「價值交付 (Outcomes)」與原則",
+                    "廢除所有舊有的工具如 WBS 與 EVM"
+                ],
+                correct: 2,
+                hint: "第7版 = 價值、原則、裁適。舊工具變成基礎手段，未廢除。"
+            }
+        ];
+
+        // --- APP STATE ---
+        let currentStageIndex = 0;
+        let evolutionChartInstance = null;
+
+        // --- DOM ELEMENTS ---
+        const timelineControls = document.getElementById('timeline-controls');
+        const stageContent = document.getElementById('stage-content');
+        const pantryGrid = document.getElementById('pantry-grid');
+        const quizContainer = document.getElementById('quiz-container');
+
+        // --- INITIALIZATION ---
+        function init() {
+            renderTimelineControls();
+            renderStage(0);
+            renderTerms();
+            renderQuiz();
+        }
+
+        // --- RENDER FUNCTIONS ---
+
+        // 1. Timeline Controls
+        function renderTimelineControls() {
+            timelineControls.innerHTML = '';
+            historyData.forEach((stage, index) => {
+                const btn = document.createElement('button');
+                btn.className = `flex-1 py-3 px-2 rounded-lg border-2 font-medium text-sm md:text-base transition-all duration-200 flex flex-col items-center gap-1 ${index === 0 ? 'active-stage' : 'inactive-stage'}`;
+                btn.innerHTML = `<span class="text-xl">${stage.icon}</span><span>${stage.period}</span><span class="text-xs opacity-80">${stage.name}</span>`;
+                btn.onclick = () => handleStageClick(index);
+                timelineControls.appendChild(btn);
+            });
+        }
+
+        // 2. Stage Content & Chart Update
+        function handleStageClick(index) {
+            currentStageIndex = index;
+            
+            // Update Buttons
+            const buttons = timelineControls.children;
+            for (let i = 0; i < buttons.length; i++) {
+                if (i === index) {
+                    buttons[i].className = buttons[i].className.replace('inactive-stage', 'active-stage');
+                } else {
+                    buttons[i].className = buttons[i].className.replace('active-stage', 'inactive-stage');
+                }
+            }
+
+            renderStage(index);
+        }
+
+        function renderStage(index) {
+            const data = historyData[index];
+            
+            // Render Text Content
+            stageContent.innerHTML = `
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-4xl bg-orange-100 p-3 rounded-full">${data.icon}</span>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">${data.name}</h3>
+                            <p class="text-orange-600 font-medium text-lg">${data.metaphor}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 p-3 rounded border-l-4 border-blue-500">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wide">情境背景</span>
+                            <p class="text-gray-700 mt-1">${data.context}</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-3 rounded border-l-4 border-green-500">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wide">關鍵特徵</span>
+                            <p class="text-gray-700 mt-1">${data.focus}</p>
+                        </div>
+
+                        <div>
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wide">考題關鍵字訊號</span>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                ${data.keywords.map(k => `<span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-sm rounded font-medium">${k}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Update Chart
+            updateChart(index);
+        }
+
+        // 3. Chart Logic
+        function updateChart(index) {
+            const ctx = document.getElementById('evolutionChart').getContext('2d');
+            const data = historyData[index].chartData;
+
+            const chartConfig = {
+                type: 'radar',
+                data: {
+                    labels: ['數學運算 (Math)', '標準流程 (Process)', '以人為本 (People)', '價值交付 (Value)'],
+                    datasets: [{
+                        label: '管理重心權重',
+                        data: [data.math, data.process, data.people, data.value],
+                        backgroundColor: 'rgba(230, 126, 34, 0.2)',
+                        borderColor: 'rgba(230, 126, 34, 1)',
+                        pointBackgroundColor: 'rgba(230, 126, 34, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#eee' },
+                            grid: { color: '#eee' },
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { display: false } // Hide numbers for cleaner look
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            if (evolutionChartInstance) {
+                evolutionChartInstance.destroy();
+            }
+            evolutionChartInstance = new Chart(ctx, chartConfig);
+        }
+
+        // 4. Terminology
+        function renderTerms() {
+            pantryGrid.innerHTML = termsData.map(item => `
+                <div class="bg-white p-4 rounded-lg border border-gray-200 hover:border-orange-300 transition-colors">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-bold text-gray-800">${item.term}</h4>
+                        <span class="text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">${item.tag}</span>
+                    </div>
+                    <p class="text-sm text-gray-600">${item.desc}</p>
+                </div>
+            `).join('');
+        }
+
+        // 5. Quiz Logic
+        function renderQuiz() {
+            quizContainer.innerHTML = quizQuestions.map((q, qIndex) => `
+                <div class="bg-white p-6 rounded-xl card-shadow border border-gray-100">
+                    <div class="flex gap-3 mb-4">
+                        <span class="bg-orange-100 text-orange-800 font-bold px-2 py-1 rounded h-fit">Q${qIndex + 1}</span>
+                        <h4 class="font-medium text-gray-800 text-lg">${q.q}</h4>
+                    </div>
+                    <div class="space-y-2 ml-0 md:ml-10">
+                        ${q.options.map((opt, oIndex) => `
+                            <button onclick="checkAnswer(${qIndex}, ${oIndex}, this)" 
+                                class="w-full text-left p-3 rounded border border-gray-200 hover:bg-gray-50 transition-colors flex items-center group quiz-btn-${qIndex}">
+                                <div class="w-5 h-5 rounded-full border border-gray-300 mr-3 flex items-center justify-center group-hover:border-gray-400">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-transparent transition-colors"></div>
+                                </div>
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="feedback-${qIndex}" class="hidden mt-4 ml-0 md:ml-10 p-4 rounded bg-blue-50 text-blue-800 text-sm"></div>
+                </div>
+            `).join('');
+        }
+
+        function checkAnswer(qIndex, selectedOptionIndex, btnElement) {
+            const question = quizQuestions[qIndex];
+            const feedbackEl = document.getElementById(`feedback-${qIndex}`);
+            const allBtns = document.querySelectorAll(`.quiz-btn-${qIndex}`);
+
+            // Reset styles
+            allBtns.forEach(btn => {
+                btn.classList.remove('bg-green-100', 'border-green-500', 'bg-red-100', 'border-red-500');
+                btn.querySelector('div div').classList.remove('bg-gray-600'); 
+                btn.disabled = true; // Disable after choice
+            });
+
+            if (selectedOptionIndex === question.correct) {
+                // Correct
+                btnElement.classList.add('bg-green-100', 'border-green-500');
+                feedbackEl.innerHTML = `<strong class="text-green-700">🎉 正確！</strong><br>${question.hint}`;
+                feedbackEl.classList.remove('hidden', 'bg-red-50', 'text-red-800');
+                feedbackEl.classList.add('bg-green-50', 'text-green-800');
+            } else {
+                // Incorrect
+                btnElement.classList.add('bg-red-100', 'border-red-500');
+                
+                // Highlight correct one
+                allBtns[question.correct].classList.add('bg-green-50', 'border-green-300');
+                
+                feedbackEl.innerHTML = `<strong class="text-red-700">❌ 錯誤</strong><br>正確答案是：${question.options[question.correct]}<br><br>💡 解析：${question.hint}`;
+                feedbackEl.classList.remove('hidden', 'bg-green-50', 'text-green-800');
+                feedbackEl.classList.add('bg-red-50', 'text-red-800');
+            }
+        }
+
+        // Start App
+        init();
+
+    </script>
+</body>
+</html>
