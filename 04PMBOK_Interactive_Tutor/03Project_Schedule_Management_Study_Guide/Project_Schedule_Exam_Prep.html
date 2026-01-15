@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案時程管理 - 備考衝刺大師</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        .tab-active { border-bottom: 3px solid #2563EB; color: #2563EB; font-weight: bold; }
+        .card-flip { perspective: 1000px; }
+        .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-active .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 0.5rem; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .card-front { background-color: #ffffff; color: #1f2937; }
+        .card-back { background-color: #EFF6FF; color: #1e40af; transform: rotateY(180deg); border: 2px solid #BFDBFE; }
+        .hidden-section { display: none; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Accordion styles */
+        .accordion-content { transition: max-height 0.3s ease-out, padding 0.3s ease; max-height: 0; overflow: hidden; }
+        .accordion-open .accordion-content { max-height: 200px; }
+        .accordion-icon { transition: transform 0.3s ease; }
+        .accordion-open .accordion-icon { transform: rotate(180deg); }
+    </style>
+</head>
+<body class="bg-slate-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-stopwatch text-yellow-400 text-2xl"></i>
+                <h1 class="text-xl font-bold tracking-wider">PM 時程管理備考神器</h1>
+            </div>
+            <div class="hidden md:block text-sm text-blue-200">全方位完整版</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-5xl mx-auto w-full p-4 md:p-6">
+        
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-200 mb-6 overflow-x-auto">
+            <button onclick="switchTab('concept')" id="tab-concept" class="tab-active flex-1 py-3 px-4 text-center hover:bg-gray-50 transition">
+                <i class="fas fa-book-open mr-2"></i>觀念懶人包
+            </button>
+            <button onclick="switchTab('calc')" id="tab-calc" class="flex-1 py-3 px-4 text-center hover:bg-gray-50 transition text-gray-500">
+                <i class="fas fa-calculator mr-2"></i>必考計算 (PERT/EVM)
+            </button>
+            <button onclick="switchTab('path')" id="tab-path" class="flex-1 py-3 px-4 text-center hover:bg-gray-50 transition text-gray-500">
+                <i class="fas fa-project-diagram mr-2"></i>關鍵路徑 & 壓縮
+            </button>
+            <button onclick="switchTab('quiz')" id="tab-quiz" class="flex-1 py-3 px-4 text-center hover:bg-gray-50 transition text-gray-500">
+                <i class="fas fa-edit mr-2"></i>模擬測驗
+            </button>
+        </div>
+
+        <!-- Section 1: Core Concepts (Flashcards) -->
+        <div id="section-concept" class="fade-in">
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded shadow-sm">
+                <p class="font-bold text-blue-800"><i class="fas fa-info-circle mr-2"></i>學習提示</p>
+                <p class="text-sm text-blue-700 mt-1">上方卡片是核心邏輯，下方「重點補給站」補充了考試會考的理論細節。</p>
+            </div>
+
+            <!-- Flashcards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Card 1 -->
+                <div class="h-64 cursor-pointer card-flip" onclick="this.classList.toggle('flip-active')">
+                    <div class="card-inner">
+                        <div class="card-front border border-gray-200">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 text-blue-600 text-2xl">
+                                <i class="fas fa-list-ol"></i>
+                            </div>
+                            <h3 class="text-lg font-bold">1. 定義與排序活動</h3>
+                            <p class="text-gray-500 text-sm mt-2">點擊翻看重點</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="font-bold text-lg mb-2">分解與邏輯</h3>
+                            <ul class="text-left text-sm space-y-2 px-4 list-disc">
+                                <li>從 WBS 工作包拆解成「活動」。</li>
+                                <li>重點工具：PDM (優先順序圖法)。</li>
+                                <li>FS (完成-開始) 關係最常見。</li>
+                                <li>產出：網狀圖 (Network Diagram)。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="h-64 cursor-pointer card-flip" onclick="this.classList.toggle('flip-active')">
+                    <div class="card-inner">
+                        <div class="card-front border border-gray-200">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 text-green-600 text-2xl">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                            <h3 class="text-lg font-bold">2. 估計活動工期</h3>
+                            <p class="text-gray-500 text-sm mt-2">點擊翻看重點</p>
+                        </div>
+                        <div class="card-back bg-green-50 border-green-200 text-green-800">
+                            <h3 class="font-bold text-lg mb-2">怎麼猜時間？</h3>
+                            <ul class="text-left text-sm space-y-2 px-4 list-disc">
+                                <li>類比估計：參考以前 (快但不準)。</li>
+                                <li>參數估計：用統計模型 (1坪1hr)。</li>
+                                <li><strong>三點估計 (PERT)</strong>：考量風險。</li>
+                                <li><strong>儲備分析</strong>：預留緩衝時間。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="h-64 cursor-pointer card-flip" onclick="this.classList.toggle('flip-active')">
+                    <div class="card-inner">
+                        <div class="card-front border border-gray-200">
+                            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4 text-purple-600 text-2xl">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <h3 class="text-lg font-bold">3. 發展與管制時程</h3>
+                            <p class="text-gray-500 text-sm mt-2">點擊翻看重點</p>
+                        </div>
+                        <div class="card-back bg-purple-50 border-purple-200 text-purple-800">
+                            <h3 class="font-bold text-lg mb-2">產出基準</h3>
+                            <ul class="text-left text-sm space-y-2 px-4 list-disc">
+                                <li>CPM：決定最短完工期。</li>
+                                <li>資源優化：平衡 vs 撫平。</li>
+                                <li>管制工具：SPI、燃盡圖。</li>
+                                <li>落後時：趕工 (錢) 或 快速跟進 (險)。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Glossary (Accordion) -->
+            <div class="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+                <div class="bg-gray-100 p-4 font-bold border-b border-gray-200 flex justify-between items-center">
+                    <span><i class="fas fa-book-reader mr-2 text-blue-600"></i>重點補給站 (細節名詞解釋)</span>
+                </div>
+                
+                <!-- Item 1 -->
+                <div class="border-b border-gray-100">
+                    <button class="w-full text-left p-4 focus:outline-none hover:bg-gray-50 flex justify-between items-center" onclick="toggleAccordion(this)">
+                        <span class="font-medium text-gray-700">1. 規劃時程管理 (Plan Schedule Management)</span>
+                        <i class="fas fa-chevron-down accordion-icon text-gray-400"></i>
+                    </button>
+                    <div class="accordion-content bg-gray-50 px-4 text-sm text-gray-600">
+                        <div class="pb-4">
+                            這是整個流程的「第一步」。在做任何動作前，先定義遊戲規則：我們要用什麼軟體？精確度要到「小時」還是「天」？誰有權力改時間？產出是「時程管理計畫書」。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="border-b border-gray-100">
+                    <button class="w-full text-left p-4 focus:outline-none hover:bg-gray-50 flex justify-between items-center" onclick="toggleAccordion(this)">
+                        <span class="font-medium text-gray-700">2. 儲備分析：應變 vs 管理 (Reserves)</span>
+                        <i class="fas fa-chevron-down accordion-icon text-gray-400"></i>
+                    </button>
+                    <div class="accordion-content bg-gray-50 px-4 text-sm text-gray-600">
+                        <div class="pb-4">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>應變儲備 (Contingency Reserve)：</strong>針對「已知的不確定性」(Known-Unknowns)。例如：雨季可能會下雨，所以多抓2天。包含在時程基準(Baseline)內。</li>
+                                <li><strong>管理儲備 (Management Reserve)：</strong>針對「未知的不確定性」(Unknown-Unknowns)。例如：突發天災。這筆時間由高層控管，不包含在基準內。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="border-b border-gray-100">
+                    <button class="w-full text-left p-4 focus:outline-none hover:bg-gray-50 flex justify-between items-center" onclick="toggleAccordion(this)">
+                        <span class="font-medium text-gray-700">3. 資源優化：平衡 vs 撫平 (Leveling vs Smoothing)</span>
+                        <i class="fas fa-chevron-down accordion-icon text-gray-400"></i>
+                    </button>
+                    <div class="accordion-content bg-gray-50 px-4 text-sm text-gray-600">
+                        <div class="pb-4">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>資源平衡 (Resource Leveling)：</strong>資源真的不夠用時使用。解決資源過度分配。<strong>缺點：往往會延長關鍵路徑（專案延期）。</strong></li>
+                                <li><strong>資源撫平 (Resource Smoothing)：</strong>在不影響完工日期的前提下調整。利用「浮時」來調整資源。<strong>優點：不會延長專案工期。</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Item 4 -->
+                 <div>
+                    <button class="w-full text-left p-4 focus:outline-none hover:bg-gray-50 flex justify-between items-center" onclick="toggleAccordion(this)">
+                        <span class="font-medium text-gray-700">4. 燃盡圖 (Burn-down Chart)</span>
+                        <i class="fas fa-chevron-down accordion-icon text-gray-400"></i>
+                    </button>
+                    <div class="accordion-content bg-gray-50 px-4 text-sm text-gray-600">
+                        <div class="pb-4">
+                            這是一種視覺化工具，X軸是時間，Y軸是「剩餘工作量」。理想情況下，線條會隨著時間往右下角下降歸零。如果線條變平或上升，代表進度卡關或範疇變更了。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Calculations (PERT & EVM) -->
+        <div id="section-calc" class="hidden-section fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- PERT Calculator -->
+                <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                    <h2 class="text-xl font-bold mb-4 flex items-center text-blue-700">
+                        <i class="fas fa-calculator mr-2"></i>PERT 三點估計計算器
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-4">公式：(悲觀 + 4 × 最可能 + 樂觀) ÷ 6</p>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">樂觀時間 (Optimistic)</label>
+                            <input type="number" id="pert-o" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="例如: 2天">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">最可能時間 (Most Likely)</label>
+                            <input type="number" id="pert-m" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="例如: 5天">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">悲觀時間 (Pessimistic)</label>
+                            <input type="number" id="pert-p" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="例如: 14天">
+                        </div>
+                        <button onclick="calculatePERT()" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition font-bold">計算期望工期</button>
+                    </div>
+
+                    <div id="pert-result" class="mt-4 p-4 bg-gray-50 rounded hidden">
+                        <p class="text-gray-700">期望工期 (Te): <span id="pert-te" class="text-2xl font-bold text-blue-600">0</span> 天</p>
+                        <p class="text-xs text-gray-500 mt-1">標準差 (SD) = (悲觀 - 樂觀) / 6 = <span id="pert-sd">0</span></p>
+                    </div>
+                </div>
+
+                <!-- EVM Calculator -->
+                <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                    <h2 class="text-xl font-bold mb-4 flex items-center text-green-700">
+                        <i class="fas fa-chart-line mr-2"></i>SPI 進度績效計算器
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-4">公式：SPI = EV (實獲值) ÷ PV (預算值)</p>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">實獲值 EV (實際完成工作的價值)</label>
+                            <input type="number" id="evm-ev" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2 focus:ring-green-500 focus:border-green-500" placeholder="例如: $800">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">預算值 PV (計畫應該完成的價值)</label>
+                            <input type="number" id="evm-pv" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2 focus:ring-green-500 focus:border-green-500" placeholder="例如: $1000">
+                        </div>
+                        <button onclick="calculateSPI()" class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition font-bold">計算 SPI 狀態</button>
+                    </div>
+
+                    <div id="evm-result" class="mt-4 p-4 bg-gray-50 rounded hidden">
+                        <p class="text-gray-700">SPI 指標: <span id="evm-spi" class="text-2xl font-bold">0</span></p>
+                        <div id="evm-status" class="mt-2 inline-block px-3 py-1 rounded-full text-sm font-bold"></div>
+                        <p class="text-xs text-gray-500 mt-2">判斷準則：<br>SPI < 1 : 進度落後<br>SPI = 1 : 進度正常<br>SPI > 1 : 進度超前</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Critical Path & Compression -->
+        <div id="section-path" class="hidden-section fade-in">
+            <div class="space-y-8">
+                
+                <!-- CPM Concept -->
+                <div class="bg-white rounded-lg shadow p-6 border border-gray-200">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">什麼是關鍵路徑 (CPM)？</h2>
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="flex-1 text-gray-700 space-y-3">
+                            <p>想像你要出門，有兩組事情要做：</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>路徑 A：</strong> 洗澡 (20分) -> 穿衣 (5分) = <span class="font-bold text-red-600">25分鐘</span></li>
+                                <li><strong>路徑 B：</strong> 刷牙 (3分) -> 整理包包 (10分) = 13分鐘</li>
+                            </ul>
+                            <p class="mt-2 bg-yellow-50 p-3 rounded border-l-4 border-yellow-400">
+                                <strong>結論：</strong> 你最快也要 25 分鐘才能出門。<br>
+                                路徑 A 就是 <span class="text-red-600 font-bold">關鍵路徑</span> (最長的那條)。
+                            </p>
+                            <p class="text-sm text-gray-500">特性：關鍵路徑上的活動沒有「浮時」(Buffer)，一延誤整個專案就延誤。</p>
+                        </div>
+                        <div class="flex-1 flex justify-center">
+                             <!-- Simple SVG visualization -->
+                             <svg width="300" height="150" viewBox="0 0 300 150" class="border rounded bg-gray-50">
+                                <!-- Nodes -->
+                                <circle cx="30" cy="75" r="15" fill="#3B82F6" />
+                                <text x="22" y="80" fill="white" font-size="12">Start</text>
+                                
+                                <!-- Path A (Critical) -->
+                                <line x1="45" y1="75" x2="100" y2="40" stroke="#EF4444" stroke-width="3" />
+                                <rect x="90" y="20" width="60" height="40" rx="5" fill="white" stroke="#EF4444" stroke-width="2"/>
+                                <text x="100" y="45" font-size="10">洗澡 (20)</text>
+                                
+                                <line x1="150" y1="40" x2="210" y2="40" stroke="#EF4444" stroke-width="3" />
+                                <rect x="200" y="20" width="60" height="40" rx="5" fill="white" stroke="#EF4444" stroke-width="2"/>
+                                <text x="210" y="45" font-size="10">穿衣 (5)</text>
+                                
+                                <line x1="260" y1="40" x2="280" y2="75" stroke="#EF4444" stroke-width="3" />
+
+                                <!-- Path B -->
+                                <line x1="45" y1="75" x2="100" y2="110" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="4" />
+                                <rect x="90" y="90" width="60" height="40" rx="5" fill="white" stroke="#9CA3AF" stroke-width="2"/>
+                                <text x="100" y="115" font-size="10">刷牙 (3)</text>
+
+                                <line x1="150" y1="110" x2="210" y2="110" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="4" />
+                                <rect x="200" y="90" width="60" height="40" rx="5" fill="white" stroke="#9CA3AF" stroke-width="2"/>
+                                <text x="210" y="115" font-size="10">包包 (10)</text>
+
+                                <line x1="260" y1="110" x2="280" y2="75" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="4" />
+
+                                <!-- End -->
+                                <circle cx="280" cy="75" r="15" fill="#3B82F6" />
+                                <text x="270" y="80" fill="white" font-size="10">End</text>
+                             </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compression Techniques -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-red-50 p-6 rounded-lg border border-red-200">
+                        <h3 class="text-xl font-bold text-red-800 mb-2"><i class="fas fa-money-bill-wave mr-2"></i>趕工 (Crashing)</h3>
+                        <p class="text-sm text-gray-700 mb-3"><strong>方法：</strong>投入更多資源（加班、加人）。</p>
+                        <p class="text-sm text-gray-700 mb-3"><strong>代價：</strong><span class="font-bold text-red-600">成本增加</span>。</p>
+                        <p class="text-xs text-gray-500">口訣：用錢買時間。</p>
+                    </div>
+                    <div class="bg-orange-50 p-6 rounded-lg border border-orange-200">
+                        <h3 class="text-xl font-bold text-orange-800 mb-2"><i class="fas fa-forward mr-2"></i>快速跟進 (Fast Tracking)</h3>
+                        <p class="text-sm text-gray-700 mb-3"><strong>方法：</strong>本來要依序做的事，改成同時並行。</p>
+                        <p class="text-sm text-gray-700 mb-3"><strong>代價：</strong><span class="font-bold text-orange-600">風險增加</span> (可能要重做)。</p>
+                        <p class="text-xs text-gray-500">口訣：冒險偷時間。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Quiz -->
+        <div id="section-quiz" class="hidden-section fade-in">
+            <div class="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
+                <div class="mb-6 flex justify-between items-center">
+                    <h2 class="text-xl font-bold">新手挑戰題</h2>
+                    <span id="score-display" class="text-blue-600 font-bold hidden">得分: 0/3</span>
+                </div>
+
+                <!-- Question 1 -->
+                <div class="quiz-question mb-6" data-answer="B">
+                    <p class="font-bold mb-3">1. 專案經理發現進度落後 (SPI < 1)，決定批准加班費請大家週末趕工。請問他使用了哪種時程壓縮技術？</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, 'A')" class="w-full text-left p-3 rounded border hover:bg-gray-50">A. 快速跟進 (Fast Tracking)</button>
+                        <button onclick="checkAnswer(this, 'B')" class="w-full text-left p-3 rounded border hover:bg-gray-50">B. 趕工 (Crashing)</button>
+                        <button onclick="checkAnswer(this, 'C')" class="w-full text-left p-3 rounded border hover:bg-gray-50">C. 資源平滑 (Resource Smoothing)</button>
+                    </div>
+                    <div class="feedback hidden mt-2 text-sm p-2 rounded"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="quiz-question mb-6" data-answer="A">
+                    <p class="font-bold mb-3">2. 關於「關鍵路徑」的描述，下列何者正確？</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, 'A')" class="w-full text-left p-3 rounded border hover:bg-gray-50">A. 它是決定專案最短完工時間的最長路徑</button>
+                        <button onclick="checkAnswer(this, 'B')" class="w-full text-left p-3 rounded border hover:bg-gray-50">B. 關鍵路徑上的活動浮時通常很大</button>
+                        <button onclick="checkAnswer(this, 'C')" class="w-full text-left p-3 rounded border hover:bg-gray-50">C. 一個專案只能有一條關鍵路徑</button>
+                    </div>
+                    <div class="feedback hidden mt-2 text-sm p-2 rounded"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="quiz-question" data-answer="C">
+                    <p class="font-bold mb-3">3. 如果活動 A 的樂觀時間是 2 天，最可能時間 5 天，悲觀時間 14 天。請問 PERT 估算的工期是多少？</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, 'A')" class="w-full text-left p-3 rounded border hover:bg-gray-50">A. 5 天</button>
+                        <button onclick="checkAnswer(this, 'B')" class="w-full text-left p-3 rounded border hover:bg-gray-50">B. 7 天</button>
+                        <button onclick="checkAnswer(this, 'C')" class="w-full text-left p-3 rounded border hover:bg-gray-50">C. 6 天</button>
+                    </div>
+                    <div class="feedback hidden mt-2 text-sm p-2 rounded"></div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <button onclick="resetQuiz()" class="text-blue-600 underline text-sm hover:text-blue-800">重置測驗</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 p-4 text-center text-sm mt-auto">
+        <p>© 2025 專案管理學習小幫手 | 基於 NotebookLM 分析資料製作</p>
+    </footer>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('[id^="section-"]').forEach(el => el.classList.add('hidden-section'));
+            // Remove active class from all tabs
+            document.querySelectorAll('[id^="tab-"]').forEach(el => {
+                el.classList.remove('tab-active', 'text-blue-600', 'font-bold');
+                el.classList.add('text-gray-500');
+            });
+
+            // Show selected section
+            document.getElementById(`section-${tabId}`).classList.remove('hidden-section');
+            // Add active class to selected tab
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            activeTab.classList.add('tab-active');
+            activeTab.classList.remove('text-gray-500');
+        }
+
+        // Accordion Logic
+        function toggleAccordion(button) {
+            const container = button.parentElement;
+            container.classList.toggle('accordion-open');
+        }
+
+        // PERT Calculator
+        function calculatePERT() {
+            const o = parseFloat(document.getElementById('pert-o').value);
+            const m = parseFloat(document.getElementById('pert-m').value);
+            const p = parseFloat(document.getElementById('pert-p').value);
+
+            if (isNaN(o) || isNaN(m) || isNaN(p)) {
+                alert("請輸入完整的數字！");
+                return;
+            }
+
+            const te = (o + 4 * m + p) / 6;
+            const sd = (p - o) / 6;
+
+            document.getElementById('pert-te').innerText = te.toFixed(2);
+            document.getElementById('pert-sd').innerText = sd.toFixed(2);
+            document.getElementById('pert-result').classList.remove('hidden');
+        }
+
+        // EVM Calculator
+        function calculateSPI() {
+            const ev = parseFloat(document.getElementById('evm-ev').value);
+            const pv = parseFloat(document.getElementById('evm-pv').value);
+
+            if (isNaN(ev) || isNaN(pv) || pv === 0) {
+                alert("請輸入有效的數字 (PV 不能為 0)");
+                return;
+            }
+
+            const spi = ev / pv;
+            const spiElem = document.getElementById('evm-spi');
+            const statusElem = document.getElementById('evm-status');
+
+            spiElem.innerText = spi.toFixed(2);
+            
+            if (spi < 1) {
+                spiElem.className = "text-2xl font-bold text-red-600";
+                statusElem.innerText = "⚠️ 進度落後 (Behind Schedule)";
+                statusElem.className = "mt-2 inline-block px-3 py-1 rounded-full text-sm font-bold bg-red-100 text-red-700";
+            } else if (spi > 1) {
+                spiElem.className = "text-2xl font-bold text-green-600";
+                statusElem.innerText = "🚀 進度超前 (Ahead of Schedule)";
+                statusElem.className = "mt-2 inline-block px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700";
+            } else {
+                spiElem.className = "text-2xl font-bold text-gray-600";
+                statusElem.innerText = "✅ 進度正常 (On Schedule)";
+                statusElem.className = "mt-2 inline-block px-3 py-1 rounded-full text-sm font-bold bg-gray-100 text-gray-700";
+            }
+
+            document.getElementById('evm-result').classList.remove('hidden');
+        }
+
+        // Quiz Logic
+        function checkAnswer(btn, selection) {
+            const parent = btn.parentElement.parentElement;
+            const correctAnswer = parent.getAttribute('data-answer');
+            const feedback = parent.querySelector('.feedback');
+            const allBtns = parent.querySelectorAll('button');
+
+            // Disable all buttons in this question
+            allBtns.forEach(b => b.disabled = true);
+
+            feedback.classList.remove('hidden');
+
+            if (selection === correctAnswer) {
+                btn.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+                feedback.innerHTML = '<i class="fas fa-check-circle text-green-600"></i> 答對了！觀念正確。';
+                feedback.classList.add('bg-green-50', 'text-green-800');
+            } else {
+                btn.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
+                feedback.innerHTML = `<i class="fas fa-times-circle text-red-600"></i> 答錯了。正確答案是 ${correctAnswer}。`;
+                feedback.classList.add('bg-red-50', 'text-red-800');
+                
+                // Highlight correct one
+                allBtns.forEach(b => {
+                    if(b.textContent.startsWith(correctAnswer)) {
+                        b.classList.add('bg-green-50', 'border-green-300');
+                    }
+                });
+            }
+        }
+
+        function resetQuiz() {
+            const questions = document.querySelectorAll('.quiz-question');
+            questions.forEach(q => {
+                q.querySelector('.feedback').classList.add('hidden');
+                q.querySelectorAll('button').forEach(b => {
+                    b.disabled = false;
+                    b.className = "w-full text-left p-3 rounded border hover:bg-gray-50";
+                });
+            });
+        }
+    </script>
+</body>
+</html>

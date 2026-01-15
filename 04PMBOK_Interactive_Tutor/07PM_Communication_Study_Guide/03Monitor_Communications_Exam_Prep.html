@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案溝通管理：監視溝通 - 互動備考指南</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --highlight: #e74c3c;
+            --bg: #f5f7fa;
+            --text: #333;
+        }
+        body {
+            font-family: "Microsoft JhengHei", "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 15px;
+        }
+        h2 {
+            color: var(--accent);
+            margin-top: 30px;
+        }
+        .concept-box {
+            background: #eef7fb;
+            border-left: 5px solid var(--accent);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .key-point {
+            font-weight: bold;
+            color: var(--highlight);
+        }
+        
+        /* Interactive Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 200px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 10px;
+        }
+        .flip-card-front {
+            background-color: var(--primary);
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .flip-card-back {
+            background-color: white;
+            color: var(--text);
+            transform: rotateY(180deg);
+            border: 2px solid var(--primary);
+            flex-direction: column;
+        }
+
+        /* Simulator Styles */
+        .simulator {
+            border: 2px solid #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            background: #fff;
+        }
+        .scenario-text {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: var(--accent);
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .feedback.wrong {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        .progress-fill {
+            height: 10px;
+            background-color: var(--accent);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🚀 專案溝通管理：新手備考導航</h1>
+    <p>你好！雖然你對專案管理還不熟悉，但請想像你正在駕駛一架飛機。我們不僅要「廣播」訊息給乘客（這是管理溝通），更重要的是要看儀表板，確認大家都聽懂了，且沒有因為誤解而產生恐慌。這就是今天要學的「監視溝通」。</p>
+
+    <h2>1. 核心觀念：這到底是在做什麼？</h2>
+    <div class="concept-box">
+        <p><strong>定義：</strong>監視溝通是專案中的「反饋迴圈 (Feedback Loop)」。</p>
+        <p><strong>關鍵差異：</strong></p>
+        <ul>
+            <li>📝 <strong>規劃溝通：</strong> 設計路線圖（要跟誰說？說什麼？）。</li>
+            <li>📢 <strong>管理溝通：</strong> 實際開車/廣播（發送訊息、寫報告）。</li>
+            <li>🔍 <strong>監視溝通：</strong> <span class="key-point">看儀表板與確認效果</span>（對方收到了嗎？理解了嗎？這個溝通方式有效嗎？）。</li>
+        </ul>
+    </div>
+
+    <h2>2. 考試重點速記卡 (點擊翻牌)</h2>
+    <p>根據你的筆記，以下是考試最愛考的關鍵概念：</p>
+    
+    <div class="card-grid">
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    核心目標是什麼？
+                </div>
+                <div class="flip-card-back">
+                    <p><strong>確保資訊需求的滿足</strong></p>
+                    <small>不只是把信寄出去，而是確認「正確的人」在「正確的時間」收到「正確的資訊」，並且產生了<span class="key-point">預期的影響力</span>。</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    用什麼工具來監視？
+                </div>
+                <div class="flip-card-back">
+                    <p><strong>1. PMIS (系統平台)</strong></p>
+                    <p><strong>2. 觀察與交談</strong></p>
+                    <p><strong>3. 利害關係人互動評估矩陣</strong> (比較"目前"與"期望"的參與度)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    發現溝通無效時產出什麼？
+                </div>
+                <div class="flip-card-back">
+                    <p><strong>變更請求 (Change Requests)</strong></p>
+                    <small>如果發現現在的開會頻率太高（噪音）或太低（資訊不足），就要正式提出「變更」，修改溝通計畫。</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    輸入與輸出的數據轉換？
+                </div>
+                <div class="flip-card-back">
+                    <p><strong>工作績效資料 (Data)</strong></p>
+                    <p>⬇️ 經過分析與比較 ⬇️</p>
+                    <p><strong>工作績效資訊 (Information)</strong></p>
+                    <small>考試重點：把原始數據變成有意義的分析報告。</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>3. 情境模擬測驗</h2>
+    <p>考試通常是情境題。請試著解決下面的專案難題：</p>
+    
+    <div class="simulator" id="quiz-container">
+        <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+        <h3 id="q-title">情境 1</h3>
+        <p class="scenario-text" id="q-text">你是一個軟體專案的經理。你發現每週發出的電子郵件進度報告，利害關係人似乎都沒有在看，導致會議中他們一直在問已經寫在報告裡的問題。這時候你該怎麼做？</p>
+        
+        <div id="options">
+            </div>
+
+        <div id="feedback" class="feedback"></div>
+        <button id="next-btn" class="btn" style="background: #333; margin-top: 10px; display:none;" onclick="nextQuestion()">下一題</button>
+    </div>
+
+</div>
+
+<script>
+    const questions = [
+        {
+            title: "情境 1：報告沒人看",
+            text: "你是一個軟體專案的經理。你發現每週發出的電子郵件進度報告，利害關係人似乎都沒有在看，導致會議中他們一直在問已經寫在報告裡的問題。根據「監視溝通」，你該怎麼做？",
+            options: [
+                { text: "A. 增加發信頻率，每天發一次，確保他們一定會看到。", correct: false, reason: "錯誤。這會增加「噪音」，讓利害關係人更不想看。" },
+                { text: "B. 審視「利害關係人互動評估矩陣」與溝通計畫，並主動詢問他們偏好的接收方式。", correct: true, reason: "正確！監視溝通的核心是「確認有效性」。如果無效，應該透過觀察與對話找出原因，並調整計畫。" },
+                { text: "C. 在會議中大聲斥責他們沒有閱讀報告。", correct: false, reason: "錯誤。這無助於解決溝通障礙，且破壞關係。" }
+            ]
+        },
+        {
+            title: "情境 2：數據 vs 資訊",
+            text: "你的團隊成員回報了這個月實際召開了 10 次會議，但有 3 次延遲開始（這是原始數據）。你在進行「監視溝通」過程時，將這些數據與計畫比對，發現溝通效率低落。請問這份分析結果稱為什麼？",
+            options: [
+                { text: "A. 工作績效資料 (Work Performance Data)", correct: false, reason: "錯誤。「資料」是原始的數字（如：開了10次會），尚未經過分析。" },
+                { text: "B. 工作績效資訊 (Work Performance Information)", correct: true, reason: "正確！經過整合、分析、比對計畫後的結果，稱為「資訊」。這是有導航價值的產出。" },
+                { text: "C. 變更請求 (Change Request)", correct: false, reason: "錯誤。變更請求是基於分析結果採取的行動，而不是分析結果本身。" }
+            ]
+        },
+        {
+            title: "情境 3：專案經理的時間",
+            text: "根據來源資料，專案經理花費 75% 到 90% 的時間在溝通上。為什麼「監視溝通」在此背景下特別重要？",
+            options: [
+                { text: "A. 為了確保專案經理看起來很忙。", correct: false, reason: "錯誤。" },
+                { text: "B. 為了防止資源浪費與溝通不良帶來的衝擊。", correct: true, reason: "正確！因為溝通成本很高，透過監視（反饋迴圈）能即時發現士氣低落或進度延誤，避免做白工。" },
+                { text: "C. 為了能夠隨時使用 PMIS 系統。", correct: false, reason: "錯誤。PMIS 只是工具，不是目的。" }
+            ]
+        }
+    ];
+
+    let currentQ = 0;
+
+    function loadQuestion() {
+        const q = questions[currentQ];
+        document.getElementById('q-title').innerText = q.title;
+        document.getElementById('q-text').innerText = q.text;
+        
+        const optsDiv = document.getElementById('options');
+        optsDiv.innerHTML = '';
+        
+        q.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.innerText = opt.text;
+            btn.onclick = () => checkAnswer(index);
+            optsDiv.appendChild(btn);
+        });
+
+        document.getElementById('feedback').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        // Update progress
+        const percent = ((currentQ) / questions.length) * 100;
+        document.getElementById('progress').style.width = percent + '%';
+    }
+
+    function checkAnswer(index) {
+        const q = questions[currentQ];
+        const isCorrect = q.options[index].correct;
+        const feedbackDiv = document.getElementById('feedback');
+        
+        feedbackDiv.style.display = 'block';
+        feedbackDiv.className = isCorrect ? 'feedback correct' : 'feedback wrong';
+        feedbackDiv.innerHTML = (isCorrect ? '✅ 答對了！' : '❌ 答錯了。') + '<br>' + q.options[index].reason;
+
+        // Disable all buttons
+        const btns = document.querySelectorAll('#options .btn');
+        btns.forEach(b => b.disabled = true);
+
+        if (currentQ < questions.length - 1) {
+            document.getElementById('next-btn').style.display = 'block';
+        } else {
+            document.getElementById('next-btn').style.display = 'block';
+            document.getElementById('next-btn').innerText = '完成練習 🎉';
+            document.getElementById('next-btn').onclick = () => alert('恭喜你完成了基礎觀念練習！對於「監視溝通」你已經掌握了核心邏輯。');
+        }
+        
+        // Update progress to finish of this step
+        const percent = ((currentQ + 1) / questions.length) * 100;
+        document.getElementById('progress').style.width = percent + '%';
+    }
+
+    function nextQuestion() {
+        currentQ++;
+        if (currentQ < questions.length) {
+            loadQuestion();
+        }
+    }
+
+    // Initial load
+    loadQuestion();
+
+</script>
+
+</body>
+</html>

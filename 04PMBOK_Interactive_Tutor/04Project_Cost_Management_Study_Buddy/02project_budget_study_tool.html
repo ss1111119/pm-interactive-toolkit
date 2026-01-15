@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案成本管理：制定預算學習器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; }
+        .tab-active { border-bottom: 2px solid #2563eb; color: #2563eb; font-weight: bold; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .card-hover:hover { transform: translateY(-2px); transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 3.659c0 3.074-1.8 6-6 6a1 1 0 01-1-1v-2a2 2 0 012-2h1.172a2 2 0 00.707-.293l.293-.293a1 1 0 00-.293-.707L13 11m-1-4v1m0-5a9 9 0 110 18 9 9 0 010-18z" />
+                </svg>
+                小白也能懂的 PMP：制定預算
+            </h1>
+            <div class="text-sm bg-blue-700 px-3 py-1 rounded-full">考試準備模式</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto p-4 mt-4">
+        
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-200 mb-6 bg-white rounded-t-lg overflow-hidden shadow-sm">
+            <button onclick="switchTab('concept')" id="tab-concept" class="flex-1 py-4 text-center hover:bg-gray-50 transition tab-active">
+                📚 觀念圖解
+            </button>
+            <button onclick="switchTab('visual')" id="tab-visual" class="flex-1 py-4 text-center hover:bg-gray-50 transition">
+                📈 S 曲線模擬
+            </button>
+            <button onclick="switchTab('quiz')" id="tab-quiz" class="flex-1 py-4 text-center hover:bg-gray-50 transition">
+                📝 模擬測驗
+            </button>
+        </div>
+
+        <!-- Content Area -->
+        <div id="content-area" class="bg-white rounded-b-lg shadow-md p-6 min-h-[500px]">
+            
+            <!-- 1. Concept Section -->
+            <div id="view-concept" class="fade-in space-y-6">
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+                    <p class="font-bold text-blue-700">核心邏輯：層層堆疊</p>
+                    <p class="text-sm text-blue-600">預算不是憑空猜測，而是像蓋積木一樣由下而上堆疊起來的。</p>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Hierarchy Visual -->
+                    <div class="relative p-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
+                        <h3 class="text-center font-bold text-lg mb-6 text-gray-700">💰 專案預算層級圖 (必考!)</h3>
+                        
+                        <!-- Level 4 -->
+                        <div class="mx-auto w-3/4 bg-red-100 border-2 border-red-400 p-4 rounded-lg text-center relative mb-2 card-hover cursor-help group">
+                            <h4 class="font-bold text-red-800">專案預算 (Project Budget)</h4>
+                            <p class="text-xs text-red-600">包含所有錢 (基準 + 管理儲備金)</p>
+                            <!-- Tooltip -->
+                            <div class="hidden group-hover:block absolute z-10 w-64 bg-gray-800 text-white text-xs rounded p-2 -top-16 left-1/2 transform -translate-x-1/2">
+                                針對「未知的不確定性」(Unknown Unknowns)，動用需高層核准。
+                            </div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="flex justify-center my-1"><span class="text-2xl text-gray-400">⬆️</span></div>
+
+                        <!-- Level 3 -->
+                        <div class="mx-auto w-2/3 bg-green-100 border-2 border-green-500 p-4 rounded-lg text-center relative mb-2 card-hover cursor-help group shadow-lg">
+                            <h4 class="font-bold text-green-800 text-xl">成本基準 (Cost Baseline)</h4>
+                            <p class="text-xs text-green-600">S 曲線就是畫這條線！包含應變儲備金。</p>
+                            <div class="absolute -right-32 top-4 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded border border-yellow-400 transform rotate-12 shadow-sm">
+                                ⭐ 績效測量標準
+                            </div>
+                             <div class="hidden group-hover:block absolute z-10 w-64 bg-gray-800 text-white text-xs rounded p-2 top-1/2 -right-64 transform -translate-y-1/2">
+                                這是專案經理的「聖經」，任何變更都要走「變更控制流程」。包含已知風險的應變金。
+                            </div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="flex justify-center my-1"><span class="text-2xl text-gray-400">⬆️</span></div>
+
+                        <!-- Level 2 -->
+                        <div class="mx-auto w-1/2 bg-blue-100 border border-blue-300 p-2 rounded-lg text-center mb-2">
+                            <h4 class="font-semibold text-blue-800">工作包估算 (Work Packages)</h4>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="flex justify-center my-1"><span class="text-2xl text-gray-400">⬆️</span></div>
+
+                        <!-- Level 1 -->
+                        <div class="flex justify-center gap-2">
+                            <div class="bg-gray-100 border border-gray-300 p-2 rounded text-xs">活動 A 成本</div>
+                            <div class="bg-gray-100 border border-gray-300 p-2 rounded text-xs">活動 B 成本</div>
+                            <div class="bg-gray-100 border border-gray-300 p-2 rounded text-xs">活動 C 成本</div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Knowledge Points (New Section) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                            <h4 class="font-bold text-yellow-800 mb-2">🛠️ 其他關鍵工具</h4>
+                            <ul class="text-sm space-y-2 text-yellow-900">
+                                <li><span class="font-bold">融資 (Financing)：</span>若專案需要外部資金，這是獲取資源的手段（如基礎建設案）。</li>
+                                <li><span class="font-bold">歷史資訊回顧：</span>拿以前類似的專案數據來檢查現在的預算合不合理（防呆機制）。</li>
+                            </ul>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                            <h4 class="font-bold text-purple-800 mb-2">🏢 管理環境影響</h4>
+                            <ul class="text-sm space-y-2 text-purple-900">
+                                <li><span class="font-bold">組織結構：</span>
+                                    <br>• 強矩陣/專案型：經理權力大，你控預算。
+                                    <br>• 功能型：功能經理權力大，他控預算。
+                                </li>
+                                <li><span class="font-bold">漸進明細：</span>預算不是一次定死，會隨著專案進展（資訊越清楚）而越估越準。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Visualizer Section -->
+            <div id="view-visual" class="hidden fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-1 space-y-4">
+                        <h3 class="font-bold text-lg text-gray-800">控制面板</h3>
+                        <p class="text-sm text-gray-600 mb-4">調整下方的滑桿，看看「S 曲線」和「資金限制」如何運作。</p>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">前期支出 (規劃/啟動)</label>
+                                <input type="range" id="early-cost" min="5" max="30" value="10" class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">中期支出 (執行/施工)</label>
+                                <input type="range" id="mid-cost" min="30" max="80" value="60" class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">管理儲備金 (Management Reserve)</label>
+                                <input type="range" id="mgmt-reserve" min="0" max="50" value="20" class="w-full h-2 bg-red-200 rounded-lg appearance-none cursor-pointer">
+                                <p class="text-xs text-gray-500 mt-1">注意：這筆錢在成本基準之上，屬於「未知的不確定性」。</p>
+                            </div>
+                            
+                            <div class="pt-4 border-t border-gray-200">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="show-limit" class="form-checkbox h-5 w-5 text-blue-600">
+                                    <span class="text-sm font-medium text-red-600">顯示資金限制 (Funding Limit)</span>
+                                </label>
+                                <p class="text-xs text-gray-500 mt-1">若曲線超過紅線，代表你需要「調節」資金（通常調整時程）。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 bg-white border border-gray-200 rounded-xl p-2 shadow-inner">
+                        <canvas id="sCurveChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Quiz Section -->
+            <div id="view-quiz" class="hidden fade-in">
+                <div class="max-w-2xl mx-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold">新手挑戰題</h3>
+                        <span id="score-display" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold">分數: 0/0</span>
+                    </div>
+
+                    <div id="quiz-container" class="space-y-6">
+                        <!-- Questions will be injected here by JS -->
+                    </div>
+
+                    <div id="quiz-result" class="hidden mt-6 p-6 bg-green-50 border border-green-200 rounded-xl text-center">
+                        <h4 class="text-2xl font-bold text-green-700 mb-2">測驗完成！</h4>
+                        <p id="final-score" class="text-lg text-gray-700">你的觀念掌握度：100%</p>
+                        <button onclick="resetQuiz()" class="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">再測一次</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center p-6 text-gray-500 text-sm">
+        <p>基於 NotebookLM 分析內容製作 • 專為 PMP 初學者設計</p>
+    </footer>
+
+    <script>
+        // --- 1. Tab Logic ---
+        function switchTab(tabName) {
+            // Update Buttons
+            ['concept', 'visual', 'quiz'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tabName) {
+                    btn.classList.add('tab-active');
+                    btn.classList.remove('hover:bg-gray-50');
+                } else {
+                    btn.classList.remove('tab-active');
+                    btn.classList.add('hover:bg-gray-50');
+                }
+            });
+
+            // Update Content
+            ['view-concept', 'view-visual', 'view-quiz'].forEach(id => {
+                const el = document.getElementById(id);
+                if (id === `view-${tabName}`) {
+                    el.classList.remove('hidden');
+                    // FIX: Replaced undefined updateChart() with updateChartData()
+                    if(tabName === 'visual') updateChartData(); 
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+        }
+
+        // --- 2. Chart Logic (S-Curve) ---
+        let myChart = null;
+
+        function initChart() {
+            const ctx = document.getElementById('sCurveChart').getContext('2d');
+            
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['啟動', '規劃前期', '規劃後期', '執行初期', '執行中期', '執行後期', '收尾'],
+                    datasets: [
+                        {
+                            label: '專案總預算 (Budget)',
+                            data: [], // calculated
+                            borderColor: 'rgb(239, 68, 68)', // Red
+                            borderDash: [5, 5],
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: '成本基準 (Cost Baseline - PV)',
+                            data: [], // calculated
+                            borderColor: 'rgb(37, 99, 235)', // Blue
+                            backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: '資金限制 (Funding Limit)',
+                            data: [], 
+                            borderColor: 'rgb(220, 38, 38)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            hidden: true // toggled
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: { mode: 'index', intersect: false },
+                        title: { display: true, text: 'S 曲線與預算結構' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: '累積成本 ($)' } }
+                    }
+                }
+            });
+
+            updateChartData();
+        }
+
+        function updateChartData() {
+            // Check if elements exist before accessing value to prevent errors during early load (though load listener handles this)
+            const earlyEl = document.getElementById('early-cost');
+            const midEl = document.getElementById('mid-cost');
+            const mgmtEl = document.getElementById('mgmt-reserve');
+            const showLimitEl = document.getElementById('show-limit');
+            
+            if (!earlyEl || !midEl || !mgmtEl) return;
+
+            const early = parseInt(earlyEl.value);
+            const mid = parseInt(midEl.value);
+            const mgmtReserve = parseInt(mgmtEl.value);
+            const showLimit = showLimitEl.checked;
+
+            // Generate S-Curve Data Points (Cumulative)
+            // Logic: Slow start, steep middle, taper off
+            let cumulative = 0;
+            const baselineData = [];
+            
+            // 7 points simulation
+            const increments = [
+                early * 0.5,    // 啟動
+                early,          // 規劃前
+                early * 1.5,    // 規劃後
+                mid * 0.8,      // 執行初 (Ramp up)
+                mid,            // 執行中 (Peak)
+                mid * 0.6,      // 執行後 (Ramp down)
+                early * 0.5     // 收尾
+            ];
+
+            increments.forEach(inc => {
+                cumulative += inc;
+                baselineData.push(cumulative);
+            });
+
+            const totalBaseline = baselineData[baselineData.length - 1];
+            const totalBudget = totalBaseline + mgmtReserve;
+
+            // Budget Line is usually a flat line at the top or stepped, 
+            // but here we visualize it as the ceiling above the S-curve
+            const budgetData = baselineData.map(() => totalBudget);
+
+            // Funding Limit (Arbitrary limit for demo)
+            const limitLine = totalBudget * 0.85; // Simulate a limit slightly below budget to show conflict
+            const limitData = baselineData.map(() => limitLine);
+
+            if (myChart) {
+                myChart.data.datasets[1].data = baselineData; // Baseline
+                myChart.data.datasets[0].data = budgetData;   // Total Budget
+                myChart.data.datasets[2].data = limitData;    // Limit
+                myChart.data.datasets[2].hidden = !showLimit;
+                myChart.update();
+            }
+        }
+
+        // Event Listeners for sliders
+        document.getElementById('early-cost').addEventListener('input', updateChartData);
+        document.getElementById('mid-cost').addEventListener('input', updateChartData);
+        document.getElementById('mgmt-reserve').addEventListener('input', updateChartData);
+        document.getElementById('show-limit').addEventListener('change', updateChartData);
+
+        // --- 3. Quiz Logic ---
+        const questions = [
+            {
+                q: "「成本基準」通常會以什麼樣的形式展現，用來代表隨時間累積的預計支出？",
+                options: ["直方圖 (Histogram)", "S 曲線 (S-curve)", "散佈圖 (Scatter Plot)", "控制圖 (Control Chart)"],
+                a: 1,
+                expl: "S 曲線顯示累積成本隨時間的變化：初期慢、中期快、後期慢。"
+            },
+            {
+                q: "關於「應變儲備金」與「管理儲備金」，下列何者正確？",
+                options: [
+                    "應變儲備金是用來處理「未知的不確定性」",
+                    "管理儲備金包含在「成本基準」內",
+                    "應變儲備金包含在「成本基準」內，處理已知風險",
+                    "專案經理可以隨意動用管理儲備金"
+                ],
+                a: 2,
+                expl: "口訣：應變=已知(在基準內)；管理=未知(在基準外)。"
+            },
+            {
+                q: "當發現預算支出需求超過了組織規定的資金限制時，專案經理應該進行什麼動作？",
+                options: [
+                    "資金限制調解 (Funding Limit Reconciliation)",
+                    "立即停止專案",
+                    "動用管理儲備金",
+                    "忽視限制繼續執行"
+                ],
+                a: 0,
+                expl: "這通常需要調整時程來平滑資金支出，確保不會「透支」。"
+            },
+            {
+                q: "制定預算主要是將什麼東西進行加總，以建立成本基準？",
+                options: [
+                    "專案章程",
+                    "個別活動或工作包的估計成本",
+                    "商業論證",
+                    "利害關係人清單"
+                ],
+                a: 1,
+                expl: "這是「由下而上」的彙總過程：活動 -> 工作包 -> 控制帳戶 -> 專案。"
+            }
+        ];
+
+        let currentScore = 0;
+        let answeredCount = 0;
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            questions.forEach((item, index) => {
+                const qEl = document.createElement('div');
+                qEl.className = 'bg-white border border-gray-200 p-6 rounded-lg shadow-sm';
+                qEl.innerHTML = `
+                    <p class="font-bold text-lg mb-4 text-gray-800">${index + 1}. ${item.q}</p>
+                    <div class="space-y-2">
+                        ${item.options.map((opt, i) => `
+                            <button onclick="checkAnswer(${index}, ${i}, this)" 
+                                class="w-full text-left p-3 rounded border border-gray-300 hover:bg-blue-50 transition q-btn-${index}" 
+                                data-idx="${i}">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="feedback-${index}" class="hidden mt-4 p-3 rounded text-sm font-medium"></div>
+                `;
+                container.appendChild(qEl);
+            });
+            updateScoreDisplay();
+        }
+
+        function checkAnswer(qIndex, choiceIndex, btn) {
+            // Disable all buttons for this question
+            const buttons = document.querySelectorAll(`.q-btn-${qIndex}`);
+            buttons.forEach(b => b.disabled = true);
+            answeredCount++;
+
+            const feedback = document.getElementById(`feedback-${qIndex}`);
+            feedback.classList.remove('hidden');
+
+            const isCorrect = choiceIndex === questions[qIndex].a;
+            if (isCorrect) {
+                btn.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                feedback.classList.add('bg-green-100', 'text-green-800');
+                feedback.innerHTML = `✅ 正確！ ${questions[qIndex].expl}`;
+                currentScore++;
+            } else {
+                btn.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+                feedback.classList.add('bg-red-100', 'text-red-800');
+                // Highlight correct answer
+                buttons[questions[qIndex].a].classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                feedback.innerHTML = `❌ 錯誤。正確答案是：${questions[qIndex].options[questions[qIndex].a]}。<br>${questions[qIndex].expl}`;
+            }
+
+            updateScoreDisplay();
+
+            if (answeredCount === questions.length) {
+                document.getElementById('quiz-result').classList.remove('hidden');
+                document.getElementById('final-score').innerText = `你的得分：${currentScore} / ${questions.length}`;
+            }
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score-display').innerText = `分數: ${currentScore}/${questions.length}`;
+        }
+
+        function resetQuiz() {
+            currentScore = 0;
+            answeredCount = 0;
+            document.getElementById('quiz-result').classList.add('hidden');
+            renderQuiz();
+            window.scrollTo(0, 0);
+        }
+
+        // --- Initialization ---
+        window.addEventListener('load', () => {
+            initChart();
+            renderQuiz();
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案時程管制學習儀表板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #cbd5e1;
+            border-radius: 5px;
+            outline: none;
+        }
+        .slider-thumb::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        /* Custom scrollbar for concept cards if needed */
+        .concept-card {
+            transition: all 0.3s ease;
+        }
+        .concept-card:hover {
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <i data-lucide="compass"></i> 專案時程管制大師 (Control Schedule)
+            </h1>
+            <span class="text-sm bg-blue-800 px-3 py-1 rounded-full">PMP/CAPM 備考模式</span>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4 md:p-8 space-y-8">
+
+        <!-- Intro Section -->
+        <section class="bg-white rounded-xl p-6 shadow-md border-l-4 border-blue-500">
+            <h2 class="text-2xl font-bold mb-4">這是一個什麼過程？</h2>
+            <p class="text-lg text-gray-600 mb-4">
+                想像你是專案的「導航系統」。<br>
+                管制時程不只是紀錄過去，更是<span class="font-bold text-blue-600">預測未來</span>並<span class="font-bold text-red-600">修正路線</span>的過程。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <div class="flex items-center gap-2 mb-2 text-blue-800 font-bold">
+                        <i data-lucide="eye"></i> 監視與更新
+                    </div>
+                    <p class="text-sm">識別進度與計畫（基準）之間的偏差 (Variance)。不僅紀錄過去，更要分析對未來的影響。</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <div class="flex items-center gap-2 mb-2 text-green-800 font-bold">
+                        <i data-lucide="trending-up"></i> 預測與產出
+                    </div>
+                    <p class="text-sm">產出工作績效資訊 (WPI) 與時程預測 (Forecasts)，判斷完工日期是否變動。</p>
+                </div>
+                <div class="bg-red-50 p-4 rounded-lg">
+                    <div class="flex items-center gap-2 mb-2 text-red-800 font-bold">
+                        <i data-lucide="shield-alert"></i> 管理變更
+                    </div>
+                    <p class="text-sm">若偏差過大，透過「變更請求」修改時程基準，並將經驗記錄在組織資產中。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tool 1: EVM Simulator -->
+        <section class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="bg-indigo-600 p-4 text-white">
+                <h3 class="text-xl font-bold flex items-center gap-2">
+                    <i data-lucide="calculator"></i> 關鍵工具 1：EVM 實獲值分析 (必考計算)
+                </h3>
+                <p class="text-sm opacity-80">拖動滑桿，觀察 SPI 和 SV 如何變化。這是在考試中判斷專案生死的關鍵！</p>
+            </div>
+            
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Controls -->
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2 flex justify-between">
+                            <span>PV (計畫值 - 預計要做多少?)</span>
+                            <span id="pv-val" class="font-bold text-indigo-600">$500</span>
+                        </label>
+                        <input type="range" id="pv-slider" min="100" max="1000" value="500" class="slider-thumb w-full">
+                        <p class="text-xs text-gray-500 mt-1">基準：原本這時候該完成的工作價值</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2 flex justify-between">
+                            <span>EV (實獲值 - 實際做了多少?)</span>
+                            <span id="ev-val" class="font-bold text-indigo-600">$400</span>
+                        </label>
+                        <input type="range" id="ev-slider" min="0" max="1000" value="400" class="slider-thumb w-full">
+                        <p class="text-xs text-gray-500 mt-1">績效：實際上完成的工作價值</p>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="bg-gray-50 rounded-lg p-6 border border-gray-200 flex flex-col justify-center space-y-4">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <div>
+                            <span class="block text-sm text-gray-500">SV (進度變異)</span>
+                            <span class="text-xs text-gray-400">EV - PV</span>
+                        </div>
+                        <span id="sv-result" class="text-2xl font-bold text-red-500">-$100</span>
+                    </div>
+
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <div>
+                            <span class="block text-sm text-gray-500">SPI (進度績效指標)</span>
+                            <span class="text-xs text-gray-400">EV / PV</span>
+                        </div>
+                        <span id="spi-result" class="text-2xl font-bold text-red-500">0.80</span>
+                    </div>
+
+                    <div id="status-box" class="bg-red-100 text-red-800 p-3 rounded text-center font-bold">
+                        ⚠️ 進度落後 (Behind Schedule)
+                    </div>
+                    <p class="text-xs text-gray-500 text-center">考試口訣：SPI 小於 1 就是慢了！</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tool 2: Compression Strategies -->
+        <h3 class="text-xl font-bold text-gray-700 mt-8 mb-4 flex items-center gap-2">
+             <i data-lucide="wrench"></i> 關鍵工具 2：時程壓縮策略 (進度落後時使用)
+        </h3>
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover transition-all duration-300 border-t-4 border-yellow-400">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-800">策略 A: 趕工 (Crashing)</h3>
+                    <i data-lucide="coins" class="text-yellow-500 w-8 h-8"></i>
+                </div>
+                <p class="text-gray-600 mb-4 text-sm">投入更多資源（加班、加人）來縮短時間。</p>
+                <div class="bg-yellow-50 p-3 rounded border border-yellow-200 mb-4">
+                    <ul class="text-sm space-y-1">
+                        <li>✅ 優點：最直接有效。</li>
+                        <li>❌ 缺點：<span class="font-bold text-red-600">成本增加 (Cost)</span>。</li>
+                    </ul>
+                </div>
+                <button onclick="simulateStrategy('crashing')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded transition">
+                    模擬使用情境
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover transition-all duration-300 border-t-4 border-purple-400">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-800">策略 B: 快速跟進 (Fast-tracking)</h3>
+                    <i data-lucide="layers" class="text-purple-500 w-8 h-8"></i>
+                </div>
+                <p class="text-gray-600 mb-4 text-sm">將原本按順序的活動，改為重疊並行。</p>
+                <div class="bg-purple-50 p-3 rounded border border-purple-200 mb-4">
+                    <ul class="text-sm space-y-1">
+                        <li>✅ 優點：不用多花錢。</li>
+                        <li>❌ 缺點：<span class="font-bold text-red-600">風險增加、重做 (Risk/Rework)</span>。</li>
+                    </ul>
+                </div>
+                <button onclick="simulateStrategy('fastTracking')" class="w-full bg-purple-500 hover:bg-purple-600 text-white py-2 rounded transition">
+                    模擬使用情境
+                </button>
+            </div>
+        </section>
+        
+        <!-- Simulation Result Modal Area -->
+        <div id="strategy-result" class="hidden bg-gray-800 text-white p-4 rounded-lg shadow-lg text-center animate-bounce">
+            <!-- Content injected via JS -->
+        </div>
+
+        <!-- Additional Concepts (Added per user request) -->
+        <h3 class="text-xl font-bold text-gray-700 mt-8 mb-4 flex items-center gap-2">
+            <i data-lucide="book-open"></i> 📚 必考觀念補充包 (補足來源資料)
+        </h3>
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+            
+            <!-- Resource Optimization -->
+            <div class="bg-white rounded-xl shadow p-5 concept-card border border-gray-100">
+                <h4 class="font-bold text-blue-600 mb-2 flex items-center gap-2">
+                    <i data-lucide="users"></i> 資源優化 (Resource Optimization)
+                </h4>
+                <p class="text-xs text-gray-500 mb-3">當資源短缺或有限制時使用</p>
+                <div class="space-y-3">
+                    <div class="bg-gray-50 p-3 rounded">
+                        <span class="font-bold text-gray-700">1. 資源平衡 (Leveling)</span>
+                        <p class="text-sm text-gray-600 mt-1">資源不足，強行將活動延後。結果：<span class="text-red-500 font-bold">關鍵路徑會改變，工期通常會延長</span>。</p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded">
+                        <span class="font-bold text-gray-700">2. 資源平滑 (Smoothing)</span>
+                        <p class="text-sm text-gray-600 mt-1">只利用「浮時」(Float) 來調整資源，不影響關鍵路徑。結果：<span class="text-green-600 font-bold">工期不會變</span>。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts & Analysis -->
+            <div class="bg-white rounded-xl shadow p-5 concept-card border border-gray-100">
+                <h4 class="font-bold text-blue-600 mb-2 flex items-center gap-2">
+                    <i data-lucide="bar-chart-2"></i> 圖表與分析技術
+                </h4>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex gap-2">
+                        <i data-lucide="flame" class="text-orange-500 w-5 h-5 flex-shrink-0"></i>
+                        <div>
+                            <span class="font-bold">燃盡圖 (Burn-down Chart)</span>
+                            <p class="text-gray-600">顯示「剩餘工作」隨時間的消耗速度。斜率越陡，代表做得越快。</p>
+                        </div>
+                    </li>
+                    <li class="flex gap-2">
+                        <i data-lucide="line-chart" class="text-blue-500 w-5 h-5 flex-shrink-0"></i>
+                        <div>
+                            <span class="font-bold">趨勢 vs. 差異分析</span>
+                            <p class="text-gray-600"><span class="font-semibold">差異 (Variance):</span> 現在 vs. 基準 (SV, SPI)。</p>
+                            <p class="text-gray-600"><span class="font-semibold">趨勢 (Trend):</span> 觀察績效隨時間的變化 (是在變好還是變壞?)。</p>
+                        </div>
+                    </li>
+                     <li class="flex gap-2">
+                        <i data-lucide="help-circle" class="text-purple-500 w-5 h-5 flex-shrink-0"></i>
+                        <div>
+                            <span class="font-bold">假設情境分析 (What-if)</span>
+                            <p class="text-gray-600">評估「如果X發生，時程會怎樣？」，用來擬定預防措施。</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Integration View -->
+            <div class="bg-white rounded-xl shadow p-5 concept-card border border-gray-100 col-span-1 md:col-span-2">
+                <h4 class="font-bold text-blue-600 mb-2 flex items-center gap-2">
+                    <i data-lucide="link"></i> 整合觀點 (Integration)
+                </h4>
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1 bg-blue-50 p-3 rounded border border-blue-100">
+                        <span class="font-bold text-blue-800">🔗 與範疇 (Scope) 的關係</span>
+                        <p class="text-sm text-gray-600 mt-1">「範疇蔓延」(Scope Creep) 是時程延誤的主因。管制時程前，必須確認範疇基準是明確的。</p>
+                    </div>
+                    <div class="flex-1 bg-blue-50 p-3 rounded border border-blue-100">
+                        <span class="font-bold text-blue-800">🔗 與資源 (Resource) 的關係</span>
+                        <p class="text-sm text-gray-600 mt-1">人員異動或設備損壞會導致時程偏差。管制時程需參考「資源月曆」。</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-bold mb-6 border-b pb-2">🎯 觀念小測驗 (已更新)</h3>
+            
+            <div class="space-y-4" id="quiz-container">
+                <!-- Question 1 -->
+                <div class="quiz-item">
+                    <p class="font-bold mb-2">1. 你的專案 SPI = 0.8，這代表什麼？</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, false)" class="block w-full text-left p-3 border rounded hover:bg-gray-50">A. 進度超前，效率很好</button>
+                        <button onclick="checkAnswer(this, true)" class="block w-full text-left p-3 border rounded hover:bg-gray-50">B. 進度落後，效率只有計畫的 80%</button>
+                        <button onclick="checkAnswer(this, false)" class="block w-full text-left p-3 border rounded hover:bg-gray-50">C. 預算超支了</button>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="quiz-item mt-6">
+                    <p class="font-bold mb-2">2. 為了趕進度，決定讓設計和施工「同時進行」，導致重做風險增加，這叫什麼？</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, false)" class="block w-full text-left p-3 border rounded hover:bg-gray-50">A. 趕工 (Crashing)</button>
+                        <button onclick="checkAnswer(this, false)" class="block w-full text-left p-3 border rounded hover:bg-gray-50">B. 資源平衡 (Resource Leveling)</button>
+                        <button onclick="checkAnswer(this, true)" class="block w-full text-left p-3 border rounded hover:bg-gray-50">C. 快速跟進 (Fast-tracking)</button>
+                    </div>
+                </div>
+
+                <!-- Question 3 (New) -->
+                <div class="quiz-item mt-6">
+                    <p class="font-bold mb-2">3. 關於「資源平衡 (Leveling)」，下列何者正確？</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, true)" class="block w-full text-left p-3 border rounded hover:bg-gray-50">A. 通常會導致關鍵路徑改變，專案工期延長</button>
+                        <button onclick="checkAnswer(this, false)" class="block w-full text-left p-3 border rounded hover:bg-gray-50">B. 只利用浮時調整，不影響工期</button>
+                        <button onclick="checkAnswer(this, false)" class="block w-full text-left p-3 border rounded hover:bg-gray-50">C. 透過增加加班費來解決資源不足</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-200 text-center p-4 mt-8 text-sm text-gray-600">
+        專案管理學習輔助工具 | Generated by AI for PM Beginners
+    </footer>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // EVM Calculator Logic
+        const pvSlider = document.getElementById('pv-slider');
+        const evSlider = document.getElementById('ev-slider');
+        const pvVal = document.getElementById('pv-val');
+        const evVal = document.getElementById('ev-val');
+        const svResult = document.getElementById('sv-result');
+        const spiResult = document.getElementById('spi-result');
+        const statusBox = document.getElementById('status-box');
+
+        function updateEVM() {
+            const pv = parseInt(pvSlider.value);
+            const ev = parseInt(evSlider.value);
+
+            pvVal.innerText = `$${pv}`;
+            evVal.innerText = `$${ev}`;
+
+            // Calculate SV
+            const sv = ev - pv;
+            svResult.innerText = `$${sv}`;
+            if(sv < 0) {
+                svResult.className = "text-2xl font-bold text-red-500";
+            } else {
+                svResult.className = "text-2xl font-bold text-green-500";
+            }
+
+            // Calculate SPI
+            let spi = 0;
+            if(pv !== 0) {
+                spi = (ev / pv).toFixed(2);
+            }
+            spiResult.innerText = spi;
+
+            // Update Status and Styling
+            if (spi < 1) {
+                spiResult.className = "text-2xl font-bold text-red-500";
+                statusBox.className = "bg-red-100 text-red-800 p-3 rounded text-center font-bold transition-all";
+                statusBox.innerText = "⚠️ 進度落後 (Behind Schedule)";
+            } else {
+                spiResult.className = "text-2xl font-bold text-green-500";
+                statusBox.className = "bg-green-100 text-green-800 p-3 rounded text-center font-bold transition-all";
+                statusBox.innerText = "✅ 進度良好/超前 (On/Ahead of Schedule)";
+            }
+        }
+
+        pvSlider.addEventListener('input', updateEVM);
+        evSlider.addEventListener('input', updateEVM);
+
+        // Simulation Logic
+        function simulateStrategy(type) {
+            const resultBox = document.getElementById('strategy-result');
+            resultBox.classList.remove('hidden');
+            
+            if (type === 'crashing') {
+                resultBox.innerHTML = `
+                    <div class="font-bold text-lg text-yellow-300">你選擇了「趕工」！</div>
+                    <p>你花了一筆錢請外包團隊進場。</p>
+                    <p class="mt-2 text-sm">結果：時間縮短了 3 天，但<span class="text-red-300 font-bold">預算超支 $5000</span>。</p>
+                `;
+            } else {
+                resultBox.innerHTML = `
+                    <div class="font-bold text-lg text-purple-300">你選擇了「快速跟進」！</div>
+                    <p>你讓工程師在設計圖還沒完全好之前就開始寫程式。</p>
+                    <p class="mt-2 text-sm">結果：時間縮短了 2 天，但<span class="text-red-300 font-bold">發現 3 個 Bug 需要重做</span>，風險升高！</p>
+                `;
+            }
+
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                resultBox.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Quiz Logic
+        function checkAnswer(btn, isCorrect) {
+            const allBtns = btn.parentElement.querySelectorAll('button');
+            allBtns.forEach(b => b.classList.add('opacity-50', 'cursor-not-allowed'));
+            allBtns.forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                btn.classList.remove('opacity-50');
+                btn.classList.add('bg-green-500', 'text-white', 'border-green-600');
+                btn.innerText += " ✅ (答對了！)";
+            } else {
+                btn.classList.remove('opacity-50');
+                btn.classList.add('bg-red-500', 'text-white', 'border-red-600');
+                btn.innerText += " ❌ (答錯囉)";
+            }
+        }
+    </script>
+</body>
+</html>

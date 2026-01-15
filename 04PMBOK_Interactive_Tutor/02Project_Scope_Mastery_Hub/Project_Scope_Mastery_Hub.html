@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案範疇管理學習中心</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Microsoft JhengHei, sans-serif;
+            background-color: #f0f4f8;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .wbs-line {
+            border-left: 2px solid #cbd5e1;
+            margin-left: 1rem;
+            padding-left: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Icons components wrapper
+        const Icon = ({ name, size = 24, className = "" }) => {
+            return <i className={`ph ph-${name} ${className}`} style={{ fontSize: size }}></i>;
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('learn');
+
+            return (
+                <div className="min-h-screen flex flex-col max-w-5xl mx-auto bg-white shadow-xl my-4 rounded-xl overflow-hidden">
+                    {/* Header */}
+                    <header className="bg-slate-800 text-white p-6">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <h1 className="text-2xl font-bold flex items-center gap-2">
+                                    <Icon name="kanban" size={32} className="text-emerald-400" />
+                                    專案範疇管理 (Scope Management)
+                                </h1>
+                                <p className="text-slate-300 text-sm mt-1">針對 PMP 考試新手的互動式學習指南</p>
+                            </div>
+                            <div className="flex gap-2">
+                                <button 
+                                    onClick={() => setActiveTab('learn')}
+                                    className={`px-4 py-2 rounded-lg flex items-center gap-2 transition ${activeTab === 'learn' ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                                >
+                                    <Icon name="book-open-text" /> 觀念學習
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('quiz')}
+                                    className={`px-4 py-2 rounded-lg flex items-center gap-2 transition ${activeTab === 'quiz' ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                                >
+                                    <Icon name="exam" /> 模擬測驗
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Content Area */}
+                    <main className="flex-1 p-6 bg-slate-50 overflow-y-auto">
+                        {activeTab === 'learn' ? <LearningModule /> : <QuizModule />}
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="bg-slate-100 p-4 text-center text-slate-500 text-sm border-t">
+                        基於 NotebookLM 分析資料產製 • 專案管理基礎教材
+                    </footer>
+                </div>
+            );
+        };
+
+        // --- Learning Components ---
+
+        const LearningModule = () => {
+            const [section, setSection] = useState(0);
+
+            const sections = [
+                { id: 'basics', title: '核心定義', icon: 'target' },
+                { id: 'process', title: '六大流程', icon: 'steps' },
+                { id: 'wbs', title: 'WBS 結構', icon: 'tree-structure' },
+                { id: 'risks', title: '風險與比較', icon: 'warning' }
+            ];
+
+            return (
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-full">
+                    {/* Sidebar Navigation */}
+                    <div className="col-span-1 space-y-2">
+                        {sections.map((s, idx) => (
+                            <button
+                                key={s.id}
+                                onClick={() => setSection(idx)}
+                                className={`w-full text-left p-4 rounded-lg flex items-center gap-3 transition ${section === idx ? 'bg-white border-l-4 border-emerald-500 shadow-md text-emerald-700 font-bold' : 'text-slate-600 hover:bg-white hover:shadow-sm'}`}
+                            >
+                                <Icon name={s.icon} />
+                                {s.title}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="col-span-1 md:col-span-3 bg-white p-6 rounded-xl shadow-sm border border-slate-100 min-h-[500px]">
+                        {section === 0 && <BasicsSection />}
+                        {section === 1 && <ProcessSection />}
+                        {section === 2 && <WBSInteractive />}
+                        {section === 3 && <RisksComparisons />}
+                    </div>
+                </div>
+            );
+        };
+
+        const BasicsSection = () => {
+            return (
+                <div className="space-y-6 fade-in">
+                    <h2 className="text-2xl font-bold text-slate-800 border-b pb-2">範疇管理的本質</h2>
+                    <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800">
+                        <strong>核心定義：</strong> 確保專案<span className="font-bold underline text-emerald-600 mx-1">包含且只包含</span>成功完成專案所需的所有工作。
+                        <br/><span className="text-sm mt-1 block">💡 簡單說：不多做（浪費），也不少做（失敗）。</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="border rounded-xl p-5 bg-blue-50 border-blue-100 card-hover">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Icon name="package" className="text-blue-600" size={32} />
+                                <h3 className="text-xl font-bold text-blue-700">產品範疇 (Product)</h3>
+                            </div>
+                            <p className="text-slate-700 mb-2"><strong>焦點：需求導向</strong></p>
+                            <p className="text-sm text-slate-600">指產品、服務或結果具有的<span className="font-bold">特徵與功能</span>。</p>
+                            <div className="mt-3 text-xs bg-white p-2 rounded border border-blue-200 text-blue-500">
+                                舉例：這台手機要有 5G、要有三鏡頭、螢幕要 6 吋。
+                            </div>
+                        </div>
+
+                        <div className="border rounded-xl p-5 bg-orange-50 border-orange-100 card-hover">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Icon name="hammer" className="text-orange-600" size={32} />
+                                <h3 className="text-xl font-bold text-orange-700">專案範疇 (Project)</h3>
+                            </div>
+                            <p className="text-slate-700 mb-2"><strong>焦點：工作導向</strong></p>
+                            <p className="text-sm text-slate-600">為了交付產品而必須完成的<span className="font-bold">所有工作</span>。</p>
+                            <div className="mt-3 text-xs bg-white p-2 rounded border border-orange-200 text-orange-500">
+                                舉例：畫設計圖、採購零件、組裝產線、軟體測試。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const ProcessSection = () => {
+            const steps = [
+                { name: "1. 規劃範疇管理", desc: "寫指南：定義如何做範疇管理", color: "bg-slate-200" },
+                { name: "2. 蒐集需求", desc: "問利害關係人到底要什麼", color: "bg-slate-200" },
+                { name: "3. 定義範疇", desc: "把需求轉成詳細的說明書", color: "bg-blue-100 border-blue-300" },
+                { name: "4. 建立 WBS", desc: "大卸八塊：把大目標分解成小組件", color: "bg-blue-100 border-blue-300" },
+                { name: "5. 驗證範疇", desc: "客戶簽收：確保客戶接受產出", color: "bg-green-100 border-green-300" },
+                { name: "6. 管制範疇", desc: "盯著看：防止範疇隨便變更", color: "bg-green-100 border-green-300" },
+            ];
+
+            return (
+                <div className="space-y-6 fade-in">
+                    <h2 className="text-2xl font-bold text-slate-800 border-b pb-2">六大流程地圖</h2>
+                    <p className="text-slate-600">從規劃到監控的完整鏈條：</p>
+                    
+                    <div className="grid gap-3">
+                        {steps.map((step, idx) => (
+                            <div key={idx} className={`p-4 rounded-lg border flex items-center justify-between ${step.color} transition hover:scale-[1.01]`}>
+                                <div>
+                                    <h4 className="font-bold text-slate-800">{step.name}</h4>
+                                    <p className="text-sm text-slate-600">{step.desc}</p>
+                                </div>
+                                <Icon name={idx < 4 ? "pencil-ruler" : "check-circle"} className="text-slate-400" />
+                            </div>
+                        ))}
+                    </div>
+                    
+                    <div className="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-sm text-slate-700">
+                        <strong>考試重點：</strong> 注意「驗證範疇」是在做完之後，但「定義範疇」是在開始做之前。WBS 是中間的關鍵橋樑。
+                    </div>
+                </div>
+            );
+        };
+
+        const WBSInteractive = () => {
+            const [expanded, setExpanded] = useState({ root: true });
+
+            const toggle = (id) => {
+                setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+            };
+
+            const Node = ({ id, label, isLeaf, desc, children }) => (
+                <div className="ml-6 mt-2">
+                    <div 
+                        onClick={() => !isLeaf && toggle(id)}
+                        className={`flex items-center gap-2 p-2 rounded cursor-pointer border select-none ${isLeaf ? 'bg-white border-slate-200' : 'bg-slate-100 border-slate-300 hover:bg-slate-200'}`}
+                    >
+                        {!isLeaf && (
+                            <Icon name={expanded[id] ? "caret-down" : "caret-right"} size={16} />
+                        )}
+                        {isLeaf && <Icon name="check-square" size={16} className="text-green-500" />}
+                        <span className="font-medium text-slate-700">{label}</span>
+                        {desc && <span className="text-xs text-slate-500 ml-2">({desc})</span>}
+                    </div>
+                    {expanded[id] && children && (
+                        <div className="wbs-line">
+                            {children}
+                        </div>
+                    )}
+                </div>
+            );
+
+            return (
+                <div className="fade-in h-full flex flex-col">
+                    <h2 className="text-2xl font-bold text-slate-800 border-b pb-2 mb-4">WBS (工作分解結構) 體驗</h2>
+                    <p className="mb-2 text-slate-600 text-sm">WBS 是專案的「引擎」。試著點擊展開下方的結構，找到最底層的「工作包」。</p>
+
+                    <div className="flex-1 overflow-auto bg-slate-50 p-4 rounded-xl border border-slate-200 max-h-[300px]">
+                        <Node id="root" label="專案：新網站開發" desc="第 1 層">
+                            <Node id="1" label="1.0 規劃" desc="第 2 層">
+                                <Node id="1.1" label="1.1 需求訪談" isLeaf={true} desc="工作包" />
+                                <Node id="1.2" label="1.2 產出規格書" isLeaf={true} desc="工作包" />
+                            </Node>
+                            <Node id="2" label="2.0 設計" desc="第 2 層">
+                                <Node id="2.1" label="2.1 首頁 UI" isLeaf={true} desc="工作包" />
+                                <Node id="2.2" label="2.2 後台 UI" isLeaf={true} desc="工作包" />
+                            </Node>
+                            <Node id="3" label="3.0 開發" desc="第 2 層">
+                                <Node id="3.1" label="3.1 前端" desc="第 3 層">
+                                    <Node id="3.1.1" label="3.1.1 HTML/CSS 切版" isLeaf={true} desc="工作包 (80小時原則)" />
+                                    <Node id="3.1.2" label="3.1.2 JS 互動邏輯" isLeaf={true} desc="工作包" />
+                                </Node>
+                                <Node id="3.2" label="3.2 後端 API" isLeaf={true} desc="工作包" />
+                            </Node>
+                        </Node>
+                    </div>
+
+                    <div className="mt-4 border-t pt-3">
+                        <h3 className="text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
+                            <Icon name="stack" className="text-purple-600"/> 
+                            考試必考：範疇基準 (Scope Baseline) 的三大組成
+                        </h3>
+                        <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                            <div className="bg-purple-50 p-2 rounded border border-purple-100 flex flex-col justify-center">
+                                <div className="font-bold text-purple-700 mb-1">1. 範疇說明書</div>
+                                <span className="text-slate-500 scale-90 block">做什麼/不做什麼的文字描述</span>
+                            </div>
+                            <div className="bg-purple-50 p-2 rounded border border-purple-100 flex flex-col justify-center">
+                                <div className="font-bold text-purple-700 mb-1">2. WBS</div>
+                                <span className="text-slate-500 scale-90 block">階層式分解圖 (如上圖)</span>
+                            </div>
+                            <div className="bg-purple-50 p-2 rounded border border-purple-100 flex flex-col justify-center">
+                                <div className="font-bold text-purple-700 mb-1">3. WBS 字典</div>
+                                <span className="text-slate-500 scale-90 block">每一格的詳細工作規範</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const RisksComparisons = () => {
+            return (
+                <div className="space-y-8 fade-in h-full overflow-y-auto pr-2">
+                    {/* 兩大病徵 */}
+                    <div>
+                        <h2 className="text-2xl font-bold text-slate-800 border-b pb-2 mb-4">兩大常見病徵</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-red-50 border border-red-200 p-4 rounded-xl">
+                                <div className="flex items-center gap-2 mb-2 text-red-700 font-bold text-lg">
+                                    <Icon name="trend-up" /> 範疇蔓延 (Scope Creep)
+                                </div>
+                                <p className="text-sm text-slate-700 mb-2">未經核准、不受控的擴張。</p>
+                                <ul className="text-xs text-slate-600 list-disc list-inside bg-white p-2 rounded">
+                                    <li>客戶口頭隨意加需求</li>
+                                    <li>沒有走變更流程</li>
+                                    <li>導致進度延後、成本增加</li>
+                                </ul>
+                            </div>
+                            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
+                                <div className="flex items-center gap-2 mb-2 text-yellow-700 font-bold text-lg">
+                                    <Icon name="star" /> 範疇鍍金 (Gold Plating)
+                                </div>
+                                <p className="text-sm text-slate-700 mb-2">團隊主動做「多餘」的事。</p>
+                                <ul className="text-xs text-slate-600 list-disc list-inside bg-white p-2 rounded">
+                                    <li>工程師覺得這樣比較酷</li>
+                                    <li>為了取悅顧客但沒被要求</li>
+                                    <li>增加不必要的風險</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 比較表 */}
+                    <div>
+                        <h2 className="text-xl font-bold text-slate-800 border-b pb-2 mb-4">驗證範疇 vs 品質管制</h2>
+                        <div className="overflow-hidden rounded-xl border border-slate-200">
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-slate-100 text-slate-700">
+                                    <tr>
+                                        <th className="p-3">比較項目</th>
+                                        <th className="p-3 text-blue-700">品質管制 (Quality Control)</th>
+                                        <th className="p-3 text-emerald-700">驗證範疇 (Validate Scope)</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-200 bg-white">
+                                    <tr>
+                                        <td className="p-3 font-medium text-slate-600">關注焦點</td>
+                                        <td className="p-3">交付標的的<strong className="text-blue-600">正確性</strong></td>
+                                        <td className="p-3">交付標的的<strong className="text-emerald-600">接受度</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-3 font-medium text-slate-600">誰來執行</td>
+                                        <td className="p-3">內部團隊 (品管人員)</td>
+                                        <td className="p-3">外部 (客戶、發起人)</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-3 font-medium text-slate-600">發生順序</td>
+                                        <td className="p-3">通常先做 (先確定沒做壞)</td>
+                                        <td className="p-3">通常後做 (確定是客戶要的)</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-3 font-medium text-slate-600">目的</td>
+                                        <td className="p-3">符合技術規格</td>
+                                        <td className="p-3">獲得正式驗收簽字</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Quiz Components ---
+
+        const QuizModule = () => {
+            const [currentQ, setCurrentQ] = useState(0);
+            const [score, setScore] = useState(0);
+            const [showResult, setShowResult] = useState(false);
+            const [selectedOption, setSelectedOption] = useState(null);
+            const [isCorrect, setIsCorrect] = useState(null);
+
+            const questions = [
+                {
+                    q: "範疇管理的主要功能是確保專案包含什麼工作？",
+                    options: [
+                        "所有可能想到的創新工作",
+                        "包含且只包含成功完成專案所必須執行的工作",
+                        "只要預算足夠，越多越好的工作",
+                        "僅包含產品設計工作，不包含專案管理工作"
+                    ],
+                    ans: 1,
+                    expl: "核心原則是「包含且只包含」(Include and only include)，避免浪費資源。"
+                },
+                {
+                    q: "關於「產品範疇」與「專案範疇」的敘述，下列何者正確？",
+                    options: [
+                        "產品範疇是「工作導向」",
+                        "專案範疇是「需求導向」",
+                        "專案範疇是為了交付具有規定特徵的產品而必須完成的所有工作",
+                        "兩者完全相同，只是名稱不同"
+                    ],
+                    ans: 2,
+                    expl: "產品範疇關注「特徵/功能」(結果)；專案範疇關注「工作」(過程)。"
+                },
+                {
+                    q: "在 WBS 中，最底層的組件被稱為什麼？",
+                    options: [
+                        "工作包 (Work Package)",
+                        "里程碑 (Milestone)",
+                        "活動 (Activity)",
+                        "帳戶編碼 (Code of Account)"
+                    ],
+                    ans: 0,
+                    expl: "WBS 分解到最底層稱為工作包，通常遵循 80 小時原則。"
+                },
+                {
+                    q: "工程師為了展現技術，主動在軟體中加入客戶未要求的隱藏功能，這屬於什麼現象？",
+                    options: [
+                        "範疇蔓延 (Scope Creep)",
+                        "範疇鍍金 (Gold Plating)",
+                        "價值工程 (Value Engineering)",
+                        "持續改進 (Continuous Improvement)"
+                    ],
+                    ans: 1,
+                    expl: "團隊「主動」增加未被要求的功能稱為鍍金；客戶「隨意」增加要求稱為蔓延。"
+                },
+                {
+                    q: "「驗證範疇」與「品質管制」的主要差異在於？",
+                    options: [
+                        "驗證範疇關注正確性，品質管制關注接受度",
+                        "驗證範疇由團隊執行，品質管制由客戶執行",
+                        "驗證範疇關注接受度，品質管制關注正確性",
+                        "兩者都在專案結束後才進行"
+                    ],
+                    ans: 2,
+                    expl: "口訣：品管看正確 (Correctness)，驗證看接受 (Acceptance)。"
+                }
+            ];
+
+            const handleAnswer = (idx) => {
+                if (selectedOption !== null) return;
+                setSelectedOption(idx);
+                const correct = idx === questions[currentQ].ans;
+                setIsCorrect(correct);
+                if (correct) setScore(s => s + 1);
+            };
+
+            const nextQuestion = () => {
+                if (currentQ < questions.length - 1) {
+                    setCurrentQ(c => c + 1);
+                    setSelectedOption(null);
+                    setIsCorrect(null);
+                } else {
+                    setShowResult(true);
+                }
+            };
+
+            const resetQuiz = () => {
+                setCurrentQ(0);
+                setScore(0);
+                setShowResult(false);
+                setSelectedOption(null);
+                setIsCorrect(null);
+            };
+
+            if (showResult) {
+                return (
+                    <div className="flex flex-col items-center justify-center h-full fade-in">
+                        <Icon name="medal" size={80} className="text-yellow-400 mb-4" />
+                        <h2 className="text-3xl font-bold text-slate-800 mb-2">測驗完成！</h2>
+                        <p className="text-xl text-slate-600 mb-6">
+                            你的得分：<span className="font-bold text-emerald-600">{score}</span> / {questions.length}
+                        </p>
+                        <div className="text-center mb-8 max-w-md text-slate-500">
+                            {score === questions.length ? "太強了！你已經掌握了範疇管理的精髓！" : 
+                             score > questions.length / 2 ? "不錯喔！再複習一下錯的觀念就完美了。" : 
+                             "別氣餒，回到「觀念學習」區再看一次吧！"}
+                        </div>
+                        <button 
+                            onClick={resetQuiz}
+                            className="px-6 py-3 bg-emerald-500 text-white rounded-lg shadow hover:bg-emerald-600 transition font-bold flex items-center gap-2"
+                        >
+                            <Icon name="arrow-counter-clockwise" /> 再測一次
+                        </button>
+                    </div>
+                );
+            }
+
+            const qData = questions[currentQ];
+
+            return (
+                <div className="max-w-2xl mx-auto h-full flex flex-col justify-center fade-in">
+                    <div className="mb-6 flex justify-between items-center text-slate-500 text-sm">
+                        <span>Question {currentQ + 1} of {questions.length}</span>
+                        <span>Score: {score}</span>
+                    </div>
+
+                    <div className="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+                        <h3 className="text-xl font-bold text-slate-800 mb-6 leading-relaxed">
+                            {qData.q}
+                        </h3>
+
+                        <div className="space-y-3">
+                            {qData.options.map((opt, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => handleAnswer(idx)}
+                                    disabled={selectedOption !== null}
+                                    className={`w-full text-left p-4 rounded-lg border-2 transition relative
+                                        ${selectedOption === null ? 'border-slate-100 hover:border-blue-300 hover:bg-blue-50' : ''}
+                                        ${selectedOption !== null && idx === qData.ans ? 'border-green-500 bg-green-50 text-green-800' : ''}
+                                        ${selectedOption === idx && idx !== qData.ans ? 'border-red-500 bg-red-50 text-red-800' : ''}
+                                        ${selectedOption !== null && idx !== qData.ans && idx !== selectedOption ? 'opacity-50' : ''}
+                                    `}
+                                >
+                                    <span className="font-bold mr-2">{["A", "B", "C", "D"][idx]}.</span>
+                                    {opt}
+                                    {selectedOption !== null && idx === qData.ans && (
+                                        <Icon name="check-circle" className="absolute right-4 top-4 text-green-600" size={24} />
+                                    )}
+                                    {selectedOption === idx && idx !== qData.ans && (
+                                        <Icon name="x-circle" className="absolute right-4 top-4 text-red-600" size={24} />
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+
+                        {selectedOption !== null && (
+                            <div className="mt-6 pt-4 border-t border-slate-100 animate-bounce-in">
+                                <div className={`p-4 rounded-lg ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} mb-4`}>
+                                    <strong>解析：</strong> {qData.expl}
+                                </div>
+                                <button 
+                                    onClick={nextQuestion}
+                                    className="w-full py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition font-bold flex justify-center items-center gap-2"
+                                >
+                                    {currentQ < questions.length - 1 ? "下一題" : "看結果"} <Icon name="arrow-right" />
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>

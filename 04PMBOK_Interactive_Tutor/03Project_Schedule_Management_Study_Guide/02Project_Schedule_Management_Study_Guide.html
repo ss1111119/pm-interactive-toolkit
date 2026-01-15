@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案時程管理大師：排序活動</title>
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+        }
+        .card-flip {
+            perspective: 1000px;
+        }
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card-front, .card-back {
+            backface-visibility: hidden;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        .flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Icons placeholder (Lucide icons are rendered via i tags or svg, simulating simple icon components here)
+        const Icon = ({ name, size = 24, color = "currentColor" }) => {
+            return <i data-lucide={name} style={{ fontSize: size, color: color, width: size, height: size, display: 'inline-block' }}></i>;
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('diagrams');
+
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [activeTab]);
+
+            return (
+                <div className="min-h-screen bg-gray-100 text-gray-800 pb-10">
+                    {/* Header */}
+                    <header className="bg-blue-600 text-white p-6 shadow-lg">
+                        <div className="max-w-4xl mx-auto">
+                            <h1 className="text-3xl font-bold flex items-center gap-3">
+                                <Icon name="calendar-clock" size={32} />
+                                專案時程管理：排序活動
+                            </h1>
+                            <p className="mt-2 text-blue-100">給初學者的互動式備考指南</p>
+                        </div>
+                    </header>
+
+                    {/* Navigation */}
+                    <nav className="max-w-4xl mx-auto mt-6 px-4">
+                        <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+                            {['diagrams', 'tools', 'dependencies', 'quiz'].map((tab) => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab)}
+                                    className={`px-4 py-2 rounded-full font-medium transition-all ${
+                                        activeTab === tab 
+                                        ? 'bg-blue-600 text-white shadow-md' 
+                                        : 'bg-white text-gray-600 hover:bg-gray-200'
+                                    }`}
+                                >
+                                    {tab === 'diagrams' && '邏輯關係圖解 (PDM)'}
+                                    {tab === 'tools' && '工具比較 (PDM vs ADM)'}
+                                    {tab === 'dependencies' && '依賴與調整'}
+                                    {tab === 'quiz' && '模擬測驗'}
+                                </button>
+                            ))}
+                        </div>
+                    </nav>
+
+                    {/* Content Area */}
+                    <main className="max-w-4xl mx-auto mt-6 px-4">
+                        {activeTab === 'diagrams' && <RelationshipVisualizer />}
+                        {activeTab === 'tools' && <ToolsComparison />}
+                        {activeTab === 'dependencies' && <DependenciesSection />}
+                        {activeTab === 'quiz' && <QuizSection />}
+                    </main>
+                    
+                    <footer className="max-w-4xl mx-auto mt-12 text-center text-gray-500 text-sm pb-6">
+                        <p>Based on Project Management Sequence Activities Analysis</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        // --- Component: Logical Relationship Visualizer ---
+        const RelationshipVisualizer = () => {
+            const [type, setType] = useState('FS');
+
+            const relationships = {
+                FS: {
+                    title: "結束到開始 (Finish-to-Start)",
+                    desc: "活動 A 結束後，活動 B 才能開始。（最常見）",
+                    example: "例子：地基打好了(A)，才能開始砌磚(B)。",
+                    color: "bg-green-100 border-green-500",
+                    aPos: "left-0",
+                    bPos: "left-48 top-12", // Staggered
+                    arrow: "M 140 30 L 160 30 L 160 80 L 190 80", // Simple path logic simulation
+                },
+                SS: {
+                    title: "開始到開始 (Start-to-Start)",
+                    desc: "活動 A 開始後，活動 B 就能開始。（平行進行）",
+                    example: "例子：開始寫程式(A)，就可以開始寫測試文件(B)。",
+                    color: "bg-blue-100 border-blue-500",
+                    aPos: "left-0",
+                    bPos: "left-0 top-24", // Parallel
+                    arrow: "M 10 60 L 10 90", // Start to Start
+                },
+                FF: {
+                    title: "結束到結束 (Finish-to-Finish)",
+                    desc: "活動 A 結束後，活動 B 才能結束。",
+                    example: "例子：寫作(A)結束了，編輯校稿(B)才能全部結束。",
+                    color: "bg-purple-100 border-purple-500",
+                    aPos: "left-0",
+                    bPos: "left-0 top-24",
+                    arrow: "M 130 60 L 130 90", // End to End
+                },
+                SF: {
+                    title: "開始到結束 (Start-to-Finish)",
+                    desc: "活動 A 開始後，活動 B 才能結束。（最少見）",
+                    example: "例子：新保全開始上班(A)，舊保全才能打卡結束下班(B)。",
+                    color: "bg-red-100 border-red-500",
+                    aPos: "left-0 top-24",
+                    bPos: "left-48",
+                    arrow: "M 10 100 L 10 120 L 200 120 L 200 60", // Start A to Finish B
+                }
+            };
+
+            const current = relationships[type];
+
+            return (
+                <div className="bg-white p-6 rounded-xl shadow-md">
+                    <h2 className="text-xl font-bold mb-4">PDM 四種邏輯關係圖解</h2>
+                    <p className="mb-4 text-gray-600">點擊下方按鈕切換關係，觀察方塊與箭頭的變化：</p>
+                    
+                    <div className="flex gap-2 mb-8 flex-wrap">
+                        {Object.keys(relationships).map(key => (
+                            <button 
+                                key={key}
+                                onClick={() => setType(key)}
+                                className={`px-4 py-2 rounded font-bold border-2 ${
+                                    type === key ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200 hover:border-blue-400'
+                                }`}
+                            >
+                                {key}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className={`p-6 rounded-lg border-l-4 mb-6 transition-colors ${current.color}`}>
+                        <h3 className="font-bold text-lg">{current.title}</h3>
+                        <p className="text-gray-800 mt-1">{current.desc}</p>
+                        <p className="text-sm text-gray-600 mt-2 italic">{current.example}</p>
+                    </div>
+
+                    {/* Visualization Canvas */}
+                    <div className="relative bg-gray-50 h-64 border rounded-lg overflow-hidden flex items-center justify-center">
+                        {/* SVG Lines */}
+                        <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#4B5563" />
+                                </marker>
+                            </defs>
+                            {/* Dynamic Logic Drawing based on Type */}
+                            {type === 'FS' && <path d="M 280 100 L 320 100 L 320 100 L 360 100" stroke="#4B5563" strokeWidth="2" markerEnd="url(#arrowhead)" fill="none" />}
+                            
+                            {type === 'SS' && <path d="M 160 100 L 160 150 L 200 150" stroke="#4B5563" strokeWidth="2" markerEnd="url(#arrowhead)" fill="none" strokeDasharray="5,5"/>}
+                            {/* Specific drawing logic for visuals is simplified for HTML/CSS layout below */}
+                        </svg>
+
+                        {/* Activity A */}
+                        <div className={`absolute transition-all duration-500 w-40 h-20 bg-blue-500 text-white rounded flex items-center justify-center font-bold shadow-lg z-20
+                            ${type === 'FS' ? 'left-[120px]' : type === 'SF' ? 'left-[360px]' : 'left-[120px] top-10'}
+                        `}>
+                            活動 A (先行)
+                        </div>
+
+                        {/* Arrow/Line Representation (CSS) */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                             {/* Simplified Connector */}
+                             {type === 'FS' && <div className="w-16 h-1 bg-gray-400 mx-2 relative"><span className="absolute right-0 -top-2 text-2xl text-gray-400">►</span></div>}
+                             {type === 'SS' && <div className="absolute left-[140px] top-[90px] w-1 h-32 border-l-2 border-dashed border-gray-400"></div>} 
+                             {type === 'FF' && <div className="absolute right-[140px] top-[90px] w-1 h-32 border-r-2 border-dashed border-gray-400"></div>}
+                        </div>
+
+                        {/* Activity B */}
+                        <div className={`absolute transition-all duration-500 w-40 h-20 bg-green-500 text-white rounded flex items-center justify-center font-bold shadow-lg z-20
+                            ${type === 'FS' ? 'left-[380px]' : type === 'SF' ? 'left-[120px]' : 'left-[380px] top-10'}
+                        `}>
+                            活動 B (後續)
+                        </div>
+
+                        {/* Visual Logic Label */}
+                        <div className="absolute bottom-4 text-center w-full text-gray-400 text-sm">
+                            {type === 'FS' && "A 結束 -> B 開始"}
+                            {type === 'SS' && "A 開始 -> B 開始 (A 與 B 左側對齊)"}
+                            {type === 'FF' && "A 結束 -> B 結束 (A 與 B 右側對齊)"}
+                            {type === 'SF' && "A 開始 -> B 結束 (邏輯倒置)"}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Component: Tools Comparison ---
+        const ToolsComparison = () => {
+            return (
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Icon name="box" className="text-blue-500" />
+                            <h3 className="text-xl font-bold">PDM (優先順序圖法)</h3>
+                        </div>
+                        <p className="text-sm text-gray-500 mb-4 font-mono">又稱：AON (節點表示法)</p>
+                        <ul className="space-y-3">
+                            <li className="flex items-start gap-2">
+                                <Icon name="check-circle" size={18} className="text-green-500 mt-1" />
+                                <span><strong>特徵：</strong>用「方塊」代表活動，箭頭只代表關係。</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <Icon name="check-circle" size={18} className="text-green-500 mt-1" />
+                                <span><strong>關係：</strong>支援全部 4 種 (FS, SS, FF, SF)。</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <Icon name="check-circle" size={18} className="text-green-500 mt-1" />
+                                <span><strong>地位：</strong>目前業界與軟體最常使用的標準。</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-xl shadow-md border-t-4 border-orange-500">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Icon name="move-right" className="text-orange-500" />
+                            <h3 className="text-xl font-bold">ADM (箭頭繪圖法)</h3>
+                        </div>
+                        <p className="text-sm text-gray-500 mb-4 font-mono">又稱：AOA (箭頭表示法)</p>
+                        <ul className="space-y-3">
+                            <li className="flex items-start gap-2">
+                                <Icon name="alert-circle" size={18} className="text-orange-500 mt-1" />
+                                <span><strong>特徵：</strong>用「箭頭」代表活動，圓圈代表事件。</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <Icon name="alert-circle" size={18} className="text-orange-500 mt-1" />
+                                <span><strong>限制：</strong>只能表示 FS (結束到開始)。</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <Icon name="alert-triangle" size={18} className="text-red-500 mt-1" />
+                                <span><strong>特殊：</strong>需使用「虛擬活動 (Dummy)」來連接邏輯 (不耗時、不耗資源)。</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Component: Dependencies & Lag/Lead ---
+        const DependenciesSection = () => {
+            return (
+                <div className="space-y-6">
+                    <div className="bg-white p-6 rounded-xl shadow-md">
+                        <h3 className="text-xl font-bold mb-4">三種依賴關係 (Dependencies)</h3>
+                        <div className="grid md:grid-cols-3 gap-4">
+                            <div className="bg-gray-50 p-4 rounded border border-gray-200">
+                                <h4 className="font-bold text-red-600 mb-2">1. 強制性 (Hard)</h4>
+                                <p className="text-sm">物理或契約限制，不可更動。</p>
+                                <p className="text-xs text-gray-500 mt-2">例：蓋房子先打地基。</p>
+                            </div>
+                            <div className="bg-gray-50 p-4 rounded border border-gray-200">
+                                <h4 className="font-bold text-blue-600 mb-2">2. 裁決性 (Soft)</h4>
+                                <p className="text-sm">最佳實務或偏好，可以調整。</p>
+                                <p className="text-xs text-gray-500 mt-2">例：先裝修廚房再裝修客廳。</p>
+                            </div>
+                            <div className="bg-gray-50 p-4 rounded border border-gray-200">
+                                <h4 className="font-bold text-green-600 mb-2">3. 外部 (External)</h4>
+                                <p className="text-sm">與專案外活動的依賴。</p>
+                                <p className="text-xs text-gray-500 mt-2">例：等待政府發放許可證。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-xl shadow-md">
+                        <h3 className="text-xl font-bold mb-4">調整時間工具：提前 vs 延後</h3>
+                        <div className="flex flex-col md:flex-row gap-6">
+                            <div className="flex-1 bg-green-50 p-4 rounded-lg border border-green-200">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Icon name="fast-forward" className="text-green-600" />
+                                    <h4 className="font-bold text-green-800">提前量 (Lead)</h4>
+                                </div>
+                                <p className="text-sm text-gray-700">縮短等待，讓後續活動提早開始 (加速)。</p>
+                                <div className="mt-3 bg-white h-2 rounded w-full overflow-hidden flex">
+                                    <div className="w-2/3 bg-blue-400">Activity A</div>
+                                    <div className="w-1/3 bg-transparent relative">
+                                        <div className="absolute -left-4 top-0 h-2 w-12 bg-green-400 opacity-50"></div>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-center mt-1 text-gray-500">重疊執行</p>
+                            </div>
+
+                            <div className="flex-1 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Icon name="clock" className="text-yellow-600" />
+                                    <h4 className="font-bold text-yellow-800">延後量 (Lag)</h4>
+                                </div>
+                                <p className="text-sm text-gray-700">刻意增加等待時間。</p>
+                                <div className="mt-3 bg-white h-2 rounded w-full overflow-hidden flex items-center">
+                                    <div className="w-1/3 bg-blue-400 h-full">Activity A</div>
+                                    <div className="w-1/3 bg-gray-200 h-full flex justify-center items-center text-[8px]">WAIT</div>
+                                    <div className="w-1/3 bg-green-400 h-full">Activity B</div>
+                                </div>
+                                <p className="text-xs text-center mt-1 text-gray-500">例：等水泥乾</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Component: Quiz Section ---
+        const QuizSection = () => {
+            const [currentQ, setCurrentQ] = useState(0);
+            const [showAnswer, setShowAnswer] = useState(false);
+            const [score, setScore] = useState(0);
+            const [finished, setFinished] = useState(false);
+
+            const questions = [
+                {
+                    q: "哪一種繪圖技術使用「方塊」代表活動，並且是目前最常用的方法？",
+                    options: ["ADM (箭頭繪圖法)", "PDM (優先順序圖法)", "Gantt Chart (甘特圖)", "WBS"],
+                    correct: 1,
+                    explanation: "PDM (或稱 AON) 使用節點/方塊代表活動，是目前的主流。"
+                },
+                {
+                    q: "「活動 A 完成後，活動 B 才能開始」屬於哪種邏輯關係？",
+                    options: ["SS (Start-to-Start)", "FF (Finish-to-Finish)", "FS (Finish-to-Start)", "SF (Start-to-Finish)"],
+                    correct: 2,
+                    explanation: "這是最標準的流程：做完前一步，才能做下一步 (FS)。"
+                },
+                {
+                    q: "ADM (箭頭繪圖法) 有時需要使用什麼來表示邏輯關係，但不消耗資源？",
+                    options: ["關鍵路徑 (Critical Path)", "緩衝時間 (Buffer)", "虛擬活動 (Dummy Activity)", "里程碑 (Milestone)"],
+                    correct: 2,
+                    explanation: "ADM 只能表示 FS，為了連接複雜邏輯，必須使用虛線畫的「虛擬活動」。"
+                },
+                {
+                    q: "「油漆漆完後，必須等待 2 天乾燥才能掛畫」，這 2 天稱為什麼？",
+                    options: ["提前量 (Lead)", "延後量 (Lag)", "浮動時間 (Float)", "寬限期"],
+                    correct: 1,
+                    explanation: "刻意增加的等待時間稱為 Lag (延後量)。"
+                },
+                {
+                    q: "團隊基於過去的最佳經驗，決定先做設計再做實作，這屬於哪種依賴關係？",
+                    options: ["強制性依賴 (Hard Logic)", "裁決性依賴 (Soft Logic)", "外部依賴", "內部依賴"],
+                    correct: 1,
+                    explanation: "基於經驗或最佳實務的選擇，稱為裁決性依賴 (軟邏輯)，因為它不是物理上絕對必須的。"
+                }
+            ];
+
+            const handleAnswer = (idx) => {
+                if (showAnswer) return;
+                if (idx === questions[currentQ].correct) {
+                    setScore(score + 1);
+                }
+                setShowAnswer(true);
+            };
+
+            const nextQuestion = () => {
+                if (currentQ < questions.length - 1) {
+                    setCurrentQ(currentQ + 1);
+                    setShowAnswer(false);
+                } else {
+                    setFinished(true);
+                }
+            };
+
+            const resetQuiz = () => {
+                setCurrentQ(0);
+                setScore(0);
+                setFinished(false);
+                setShowAnswer(false);
+            };
+
+            if (finished) {
+                return (
+                    <div className="bg-white p-8 rounded-xl shadow-md text-center">
+                        <Icon name="trophy" size={64} className="text-yellow-500 mx-auto mb-4" />
+                        <h2 className="text-2xl font-bold mb-2">測驗完成！</h2>
+                        <p className="text-lg mb-6">你的得分：<span className="font-bold text-blue-600">{score}</span> / {questions.length}</p>
+                        <button onClick={resetQuiz} className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">再測一次</button>
+                    </div>
+                );
+            }
+
+            const qData = questions[currentQ];
+
+            return (
+                <div className="bg-white p-6 rounded-xl shadow-md max-w-2xl mx-auto">
+                    <div className="flex justify-between items-center mb-4">
+                        <span className="text-sm font-bold text-gray-400">Question {currentQ + 1} / {questions.length}</span>
+                        <span className="text-sm font-bold text-blue-500">Score: {score}</span>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold mb-6">{qData.q}</h3>
+                    
+                    <div className="space-y-3">
+                        {qData.options.map((opt, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => handleAnswer(idx)}
+                                disabled={showAnswer}
+                                className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                                    showAnswer 
+                                        ? idx === qData.correct 
+                                            ? 'bg-green-100 border-green-500' 
+                                            : 'bg-gray-50 border-gray-200 opacity-50'
+                                        : 'bg-white border-gray-200 hover:border-blue-300'
+                                }`}
+                            >
+                                <div className="flex justify-between">
+                                    <span>{opt}</span>
+                                    {showAnswer && idx === qData.correct && <Icon name="check" className="text-green-600" />}
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+
+                    {showAnswer && (
+                        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100 animate-fade-in">
+                            <p className="font-bold text-blue-800 mb-1">解析：</p>
+                            <p className="text-blue-900">{qData.explanation}</p>
+                            <button 
+                                onClick={nextQuestion}
+                                className="mt-4 bg-blue-600 text-white px-6 py-2 rounded w-full font-bold hover:bg-blue-700"
+                            >
+                                {currentQ < questions.length - 1 ? "下一題" : "查看結果"}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

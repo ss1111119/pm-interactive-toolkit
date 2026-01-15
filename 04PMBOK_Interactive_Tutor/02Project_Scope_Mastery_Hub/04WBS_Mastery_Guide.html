@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WBS 專案範疇管理學習神器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .card-flip {
+            perspective: 1000px;
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        
+        .card-flip.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-front {
+            background-color: white;
+            color: #1f2937;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .card-back {
+            background-color: #2563eb;
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        /* Tree structure lines */
+        .tree ul {
+            padding-top: 20px; position: relative;
+            transition: all 0.5s;
+        }
+        .tree li {
+            float: left; text-align: center;
+            list-style-type: none;
+            position: relative;
+            padding: 20px 5px 0 5px;
+            transition: all 0.5s;
+        }
+        .tree li::before, .tree li::after {
+            content: ''; position: absolute; top: 0; right: 50%;
+            border-top: 2px solid #ccc;
+            width: 50%; height: 20px;
+        }
+        .tree li::after {
+            right: auto; left: 50%;
+            border-left: 2px solid #ccc;
+        }
+        .tree li:only-child::after, .tree li:only-child::before {
+            display: none;
+        }
+        .tree li:only-child { padding-top: 0; }
+        .tree li:first-child::before, .tree li:last-child::after {
+            border: 0 none;
+        }
+        .tree li:last-child::before{
+            border-right: 2px solid #ccc;
+            border-radius: 0 5px 0 0;
+        }
+        .tree li:first-child::after{
+            border-radius: 5px 0 0 0;
+        }
+        .tree ul ul::before{
+            content: ''; position: absolute; top: 0; left: 50%;
+            border-left: 2px solid #ccc;
+            width: 0; height: 20px;
+        }
+        .tree-node {
+            border: 2px solid #ccc;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #666;
+            font-family: arial, verdana, tahoma;
+            font-size: 14px;
+            display: inline-block;
+            border-radius: 5px;
+            transition: all 0.5s;
+            background: white;
+        }
+        .tree-node:hover, .tree-node:hover+ul li .tree-node {
+            background: #c8e4f8; color: #000; border: 2px solid #94a0b4;
+        }
+        .tree-node:hover+ul li::after, 
+        .tree-node:hover+ul li::before, 
+        .tree-node:hover+ul::before, 
+        .tree-node:hover+ul ul::before{
+            border-color:  #94a0b4;
+        }
+
+        .active-tab {
+            border-bottom: 3px solid #2563eb;
+            color: #2563eb;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-project-diagram text-blue-600 text-2xl mr-3"></i>
+                    <h1 class="text-xl font-bold text-gray-900">WBS 專案範疇管理 <span class="text-sm font-normal text-gray-500 ml-2">全方位備考指南</span></h1>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <button onclick="switchTab('learn')" id="tab-learn" class="tab-btn active-tab px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">重點卡片</button>
+                    <button onclick="switchTab('visual')" id="tab-visual" class="tab-btn px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">結構圖解</button>
+                    <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">模擬測驗</button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="md:hidden flex justify-around border-t border-gray-200 bg-gray-50">
+            <button onclick="switchTab('learn')" class="flex-1 py-3 text-sm text-gray-600 font-medium">重點</button>
+            <button onclick="switchTab('visual')" class="flex-1 py-3 text-sm text-gray-600 font-medium">圖解</button>
+            <button onclick="switchTab('quiz')" class="flex-1 py-3 text-sm text-gray-600 font-medium">測驗</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <!-- Tab 1: Learning Cards -->
+        <div id="content-learn" class="space-y-6">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">核心概念記憶卡</h2>
+                <p class="text-gray-600 mt-2">共 9 張重點卡片，涵蓋所有考點</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Card 1 -->
+                <div class="card-flip h-64" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fas fa-sitemap text-4xl text-blue-500 mb-4"></i>
+                            <h3 class="text-xl font-bold">WBS 的核心定義</h3>
+                            <p class="text-sm text-gray-500 mt-2">(點擊看答案)</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-lg font-bold mb-2">交付標的導向</h3>
+                            <p class="text-sm px-4">WBS 是一個以「交付標的 (Deliverables)」或系統功能為導向的階層式樹狀結構。不是列出動作，是列出產出物！</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="card-flip h-64" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fas fa-hourglass-half text-4xl text-orange-500 mb-4"></i>
+                            <h3 class="text-xl font-bold">80 小時原則</h3>
+                            <p class="text-sm text-gray-500 mt-2">工作包的大小規則</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-lg font-bold mb-2">Two Week Rule</h3>
+                            <p class="text-sm px-4">每個工作包(Work Package)的完成時間不應超過 80 小時或兩週。這樣才方便監控進度與成本。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card-flip h-64" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fas fa-layer-group text-4xl text-green-500 mb-4"></i>
+                            <h3 class="text-xl font-bold">建立方法：Top-down</h3>
+                            <p class="text-sm text-gray-500 mt-2">適用情境？</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-lg font-bold mb-2">由上而下法</h3>
+                            <p class="text-sm px-4">邏輯性最強，最常用。適用於專案目標明確，對開發程序清楚的時候，按順序拆解。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="card-flip h-64" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fas fa-search-plus text-4xl text-purple-500 mb-4"></i>
+                            <h3 class="text-xl font-bold">建立方法：Bottom-up</h3>
+                            <p class="text-sm text-gray-500 mt-2">適用情境？</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-lg font-bold mb-2">由下而上法</h3>
+                            <p class="text-sm px-4">先列零散活動再歸類。適用於「專案概念模糊」或「全新探索性」的專案。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="card-flip h-64" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fas fa-book text-4xl text-red-500 mb-4"></i>
+                            <h3 class="text-xl font-bold">WBS 字典</h3>
+                            <p class="text-sm text-gray-500 mt-2">它的功能是？</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-lg font-bold mb-2">詳細說明書</h3>
+                            <p class="text-sm px-4">補足 WBS 圖形的不足。包含工作內容、負責單位、資源需求與驗收準則。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="card-flip h-64" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fas fa-users-cog text-4xl text-indigo-500 mb-4"></i>
+                            <h3 class="text-xl font-bold">WBS + OBS = ?</h3>
+                            <p class="text-sm text-gray-500 mt-2">經典公式</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-lg font-bold mb-2">RAM (責任指派矩陣)</h3>
+                            <p class="text-sm px-4">WBS(做什麼) 加上 OBS(誰來做)，就能產出 RAM，明確指出「誰負責做什麼工作」。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 7 (New) -->
+                <div class="card-flip h-64" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fas fa-clone text-4xl text-teal-500 mb-4"></i>
+                            <h3 class="text-xl font-bold">類比法與生命週期法</h3>
+                            <p class="text-sm text-gray-500 mt-2">其他建立策略</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-lg font-bold mb-2">參考與流程</h3>
+                            <p class="text-sm px-4">類比法：參考類似專案的 WBS。生命週期法：依專案階段（如需求、設計、測試）展開結構。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 8 (New) -->
+                <div class="card-flip h-64" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fas fa-chart-line text-4xl text-pink-500 mb-4"></i>
+                            <h3 class="text-xl font-bold">管制帳戶 (CA)</h3>
+                            <p class="text-sm text-gray-500 mt-2">管理控制點</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-lg font-bold mb-2">績效測量點</h3>
+                            <p class="text-sm px-4">連結 WBS 與 OBS 的控制點，用於「管錢管進度」及測量專案績效 (如 EVM) 的位置。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 9 (New) -->
+                <div class="card-flip h-64" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fas fa-comments-dollar text-4xl text-yellow-500 mb-4"></i>
+                            <h3 class="text-xl font-bold">WBS 的整合價值</h3>
+                            <p class="text-sm text-gray-500 mt-2">為什麼它這麼重要？</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-lg font-bold mb-2">基礎與溝通</h3>
+                            <p class="text-sm px-4">WBS 是編制預算、估計費用、排程與風險管理的基礎，也是與利害關係人的標準溝通語言。</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Tab 2: Visualization -->
+        <div id="content-visual" class="hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6 overflow-x-auto">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">WBS 結構視覺化</h2>
+                    <p class="text-gray-600">這是一個「蓋房子」的 WBS 範例，最底層就是「工作包」</p>
+                </div>
+                
+                <div class="tree flex justify-center min-w-[600px]">
+                    <ul>
+                        <li>
+                            <div class="tree-node font-bold bg-blue-100 border-blue-300">
+                                專案：建造夢想小屋
+                                <div class="text-xs text-gray-500 mt-1">L1: 專案層級</div>
+                            </div>
+                            <ul>
+                                <li>
+                                    <div class="tree-node font-semibold">
+                                        1.0 設計階段
+                                        <div class="text-xs text-gray-500 mt-1">L2: 交付階段</div>
+                                    </div>
+                                    <ul>
+                                        <li>
+                                            <div class="tree-node">
+                                                1.1 平面圖
+                                                <div class="text-xs text-green-600 mt-1 font-bold">工作包</div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="tree-node">
+                                                1.2 3D模型
+                                                <div class="text-xs text-green-600 mt-1 font-bold">工作包</div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <div class="tree-node font-semibold">
+                                        2.0 施工階段
+                                        <div class="text-xs text-gray-500 mt-1">L2: 交付階段</div>
+                                    </div>
+                                    <ul>
+                                        <li>
+                                            <div class="tree-node">
+                                                2.1 地基工程
+                                                <div class="text-xs text-green-600 mt-1 font-bold">工作包</div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="tree-node">
+                                                2.2 結構工程
+                                                <div class="text-xs text-gray-500 mt-1">L3: 子階段</div>
+                                            </div>
+                                            <ul>
+                                                <li>
+                                                    <div class="tree-node">
+                                                        2.2.1 牆面
+                                                        <div class="text-xs text-green-600 mt-1 font-bold">工作包</div>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="tree-node">
+                                                        2.2.2 屋頂
+                                                        <div class="text-xs text-green-600 mt-1 font-bold">工作包</div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div class="bg-blue-50 p-4 rounded border border-blue-200">
+                        <h4 class="font-bold text-blue-800">管制帳戶 (Control Account)</h4>
+                        <p class="text-gray-700 mt-1">通常設在重要節點（如 2.0 施工階段），用來做績效測量 (EVM) 的點。</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded border border-green-200">
+                        <h4 class="font-bold text-green-800">工作包 (Work Package)</h4>
+                        <p class="text-gray-700 mt-1">最底層的綠色方塊。遵守 80 小時原則，可以明確指派負責人。</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                        <h4 class="font-bold text-gray-800">WBS 編碼</h4>
+                        <p class="text-gray-700 mt-1">注意看 1.0, 1.1, 2.2.1 這些編號，這能幫助會計系統追蹤成本。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Quiz -->
+        <div id="content-quiz" class="hidden">
+            <div class="max-w-2xl mx-auto">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="bg-indigo-600 px-6 py-4">
+                        <h2 class="text-xl font-bold text-white">小白通關測驗</h2>
+                        <p class="text-indigo-200 text-sm">測試你對 NotebookLM 重點的掌握度</p>
+                    </div>
+                    
+                    <div class="p-6 space-y-8" id="quiz-container">
+                        <!-- Questions will be injected here via JS -->
+                    </div>
+
+                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
+                        <span id="score-display" class="font-bold text-lg text-gray-800"></span>
+                        <button onclick="resetQuiz()" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">重新測驗</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 py-6 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; 2024 Project Management Study Guide. Based on NotebookLM Analysis.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabName) {
+            // Hide all contents
+            document.getElementById('content-learn').classList.add('hidden');
+            document.getElementById('content-visual').classList.add('hidden');
+            document.getElementById('content-quiz').classList.add('hidden');
+            
+            // Remove active style from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active-tab', 'text-blue-600');
+                btn.classList.add('text-gray-500');
+            });
+
+            // Show selected content
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            
+            // Add active style to selected button
+            const activeBtn = document.getElementById('tab-' + tabName);
+            activeBtn.classList.add('active-tab', 'text-blue-600');
+            activeBtn.classList.remove('text-gray-500');
+
+            // Mobile menu logic can be added here if using simple class toggles
+        }
+
+        // Quiz Logic
+        const questions = [
+            {
+                q: "1. 根據定義，WBS 是以什麼為導向的結構？",
+                options: ["時間導向 (Time-oriented)", "流程導向 (Process-oriented)", "交付標的導向 (Deliverable-oriented)", "成本導向 (Cost-oriented)"],
+                a: 2,
+                explanation: "WBS 的核心是「產出物」或「系統功能」，也就是交付標的。"
+            },
+            {
+                q: "2. 關於工作包 (Work Package) 的「80 小時原則」，下列何者正確？",
+                options: ["這項工作至少要做 80 小時", "這項工作的完成時間不應超過 80 小時", "這項工作的預算不能超過 80 萬", "這項工作需要 80 個人來完成"],
+                a: 1,
+                explanation: "80 小時原則（或兩週原則）是指工作包不應過大，上限為 80 小時，以便於監控。"
+            },
+            {
+                q: "3. 你接手了一個「全新且模糊」的創新專案，對於整體範圍還不太清楚。建立 WBS 時，建議採用哪種方法？",
+                options: ["由上而下法 (Top-down)", "生命週期法 (Life Cycle)", "類比法 (Analogy)", "由下而上法 (Bottom-up)"],
+                a: 3,
+                explanation: "對於模糊或探索性的專案，先列出零散活動再歸類的「由下而上法」最為適用。"
+            },
+            {
+                q: "4. WBS 與 OBS (組織分解結構) 結合後，可以產生什麼管理工具？",
+                options: ["WBS 字典", "責任指派矩陣 (RAM)", "甘特圖 (Gantt Chart)", "要徑法 (CPM)"],
+                a: 1,
+                explanation: "WBS (工作) + OBS (人) = RAM (誰做什麼)。這是範疇管理的整合價值。"
+            }
+        ];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            
+            questions.forEach((item, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'border-b border-gray-100 pb-6 last:border-0';
+                
+                let optionsHtml = '';
+                item.options.forEach((opt, optIndex) => {
+                    optionsHtml += `
+                        <label class="flex items-center space-x-3 p-3 rounded hover:bg-gray-50 cursor-pointer">
+                            <input type="radio" name="q${index}" value="${optIndex}" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300" onchange="checkAnswer(${index}, ${optIndex})">
+                            <span class="text-gray-700">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                qDiv.innerHTML = `
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">${item.q}</h3>
+                    <div class="space-y-2">
+                        ${optionsHtml}
+                    </div>
+                    <div id="feedback-${index}" class="hidden mt-3 p-3 rounded text-sm"></div>
+                `;
+                container.appendChild(qDiv);
+            });
+        }
+
+        let score = 0;
+        let answered = new Array(questions.length).fill(false);
+
+        function checkAnswer(qIndex, userChoice) {
+            if (answered[qIndex]) return; // Prevent re-answering
+            
+            answered[qIndex] = true;
+            const feedbackEl = document.getElementById(`feedback-${qIndex}`);
+            const isCorrect = userChoice === questions[qIndex].a;
+            
+            feedbackEl.classList.remove('hidden');
+            if (isCorrect) {
+                feedbackEl.classList.add('bg-green-100', 'text-green-800');
+                feedbackEl.innerHTML = `<i class="fas fa-check-circle mr-2"></i><strong>答對了！</strong> ${questions[qIndex].explanation}`;
+                score++;
+            } else {
+                feedbackEl.classList.add('bg-red-100', 'text-red-800');
+                feedbackEl.innerHTML = `<i class="fas fa-times-circle mr-2"></i><strong>答錯了。</strong> ${questions[qIndex].explanation}`;
+            }
+
+            updateScore();
+        }
+
+        function updateScore() {
+            const totalAnswered = answered.filter(Boolean).length;
+            document.getElementById('score-display').innerText = `目前得分：${score} / ${questions.length}`;
+        }
+
+        function resetQuiz() {
+            score = 0;
+            answered.fill(false);
+            renderQuiz();
+            document.getElementById('score-display').innerText = '';
+        }
+
+        // Initialize
+        renderQuiz();
+    </script>
+</body>
+</html>

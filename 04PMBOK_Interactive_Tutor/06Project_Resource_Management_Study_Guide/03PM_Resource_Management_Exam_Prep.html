@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案資源管理：備考速成班 (完整版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        .tab-active { border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: bold; background-color: #eff6ff; }
+        .card-flip { perspective: 1000px; }
+        .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 1rem; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .card-back { transform: rotateY(180deg); background-color: #f0f9ff; color: #0369a1; border: 2px solid #bae6fd; }
+        .flipped { transform: rotateY(180deg); }
+        /* Scrollbar hiding for clean tab navigation */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col" x-data="{ currentTab: 'concept' }">
+
+    <header class="bg-gradient-to-r from-blue-700 to-blue-500 text-white p-6 shadow-lg">
+        <div class="max-w-5xl mx-auto">
+            <h1 class="text-3xl font-bold mb-2">專案資源管理：備考全攻略</h1>
+            <p class="opacity-90 text-sm md:text-base">從零基礎到滿分：核心觀念、塔克曼、心理學、衝突管理與 ITTO 解析</p>
+        </div>
+    </header>
+
+    <nav class="bg-white shadow sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex overflow-x-auto no-scrollbar">
+            <button @click="currentTab = 'concept'" :class="{ 'tab-active': currentTab === 'concept' }" class="flex-shrink-0 px-5 py-4 hover:bg-gray-50 transition text-sm md:text-base font-medium">1. 核心觀念</button>
+            <button @click="currentTab = 'tuckman'" :class="{ 'tab-active': currentTab === 'tuckman' }" class="flex-shrink-0 px-5 py-4 hover:bg-gray-50 transition text-sm md:text-base font-medium">2. 塔克曼模型</button>
+            <button @click="currentTab = 'theory'" :class="{ 'tab-active': currentTab === 'theory' }" class="flex-shrink-0 px-5 py-4 hover:bg-gray-50 transition text-sm md:text-base font-medium">3. 心理學理論</button>
+            <button @click="currentTab = 'conflict'" :class="{ 'tab-active': currentTab === 'conflict' }" class="flex-shrink-0 px-5 py-4 hover:bg-gray-50 transition text-sm md:text-base font-medium text-red-600">4. 衝突管理 (必考)</button>
+            <button @click="currentTab = 'itto'" :class="{ 'tab-active': currentTab === 'itto' }" class="flex-shrink-0 px-5 py-4 hover:bg-gray-50 transition text-sm md:text-base font-medium text-purple-600">5. 流程細節 (ITTO)</button>
+            <button @click="currentTab = 'quiz'" :class="{ 'tab-active': currentTab === 'quiz' }" class="flex-shrink-0 px-5 py-4 hover:bg-gray-50 transition text-sm md:text-base font-medium">6. 模擬考題</button>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-5xl mx-auto w-full p-4 md:p-6 space-y-6">
+
+        <div x-show="currentTab === 'concept'" x-transition.opacity class="space-y-6">
+            <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+                <h2 class="text-2xl font-bold mb-4 text-blue-800">兩大流程的根本差異</h2>
+                <p class="mb-4 text-gray-600">考試訣竅：判斷題目是在「培養能力 (練兵)」還是在「解決問題 (管兵)」。</p>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-green-50 p-5 rounded-lg border border-green-200">
+                        <h3 class="text-xl font-bold text-green-700 mb-2 flex items-center">
+                            <span class="text-2xl mr-2">🌱</span> 發展團隊 (Develop)
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-3 font-semibold">口訣：練兵、培養、凝聚力</p>
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li><strong>目標：</strong>讓大家變強、變熟、氣氛變好。</li>
+                            <li><strong>關鍵手段：</strong>
+                                <span class="bg-green-100 px-2 py-1 rounded text-xs text-green-800">集中辦公</span>
+                                <span class="bg-green-100 px-2 py-1 rounded text-xs text-green-800">表揚獎勵</span>
+                                <span class="bg-green-100 px-2 py-1 rounded text-xs text-green-800">培訓</span>
+                            </li>
+                            <li><strong>產出結果：</strong>團隊績效評估 (成績單)。</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-red-50 p-5 rounded-lg border border-red-200">
+                        <h3 class="text-xl font-bold text-red-700 mb-2 flex items-center">
+                            <span class="text-2xl mr-2">🔧</span> 管理團隊 (Manage)
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-3 font-semibold">口訣：管秩序、盯績效、解決衝突</p>
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li><strong>目標：</strong>修正錯誤、解決紛爭、確保產出。</li>
+                            <li><strong>關鍵手段：</strong>
+                                <span class="bg-red-100 px-2 py-1 rounded text-xs text-red-800">360度回饋</span>
+                                <span class="bg-red-100 px-2 py-1 rounded text-xs text-red-800">衝突管理</span>
+                            </li>
+                            <li><strong>產出結果：</strong>變更請求 (換人/修正)。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="currentTab === 'tuckman'" x-transition.opacity class="space-y-6">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">塔克曼 (Tuckman) 團隊發展五階段</h2>
+            <p class="text-gray-600 text-sm">請依照順序記憶，並特別注意 PM 在各階段的領導風格。</p>
+
+            <div class="space-y-4" x-data="{ activeStage: 1 }">
+                <div class="flex flex-wrap gap-2">
+                    <template x-for="(stage, index) in [
+                        {id:1, name:'1. 形成期 (Forming)', icon:'👋'},
+                        {id:2, name:'2. 激盪期 (Storming)', icon:'⚡'},
+                        {id:3, name:'3. 規範期 (Norming)', icon:'🤝'},
+                        {id:4, name:'4. 表現期 (Performing)', icon:'🚀'},
+                        {id:5, name:'5. 解散期 (Adjourning)', icon:'🏁'}
+                    ]">
+                        <button @click="activeStage = stage.id" 
+                            :class="activeStage === stage.id ? 'bg-indigo-600 text-white shadow-lg ring-2 ring-indigo-300' : 'bg-white text-gray-600 hover:bg-gray-100 border'"
+                            class="flex-1 py-2 px-3 md:py-3 md:px-4 rounded-lg transition text-xs md:text-sm font-bold">
+                            <span x-text="stage.icon"></span> <span x-text="stage.name" class="hidden md:inline"></span>
+                            <span x-text="stage.id" class="md:hidden"></span>
+                        </button>
+                    </template>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-indigo-500">
+                    <div x-show="activeStage === 1">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-2">1. 形成期 (Forming)</h3>
+                        <p class="mb-2"><strong>特徵：</strong> 客氣、安靜、觀察風向。不知道角色職責。</p>
+                        <p class="bg-indigo-50 p-3 rounded text-sm border border-indigo-100"><strong>PM 策略 (指導式)：</strong> 需要明確指令 (Directing)。告訴大家該做什麼。</p>
+                    </div>
+                    <div x-show="activeStage === 2">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-2">2. 激盪期 (Storming) <span class="text-red-500 text-sm ml-2">⚠️ 考點</span></h3>
+                        <p class="mb-2"><strong>特徵：</strong> 衝突發生、搶奪權力、意見不合。團隊氣氛最差。</p>
+                        <p class="bg-indigo-50 p-3 rounded text-sm border border-indigo-100"><strong>PM 策略 (教練式)：</strong> 需要調解與輔導 (Coaching)。解決衝突是第一要務。</p>
+                    </div>
+                    <div x-show="activeStage === 3">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-2">3. 規範期 (Norming)</h3>
+                        <p class="mb-2"><strong>特徵：</strong> 建立共識、產生習慣 (Ground Rules)、信任感增加。</p>
+                        <p class="bg-indigo-50 p-3 rounded text-sm border border-indigo-100"><strong>PM 策略 (支持式)：</strong> 鼓勵與協助 (Supporting)。</p>
+                    </div>
+                    <div x-show="activeStage === 4">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-2">4. 表現期 (Performing)</h3>
+                        <p class="mb-2"><strong>特徵：</strong> 高效運作、相互依賴、能自我解決問題。</p>
+                        <p class="bg-indigo-50 p-3 rounded text-sm border border-indigo-100"><strong>PM 策略 (授權式)：</strong> 放手讓團隊做 (Delegating)。</p>
+                    </div>
+                    <div x-show="activeStage === 5">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-2">5. 解散期 (Adjourning)</h3>
+                        <p class="mb-2"><strong>特徵：</strong> 專案結束，情緒複雜 (失落/興奮)。</p>
+                        <p class="bg-indigo-50 p-3 rounded text-sm border border-indigo-100"><strong>PM 策略：</strong> 表揚與慶功。肯定大家的貢獻。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="currentTab === 'theory'" x-transition.opacity>
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">重要心理學理論 (點擊卡片翻轉)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="h-64 cursor-pointer card-flip" onclick="this.querySelector('.card-inner').classList.toggle('flipped')">
+                    <div class="card-inner bg-white rounded-lg shadow-md border">
+                        <div class="card-front">
+                            <div class="text-4xl mb-4">🔺</div>
+                            <h3 class="text-xl font-bold">馬斯洛需求層級</h3>
+                        </div>
+                        <div class="card-back">
+                            <h4 class="font-bold mb-2 text-blue-800">由下而上滿足</h4>
+                            <ol class="text-left text-sm list-decimal pl-4 space-y-1">
+                                <li>生理 (溫飽)</li>
+                                <li>安全 (穩定)</li>
+                                <li>社交 (歸屬)</li>
+                                <li>尊嚴 (成就)</li>
+                                <li>自我實現</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-64 cursor-pointer card-flip" onclick="this.querySelector('.card-inner').classList.toggle('flipped')">
+                    <div class="card-inner bg-white rounded-lg shadow-md border">
+                        <div class="card-front">
+                            <div class="text-4xl mb-4">⚖️</div>
+                            <h3 class="text-xl font-bold">赫茲伯格雙因子</h3>
+                        </div>
+                        <div class="card-back">
+                            <h4 class="font-bold mb-2 text-blue-800">保健 vs 激勵</h4>
+                            <div class="text-left text-sm space-y-2 px-2">
+                                <p><strong>💊 保健 (Hygiene)：</strong><br>薪水、環境。<br>沒有會不爽，有也只是「剛好」。</p>
+                                <p><strong>🏆 激勵 (Motivation)：</strong><br>責任、成就感。<br>能真正提升士氣。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-64 cursor-pointer card-flip" onclick="this.querySelector('.card-inner').classList.toggle('flipped')">
+                    <div class="card-inner bg-white rounded-lg shadow-md border">
+                        <div class="card-front">
+                            <div class="text-4xl mb-4">❌ ✅</div>
+                            <h3 class="text-xl font-bold">麥格雷戈 XY 理論</h3>
+                        </div>
+                        <div class="card-back">
+                            <h4 class="font-bold mb-2 text-blue-800">人性假設</h4>
+                            <div class="text-left text-sm space-y-2 px-2">
+                                <p><strong>❌ X 理論：</strong><br>性惡論 (懶惰)。<br>手段：嚴格控制、懲罰。</p>
+                                <p><strong>✅ Y 理論：</strong><br>性善論 (負責)。<br>手段：授權、參與。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="currentTab === 'conflict'" x-transition.opacity>
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">衝突管理 5 大策略 (必考情境)</h2>
+            <p class="mb-4 text-gray-600 text-sm">考試會給你一個情境，問你 PM 用了哪一招。請記住「雙贏」永遠是首選。</p>
+            
+            <div class="grid gap-4">
+                <div class="bg-white border-l-8 border-green-500 rounded shadow p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-lg text-green-700">1. 合作/解決問題 (Collaborate / Problem Solve)</h3>
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-bold">雙贏 (Win-Win)</span>
+                    </div>
+                    <p class="text-sm text-gray-700"><strong>情境：</strong> 雙方坦誠相見，尋找「根源問題」，找出讓雙方都滿意的解法。</p>
+                    <p class="text-sm mt-1 text-gray-500">💡 這是 PMP 考試中的「最佳解」，除非時間不夠。</p>
+                </div>
+
+                <div class="bg-white border-l-8 border-red-500 rounded shadow p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-lg text-red-700">2. 強迫/命令 (Force / Direct)</h3>
+                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded font-bold">一贏一輸 (Win-Lose)</span>
+                    </div>
+                    <p class="text-sm text-gray-700"><strong>情境：</strong> 利用權力強制執行。「照我說的做！」</p>
+                    <p class="text-sm mt-1 text-gray-500">💡 適用於：緊急狀況、攸關法規時。</p>
+                </div>
+
+                <div class="bg-white border-l-8 border-yellow-500 rounded shadow p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-lg text-yellow-700">3. 妥協/調解 (Compromise / Reconcile)</h3>
+                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded font-bold">雙輸 (Lose-Lose)</span>
+                    </div>
+                    <p class="text-sm text-gray-700"><strong>情境：</strong> 各退一步。找一個「大家雖不滿意但能接受」的中間點。</p>
+                    <p class="text-sm mt-1 text-gray-500">💡 適用於：暫時解決問題。</p>
+                </div>
+
+                <div class="bg-white border-l-8 border-blue-400 rounded shadow p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-lg text-blue-700">4. 緩解/包容 (Smooth / Accommodate)</h3>
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded font-bold">輸-贏 (Lose-Win)</span>
+                    </div>
+                    <p class="text-sm text-gray-700"><strong>情境：</strong> 強調共識，忽略差異。「你說的都對，我們先別吵。」</p>
+                    <p class="text-sm mt-1 text-gray-500">💡 適用於：和諧比問題本身重要時。</p>
+                </div>
+
+                <div class="bg-white border-l-8 border-gray-400 rounded shadow p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-lg text-gray-700">5. 撤退/迴避 (Withdraw / Avoid)</h3>
+                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded font-bold">雙輸-迴避</span>
+                    </div>
+                    <p class="text-sm text-gray-700"><strong>情境：</strong> 暫時不處理，從衝突中撤離。「我待會再回覆你。」</p>
+                    <p class="text-sm mt-1 text-gray-500">💡 適用於：需要冷靜、收集資料時。</p>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="currentTab === 'itto'" x-transition.opacity>
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">流程細節透視 (ITTO 重點)</h2>
+            <p class="mb-4 text-gray-600">這是很多人混淆的地方，請專注於「輸出 (Output)」的差異。</p>
+
+            <div class="overflow-hidden bg-white shadow rounded-lg">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">比較項目</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-green-600 uppercase tracking-wider bg-green-50">發展團隊 (Develop)</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider bg-red-50">管理團隊 (Manage)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200 text-sm">
+                        <tr>
+                            <td class="px-6 py-4 font-bold text-gray-900 whitespace-nowrap">核心動作</td>
+                            <td class="px-6 py-4 text-gray-600">提升能力、促進互動<br>(Training, Teambuilding)</td>
+                            <td class="px-6 py-4 text-gray-600">追蹤表現、解決問題<br>(Tracking, Resolving)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-bold text-gray-900 whitespace-nowrap">主要產出 (Outputs)</td>
+                            <td class="px-6 py-4 text-gray-600">
+                                <ul class="list-disc pl-4">
+                                    <li class="font-bold text-green-700">團隊績效評估<br>(Team Performance Assessments)</li>
+                                    <li>變更請求 (較少見)</li>
+                                </ul>
+                            </td>
+                            <td class="px-6 py-4 text-gray-600">
+                                <ul class="list-disc pl-4">
+                                    <li class="font-bold text-red-700">變更請求<br>(Change Requests)</li>
+                                    <li>專案管理計畫書更新</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-bold text-gray-900 whitespace-nowrap">關鍵工具 (Tools)</td>
+                            <td class="px-6 py-4 text-gray-600">集中辦公、認可與獎勵、<br>人際關係技能</td>
+                            <td class="px-6 py-4 text-gray-600">人際關係技能 (衝突管理)、<br>專案管理資訊系統</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 p-4 bg-yellow-50 text-yellow-800 rounded text-sm border border-yellow-200">
+                <strong>💡 記憶點：</strong> 
+                「發展」是為了交出成績單（績效評估），證明訓練有效；
+                「管理」是發現不對勁，所以要提出改變（變更請求）。
+            </div>
+        </div>
+
+        <div x-show="currentTab === 'quiz'" x-transition.opacity>
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">全真模擬考題 (含新題型)</h2>
+            
+            <div class="space-y-6" x-data="{ 
+                questions: [
+                    {
+                        q: 'Q1: 兩位核心工程師對於資料庫架構爭執不下，專案時程已經落後。PM 介入後說：「我們現在沒時間討論這個，先照 A 方案做，之後再說。」請問 PM 用了哪種衝突管理策略？',
+                        options: ['合作/解決問題 (Collaborate)', '強迫/命令 (Force)', '撤退/迴避 (Withdraw)', '妥協 (Compromise)'],
+                        ans: 1,
+                        expl: 'PM 利用權力強制決定方案 A，且忽視了 B 的意見，這是典型的「強迫/命令」。雖然解決了當下進度問題，但可能導致 B 不滿 (Win-Lose)。'
+                    },
+                    {
+                        q: 'Q2: 在每個月的團隊會議中，PM 都會頒發「最佳進步獎」給成員。這屬於哪一個流程的活動？',
+                        options: ['管理團隊 (Manage Team)', '發展團隊 (Develop Team)', '獲取資源 (Acquire Resources)', '控制資源 (Control Resources)'],
+                        ans: 1,
+                        expl: '「認可與獎勵 (Recognition and Rewards)」是「發展團隊」的工具與技術，目的是激勵成員，提升士氣。'
+                    },
+                    {
+                        q: 'Q3: 團隊發生衝突，PM 召集雙方坐下來，深入探討雙方的需求，最後找出了一個融合雙方想法的新方案。這是？',
+                        options: ['妥協 (Compromise)', '緩解 (Smooth)', '合作/解決問題 (Collaborate)', '強迫 (Force)'],
+                        ans: 2,
+                        expl: '深入探討根源、融合雙方想法、尋求雙贏，這是「合作/解決問題 (Collaborate)」。注意：妥協是各退一步，合作是創造新價值。'
+                    },
+                    {
+                        q: 'Q4: 根據赫茲伯格雙因子理論，下列哪一項屬於「激勵因子」，能真正提升員工滿意度？',
+                        options: ['舒適的辦公椅', '有競爭力的薪水', '工作帶來的成就感', '良好的同事關係'],
+                        ans: 2,
+                        expl: '辦公椅、薪水、同事關係都屬於「保健因子 (Hygiene)」，沒有會不爽，有也只是剛好。只有「成就感、責任、晉升」屬於激勵因子。'
+                    },
+                    {
+                        q: 'Q5: 專案經理完成了一份文件，內容詳細記載了團隊成員在過去三個月的技能提升狀況與合作效率。這份文件最可能是？',
+                        options: ['變更請求', '團隊績效評估 (Team Performance Assessments)', '工作績效報告', '資源行事曆'],
+                        ans: 1,
+                        expl: '這是「發展團隊」的主要輸出：團隊績效評估。用來評估團隊建設活動是否有效。'
+                    }
+                ]
+            }">
+                
+                <template x-for="(item, idx) in questions">
+                    <div class="bg-white p-6 rounded-lg shadow border hover:shadow-md transition" x-data="{ selected: null, showExpl: false }">
+                        <p class="font-bold text-lg mb-4 text-gray-800" x-text="item.q"></p>
+                        <div class="space-y-2">
+                            <template x-for="(opt, optIdx) in item.options">
+                                <button 
+                                    @click="selected = optIdx; showExpl = true"
+                                    :class="{
+                                        'bg-green-100 border-green-500 text-green-900 font-bold': showExpl && optIdx === item.ans,
+                                        'bg-red-100 border-red-500 text-red-900': showExpl && selected === optIdx && optIdx !== item.ans,
+                                        'hover:bg-gray-50 border-gray-300 text-gray-700': !showExpl
+                                    }"
+                                    class="w-full text-left p-3 rounded border transition block"
+                                    x-text="opt"
+                                    :disabled="showExpl"
+                                ></button>
+                            </template>
+                        </div>
+                        <div x-show="showExpl" x-transition class="mt-4 p-4 bg-blue-50 text-blue-900 rounded text-sm border-l-4 border-blue-400">
+                            <strong>解析：</strong> <span x-text="item.expl"></span>
+                        </div>
+                    </div>
+                </template>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white text-center p-8 mt-8">
+        <p class="mb-2">Generated by AI Thought Partner for Project Management Exam Prep.</p>
+        <p class="text-xs text-gray-400">Content based on NotebookLM analysis & PMP Best Practices.</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案風險管理：零基礎考前衝刺班</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --card-bg: #ffffff;
+        }
+        body {
+            font-family: "Microsoft JhengHei", "Segoe UI", sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 { margin: 0; font-size: 2rem; }
+        p.subtitle { opacity: 0.9; margin-top: 0.5rem; }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .nav-btn:hover { color: var(--accent); }
+        .nav-btn.active {
+            color: var(--accent);
+            border-bottom: 3px solid var(--accent);
+        }
+
+        /* Content Sections */
+        .section {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            animation: fadeIn 0.5s;
+        }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 { border-left: 5px solid var(--accent); padding-left: 15px; color: var(--primary); }
+        h3 { color: var(--accent); margin-top: 1.5rem; }
+
+        /* Concept Cards */
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary);
+        }
+        .highlight { font-weight: bold; color: var(--danger); }
+        .good { font-weight: bold; color: var(--success); }
+
+        /* Process Steps */
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            background: #fff;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .step-num {
+            background: var(--accent);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+
+        /* Strategy Game */
+        .strategy-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .strategy-col { flex: 1; min-width: 300px; }
+        .strategy-item {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.2s;
+        }
+        .strategy-item:hover { background: #e9ecef; }
+        .details-box {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f6f3;
+            border-radius: 5px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        /* Quiz */
+        .quiz-question {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        .options label {
+            display: block;
+            padding: 10px;
+            background: #f8f9fa;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .options input { margin-right: 10px; }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .correct { background: #d4edda; color: #155724; }
+        .incorrect { background: #f8d7da; color: #721c24; }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .btn:hover { background: #2980b9; }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🎯 專案風險管理速成班</h1>
+    <p class="subtitle">為零基礎設計的互動式考前筆記</p>
+</header>
+
+<div class="container">
+    <div class="nav-tabs">
+        <button class="nav-btn active" onclick="switchTab('concept')">1. 核心觀念</button>
+        <button class="nav-btn" onclick="switchTab('process')">2. 七大流程</button>
+        <button class="nav-btn" onclick="switchTab('strategy')">3. 應對策略</button>
+        <button class="nav-btn" onclick="switchTab('exam')">4. 模擬測驗</button>
+    </div>
+
+    <div id="concept" class="section active">
+        <h2>什麼是風險管理？</h2>
+        <p>想像你要帶團去國外旅遊。風險管理不是「等出事了解決」，而是「出發前先想好」。</p>
+        
+        <div class="concept-grid">
+            <div class="card" style="border-left-color: var(--success);">
+                <h3>核心哲學：主動式 (Proactive)</h3>
+                <p>關鍵字：<b>預防勝於治療</b>。</p>
+                <p>核心價值：在風險發生前就採取行動，而不是事後補救（那是危機管理）。</p>
+            </div>
+            <div class="card" style="border-left-color: var(--accent);">
+                <h3>風險不只是「壞事」</h3>
+                <p>在專案管理中，風險包含：</p>
+                <ul>
+                    <li><span class="highlight">威脅 (Threats)</span>：負面事件。目標是降低機率與衝擊。</li>
+                    <li><span class="good">機會 (Opportunities)</span>：正面事件。目標是提高機率與衝擊。</li>
+                </ul>
+            </div>
+            <div class="card" style="border-left-color: var(--danger);">
+                <h3>兩個層次</h3>
+                <p><b>1. 個別專案風險：</b> 單一事件（例如：某個工程師生病）。</p>
+                <p><b>2. 整體專案風險：</b> 整個專案的不確定性（例如：市場景氣突然變差）。</p>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; background: #fff3cd; padding: 15px; border-radius: 10px;">
+            <strong>🎓 考試重點筆記：</strong>
+            <br>
+            風險管理就像是專案的「免疫系統」。它與<span class="highlight">範疇、時程、成本（三重限制）</span>息息相關。若不管理風險，這三個基準通常會直接受害。
+        </div>
+    </div>
+
+    <div id="process" class="section">
+        <h2>風險管理的七大關鍵流程</h2>
+        <p>來源資料特別提到，新版 PMBOK 從 6 個流程增加為 7 個，新增了<b>「實施風險回應」</b>。這代表「光說不練」是不行的，必須執行！</p>
+
+        <div class="step">
+            <div class="step-num">1</div>
+            <div>
+                <strong>規劃風險管理 (Plan Risk Management)</strong>
+                <br>制定遊戲規則。定義我們要怎麼做風險管理？誰負責？容忍度是多少？
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">2</div>
+            <div>
+                <strong>識別風險 (Identify Risks)</strong>
+                <br>把所有可能發生的好事、壞事找出來。
+                <br><em>方法：德菲法（專家匿名）、腦力激盪、SWOT 分析。</em>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">3</div>
+            <div>
+                <strong>執行質性風險分析 (Perform Qualitative Risk Analysis)</strong>
+                <br>這是「排序」。判斷哪個風險比較緊急？
+                <br><em>關鍵：評估發生機率 (Probability) 與 衝擊 (Impact)。</em>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">4</div>
+            <div>
+                <strong>執行量化風險分析 (Perform Quantitative Risk Analysis)</strong>
+                <br>這是「算數字」。到底會賠多少錢？晚多少天？
+                <br><em>方法：蒙地卡羅分析（電腦模擬）、統計方法。</em>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">5</div>
+            <div>
+                <strong>規劃風險回應 (Plan Risk Responses)</strong>
+                <br>想對策。對於找出來的風險，我們要怎麼辦？(這是下一步驟的重點)。
+            </div>
+        </div>
+
+        <div class="step" style="border: 2px solid var(--accent); background: #f0f8ff;">
+            <div class="step-num">6</div>
+            <div>
+                <strong>實施風險回應 (Implement Risk Responses)</strong>
+                <br>★ 考試重點：這是新增的流程！
+                <br>確保商量好的對策真的被執行了，而不只是寫在紙上。
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">7</div>
+            <div>
+                <strong>監視風險 (Monitor Risks)</strong>
+                <br>持續追蹤。舊風險還在嗎？有殘餘風險嗎？有新風險嗎？
+            </div>
+        </div>
+    </div>
+
+    <div id="strategy" class="section">
+        <h2>風險回應策略配對</h2>
+        <p>這是考試最愛考的題型。請點擊下方的策略名稱，查看它的定義與應用情境。</p>
+
+        <div class="strategy-container">
+            <div class="strategy-col">
+                <h3 style="color: var(--danger);">🛑 面對威脅 (負面風險)</h3>
+                
+                <div class="strategy-item" onclick="toggleDetail('avoid')">
+                    <strong>規避 (Avoid)</strong>
+                    <div id="avoid" class="details-box">
+                        <b>定義：</b> 消除威脅，讓機率變 0。<br>
+                        <b>例子：</b> 怕下雨導致戶外活動取消 -> 改在室內舉辦。<br>
+                        <b>口訣：</b> 徹底閃躲。
+                    </div>
+                </div>
+
+                <div class="strategy-item" onclick="toggleDetail('transfer')">
+                    <strong>轉移 (Transfer)</strong>
+                    <div id="transfer" class="details-box">
+                        <b>定義：</b> 找第三方承擔責任。<br>
+                        <b>例子：</b> 買保險、外包給廠商做。<br>
+                        <b>口訣：</b> 花錢消災，找替死鬼。
+                    </div>
+                </div>
+
+                <div class="strategy-item" onclick="toggleDetail('mitigate')">
+                    <strong>減輕 (Mitigate)</strong>
+                    <div id="mitigate" class="details-box">
+                        <b>定義：</b> 降低發生的「機率」或「衝擊」。<br>
+                        <b>例子：</b> 怕系統當機 -> 多裝一台備用主機 (Redundancy)。<br>
+                        <b>口訣：</b> 大事化小。
+                    </div>
+                </div>
+
+                <div class="strategy-item" onclick="toggleDetail('accept_bad')">
+                    <strong>接受 (Accept)</strong>
+                    <div id="accept_bad" class="details-box">
+                        <b>定義：</b> 沒辦法處理或處理成本太高，只好接受。<br>
+                        <b>例子：</b> 若下雨就穿雨衣繼續做。<br>
+                        <b>口訣：</b> 雙手一攤，預留準備金。
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategy-col">
+                <h3 style="color: var(--success);">🚀 面對機會 (正面風險)</h3>
+
+                <div class="strategy-item" onclick="toggleDetail('exploit')">
+                    <strong>開拓 (Exploit)</strong>
+                    <div id="exploit" class="details-box">
+                        <b>定義：</b> 消除不確定性，確保機會 100% 發生。<br>
+                        <b>例子：</b> 指派最強的工程師去搶這個合約。<br>
+                        <b>口訣：</b> 勢在必得。
+                    </div>
+                </div>
+
+                <div class="strategy-item" onclick="toggleDetail('share')">
+                    <strong>分享 (Share)</strong>
+                    <div id="share" class="details-box">
+                        <b>定義：</b> 與第三方合作，一起獲利。<br>
+                        <b>例子：</b> 與另一家公司組建合資企業 (Joint Venture) 投標。<br>
+                        <b>口訣：</b> 有錢大家賺。
+                    </div>
+                </div>
+
+                <div class="strategy-item" onclick="toggleDetail('enhance')">
+                    <strong>強化 (Enhance)</strong>
+                    <div id="enhance" class="details-box">
+                        <b>定義：</b> 提高機會發生的「機率」或「衝擊」。<br>
+                        <b>例子：</b> 為了拿到獎金，投入更多資源提早完工。<br>
+                        <b>口訣：</b> 錦上添花。
+                    </div>
+                </div>
+
+                 <div class="strategy-item" onclick="toggleDetail('accept_good')">
+                    <strong>接受 (Accept)</strong>
+                    <div id="accept_good" class="details-box">
+                        <b>定義：</b> 樂觀其成，但不主動追求。<br>
+                        <b>例子：</b> 如果天氣好就當作賺到。<br>
+                        <b>口訣：</b> 隨緣。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; padding: 10px; border: 1px dashed #666;">
+            <strong>特別策略：上報 (Escalate)</strong><br>
+            當風險（無論好壞）超出專案經理的權限或影響範圍時，不要自己扛，要回報給高層管理。
+        </div>
+    </div>
+
+    <div id="exam" class="section">
+        <h2>🔥 考前模擬測驗</h2>
+        <p>根據你的筆記內容生成的題目。</p>
+
+        <div class="quiz-question">
+            <p><strong>1. 關於專案風險管理的描述，下列何者正確？</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q1" value="a"> A. 風險管理主要是在問題發生後進行補救（危機管理）</label>
+                <label><input type="radio" name="q1" value="b"> B. 風險只有負面的，目標是消除所有風險</label>
+                <label><input type="radio" name="q1" value="c"> C. 風險管理是主動式的過程，旨在提高正面事件機率並降低負面事件衝擊</label>
+                <label><input type="radio" name="q1" value="d"> D. 風險管理是獨立的領域，與範疇、時程、成本無關</label>
+            </div>
+            <button class="btn" onclick="checkAnswer('q1', 'c')">送出答案</button>
+            <div id="q1-feedback" class="feedback"></div>
+        </div>
+
+        <div class="quiz-question">
+            <p><strong>2. 專案經理決定為昂貴的設備購買保險，以防運送途中損壞。這是屬於哪一種風險回應策略？</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q2" value="a"> A. 規避 (Avoid)</label>
+                <label><input type="radio" name="q2" value="b"> B. 轉移 (Transfer)</label>
+                <label><input type="radio" name="q2" value="c"> C. 減輕 (Mitigate)</label>
+                <label><input type="radio" name="q2" value="d"> D. 接受 (Accept)</label>
+            </div>
+            <button class="btn" onclick="checkAnswer('q2', 'b')">送出答案</button>
+            <div id="q2-feedback" class="feedback"></div>
+        </div>
+
+        <div class="quiz-question">
+            <p><strong>3. 在新版的風險管理流程中，新增了哪一個步驟，強調計畫必須被具體執行？</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q3" value="a"> A. 識別風險</label>
+                <label><input type="radio" name="q3" value="b"> B. 實施風險回應 (Implement Risk Responses)</label>
+                <label><input type="radio" name="q3" value="c"> C. 執行量化風險分析</label>
+                <label><input type="radio" name="q3" value="d"> D. 規劃風險管理</label>
+            </div>
+            <button class="btn" onclick="checkAnswer('q3', 'b')">送出答案</button>
+            <div id="q3-feedback" class="feedback"></div>
+        </div>
+        
+         <div class="quiz-question">
+            <p><strong>4. 使用「蒙地卡羅分析」來模擬風險對專案整體目標的影響，是屬於哪一個流程？</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q4" value="a"> A. 執行質性風險分析</label>
+                <label><input type="radio" name="q4" value="b"> B. 規劃風險回應</label>
+                <label><input type="radio" name="q4" value="c"> C. 執行量化風險分析</label>
+                <label><input type="radio" name="q4" value="d"> D. 識別風險</label>
+            </div>
+            <button class="btn" onclick="checkAnswer('q4', 'c')">送出答案</button>
+            <div id="q4-feedback" class="feedback"></div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    // Tab switching logic
+    function switchTab(tabId) {
+        // Remove active class from all buttons and sections
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+
+        // Add active class to clicked button
+        event.target.classList.add('active');
+        // Show corresponding section
+        document.getElementById(tabId).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    // Toggle Strategy Details
+    function toggleDetail(id) {
+        const el = document.getElementById(id);
+        const currentDisplay = window.getComputedStyle(el).display;
+        if (currentDisplay === 'none') {
+            el.style.display = 'block';
+        } else {
+            el.style.display = 'none';
+        }
+    }
+
+    // Quiz Logic
+    function checkAnswer(questionId, correctAnswer) {
+        const options = document.getElementsByName(questionId);
+        let selectedValue = null;
+        for (const option of options) {
+            if (option.checked) {
+                selectedValue = option.value;
+                break;
+            }
+        }
+
+        const feedbackEl = document.getElementById(questionId + '-feedback');
+        feedbackEl.style.display = 'block';
+        
+        if (!selectedValue) {
+            feedbackEl.className = 'feedback incorrect';
+            feedbackEl.innerHTML = '請先選擇一個答案！';
+            return;
+        }
+
+        if (selectedValue === correctAnswer) {
+            feedbackEl.className = 'feedback correct';
+            let explanation = "正確！";
+            if(questionId === 'q1') explanation += " 風險管理核心是主動式管理，包含正面機會與負面威脅。";
+            if(questionId === 'q2') explanation += " 購買保險是典型的「轉移」策略，將財務後果轉嫁給第三方。";
+            if(questionId === 'q3') explanation += " 筆記提到流程由 6 個增加為 7 個，新增了「實施風險回應」。";
+            if(questionId === 'q4') explanation += " 蒙地卡羅分析是「量化」分析的一種數值模擬方法。";
+            feedbackEl.innerHTML = explanation;
+        } else {
+            feedbackEl.className = 'feedback incorrect';
+            feedbackEl.innerHTML = '答案不正確，請參考筆記內容再試一次。';
+        }
+    }
+</script>
+
+</body>
+</html>

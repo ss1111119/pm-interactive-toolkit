@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理入門：定義活動 (Chapter 06)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+            height: 200px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 0.75rem;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .flip-card-front {
+            background-color: #ffffff;
+            color: #1e293b;
+            border: 2px solid #e2e8f0;
+        }
+
+        .flip-card-back {
+            background-color: #3b82f6;
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .tab-btn.active {
+            border-bottom: 3px solid #3b82f6;
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Flowchart connection lines */
+        .flow-line {
+            position: absolute;
+            background-color: #cbd5e1;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-tasks text-blue-600 text-2xl mr-3"></i>
+                    <span class="font-bold text-xl tracking-tight text-slate-800">PM 備考指南：定義活動</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        
+        <!-- Introduction Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-slate-800 mb-3">第六章：專案時程管理</h1>
+            <p class="text-lg text-slate-500">將抽象的「範疇」轉化為可執行的「行動清單」</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-200 mb-8 overflow-x-auto">
+            <button onclick="switchTab('concept')" id="tab-concept" class="tab-btn active px-6 py-3 focus:outline-none whitespace-nowrap">圖解觀念</button>
+            <button onclick="switchTab('flashcards')" id="tab-flashcards" class="tab-btn px-6 py-3 focus:outline-none whitespace-nowrap">關鍵字記憶卡</button>
+            <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn px-6 py-3 focus:outline-none whitespace-nowrap">模擬測驗</button>
+        </div>
+
+        <!-- Content Area -->
+        <div id="content-area" class="min-h-[500px]">
+            <!-- Content will be injected here by JS -->
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-6 mt-12">
+        <div class="max-w-5xl mx-auto px-4 text-center">
+            <p class="text-slate-400 text-sm">Based on PMBOK Guide Context & User NotebookLM Analysis</p>
+        </div>
+    </footer>
+
+    <script>
+        // Data Models
+        const conceptHTML = `
+            <div class="fade-in space-y-8">
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded mb-6">
+                    <h3 class="font-bold text-blue-800 text-lg mb-2">核心定義</h3>
+                    <p class="text-blue-700">「定義活動」是識別為完成專案交付標的而必須採取之特定行動的過程。它是從範疇規劃（WBS）過渡到時程規劃的橋樑。</p>
+                </div>
+
+                <div class="relative bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                    <h3 class="text-xl font-bold mb-6 text-center">分解 (Decomposition) 流程圖</h3>
+                    
+                    <div class="flex flex-col items-center space-y-6 relative z-10">
+                        <!-- Level 1 -->
+                        <div class="w-64 p-4 bg-slate-800 text-white rounded-lg text-center shadow-md">
+                            <div class="font-bold text-lg">專案範疇 (Project Scope)</div>
+                            <div class="text-xs text-slate-300">我們要交付什麼成果？</div>
+                        </div>
+
+                        <i class="fas fa-arrow-down text-slate-400 text-xl"></i>
+
+                        <!-- Level 2 -->
+                        <div class="w-64 p-4 bg-indigo-600 text-white rounded-lg text-center shadow-md">
+                            <div class="font-bold text-lg">工作包 (Work Package)</div>
+                            <div class="text-xs text-indigo-200">最小的管理單元 (WBS底層)</div>
+                        </div>
+
+                        <div class="flex items-center text-slate-400 text-sm py-2">
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded border border-yellow-200 font-bold">關鍵轉折點：定義活動</span>
+                        </div>
+                        <i class="fas fa-arrow-down text-slate-400 text-xl"></i>
+
+                        <!-- Level 3 -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+                            <div class="p-3 bg-green-500 text-white rounded-lg text-center shadow hover:bg-green-600 transition">
+                                <div class="font-bold">活動 A</div>
+                                <div class="text-xs opacity-90">具體動作</div>
+                            </div>
+                            <div class="p-3 bg-green-500 text-white rounded-lg text-center shadow hover:bg-green-600 transition">
+                                <div class="font-bold">活動 B</div>
+                                <div class="text-xs opacity-90">可估算工期</div>
+                            </div>
+                            <div class="p-3 bg-green-500 text-white rounded-lg text-center shadow hover:bg-green-600 transition">
+                                <div class="font-bold">活動 C</div>
+                                <div class="text-xs opacity-90">消耗資源</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ITTO Summary Table -->
+                <div class="bg-white rounded-lg shadow border border-slate-200 overflow-hidden mt-8">
+                    <div class="bg-slate-100 px-6 py-3 border-b border-slate-200">
+                        <h4 class="font-bold text-slate-800">考試重點速記表 (ITTO)</h4>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+                        <div class="p-5">
+                            <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">輸入 (參考依據)</h5>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i><span>專案管理計畫書 (範疇基準)</span></li>
+                                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i><span>企業環境因素 / 組織流程資產</span></li>
+                            </ul>
+                        </div>
+                        <div class="p-5 bg-blue-50/50">
+                            <h5 class="text-xs font-bold text-blue-400 uppercase tracking-wide mb-3">工具與技術 (怎麼做)</h5>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex items-start"><i class="fas fa-wrench text-blue-500 mt-1 mr-2"></i><strong>分解 (Decomposition)</strong></li>
+                                <li class="flex items-start"><i class="fas fa-wrench text-blue-500 mt-1 mr-2"></i><strong>滾動式規劃 (Rolling Wave)</strong></li>
+                                <li class="flex items-start"><i class="fas fa-wrench text-blue-500 mt-1 mr-2"></i><span>專家判斷 & 會議</span></li>
+                            </ul>
+                        </div>
+                        <div class="p-5">
+                            <h5 class="text-xs font-bold text-purple-400 uppercase tracking-wide mb-3">產出 (結果文件)</h5>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex items-start"><i class="fas fa-file-alt text-purple-500 mt-1 mr-2"></i><strong>活動清單</strong></li>
+                                <li class="flex items-start"><i class="fas fa-file-alt text-purple-500 mt-1 mr-2"></i><strong>活動屬性</strong></li>
+                                <li class="flex items-start"><i class="fas fa-flag text-purple-500 mt-1 mr-2"></i><strong>里程碑清單</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const flashcardsHTML = `
+            <div class="fade-in">
+                <p class="text-center text-slate-500 mb-6">點擊卡片查看定義與考試重點</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    ${createCard('滾動式規劃', 'Rolling Wave Planning', '針對近期工作詳細規劃，遠期工作僅作高層級概括規劃。這是一種「漸進明細」的形式。')}
+                    ${createCard('里程碑', 'Milestone', '標記專案的重要階段或事件。特點是：工期通常為零 (Zero Duration)，不消耗資源，只是一個檢查點。')}
+                    ${createCard('分解', 'Decomposition', '將專案工作包劃分為更小、更易管理之「活動」的技術。直到足以支持估算與排程為止。')}
+                    ${createCard('工作包 vs 活動', 'WP vs Activity', '工作包是 WBS 的最小單元（交付物名詞）；活動是為了完成工作包所需的具體行動（執行動作動詞）。')}
+                    ${createCard('活動屬性', 'Activity Attributes', '對每項活動的詳細描述，包含編號、先行/後續活動、邏輯關係、提前與延後量。類似活動的「履歷表」。')}
+                    ${createCard('WBS 與活動對應效益', 'WBS & Activity Link', '當 WBS 與活動清單緊密對應時，能提供更精確的「成本估算」與「績效衡量基準」，確保錢與事都對得上。')}
+                </div>
+            </div>
+        `;
+
+        const quizData = [
+            {
+                question: "「定義活動」流程的主要目的是將下列哪一項轉化為具體行動？",
+                options: ["專案章程", "工作包 (Work Package)", "活動清單", "風險登記冊"],
+                answer: 1,
+                explanation: "定義活動是將 WBS 中的「工作包」進一步分解成可執行的「活動」。"
+            },
+            {
+                question: "關於「滾動式規劃 (Rolling Wave Planning)」，下列敘述何者正確？",
+                options: [
+                    "專案一開始就需要對所有工作進行詳細規劃",
+                    "它只適用於敏捷專案，不適用於傳統專案",
+                    "近期工作詳細規劃，遠期工作概括規劃",
+                    "它是一種縮減專案範疇的技術"
+                ],
+                answer: 2,
+                explanation: "滾動式規劃是漸進明細的一種形式，針對近期要完成的工作詳細規劃，遠期則保持高層級規劃。"
+            },
+            {
+                question: "「里程碑 (Milestone)」與一般「活動」最大的區別在於？",
+                options: [
+                    "里程碑需要消耗大量資源",
+                    "里程碑通常沒有工期 (Duration = 0)",
+                    "里程碑不需要被列在清單中",
+                    "里程碑由客戶定義，活動由團隊定義"
+                ],
+                answer: 1,
+                explanation: "來源資料指出，里程碑通常是瞬時的（不具工期），用以標記專案的重要階段或事件。"
+            },
+            {
+                question: "下列哪一項不是「定義活動」流程的產出？",
+                options: ["活動清單", "里程碑清單", "活動屬性", "專案排程網圖"],
+                answer: 3,
+                explanation: "「專案排程網圖」是下一個流程「排序活動」的產出。定義活動產出的是清單類文件。"
+            },
+            {
+                question: "根據來源資料，當「WBS」與「活動清單」相對應時，主要能帶來什麼效益？",
+                options: [
+                    "減少專案團隊的溝通時間",
+                    "提供更精確的成本估算與績效衡量基準",
+                    "消除所有的專案風險",
+                    "自動產生專案時程表"
+                ],
+                answer: 1,
+                explanation: "資料顯示，兩者對應能為專案提供更精確的成本估算與績效衡量依據，確保管理的一致性。"
+            }
+        ];
+
+        // Helper Functions
+        function createCard(title, subtitle, content) {
+            return `
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3 class="text-xl font-bold text-slate-800">${title}</h3>
+                            <p class="text-sm text-slate-500 mt-2">${subtitle}</p>
+                            <p class="text-xs text-blue-500 mt-4 font-semibold">(點擊翻看重點)</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3 class="font-bold text-lg border-b border-blue-400 pb-2 mb-2 w-full">${title}</h3>
+                            <p class="text-sm leading-relaxed">${content}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderQuiz() {
+            let html = '<div class="space-y-8 fade-in max-w-2xl mx-auto">';
+            quizData.forEach((q, index) => {
+                html += `
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+                        <div class="flex items-start mb-4">
+                            <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0">${index + 1}</span>
+                            <h3 class="text-lg font-semibold text-slate-800 pt-1">${q.question}</h3>
+                        </div>
+                        <div class="space-y-3 pl-11">
+                            ${q.options.map((opt, i) => `
+                                <button onclick="checkAnswer(${index}, ${i}, this)" 
+                                    class="w-full text-left p-3 rounded border border-slate-200 hover:bg-blue-50 transition quiz-opt-${index} group">
+                                    <span class="inline-block w-6 text-slate-400 group-hover:text-blue-500">${String.fromCharCode(65+i)}.</span>
+                                    ${opt}
+                                </button>
+                            `).join('')}
+                        </div>
+                        <div id="feedback-${index}" class="hidden mt-4 ml-11 p-4 rounded bg-slate-50 text-sm"></div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            return html;
+        }
+
+        function checkAnswer(qIndex, userChoice, btnElement) {
+            const q = quizData[qIndex];
+            const feedbackEl = document.getElementById(`feedback-${qIndex}`);
+            const allBtns = document.querySelectorAll(`.quiz-opt-${qIndex}`);
+            
+            // Disable all buttons for this question
+            allBtns.forEach(btn => btn.disabled = true);
+
+            if (userChoice === q.answer) {
+                btnElement.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                feedbackEl.innerHTML = `<strong class="text-green-600">答對了！</strong><br>${q.explanation}`;
+                feedbackEl.classList.remove('bg-red-50');
+                feedbackEl.classList.add('bg-green-50');
+            } else {
+                btnElement.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+                // Highlight correct answer
+                allBtns[q.answer].classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                feedbackEl.innerHTML = `<strong class="text-red-600">答錯了。</strong><br>正確答案是 ${String.fromCharCode(65+q.answer)}。<br>${q.explanation}`;
+                feedbackEl.classList.remove('bg-green-50');
+                feedbackEl.classList.add('bg-red-50');
+            }
+            feedbackEl.classList.remove('hidden');
+        }
+
+        function switchTab(tabName) {
+            // Update Buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            // Update Content
+            const contentArea = document.getElementById('content-area');
+            if (tabName === 'concept') {
+                contentArea.innerHTML = conceptHTML;
+            } else if (tabName === 'flashcards') {
+                contentArea.innerHTML = flashcardsHTML;
+            } else if (tabName === 'quiz') {
+                contentArea.innerHTML = renderQuiz();
+            }
+        }
+
+        // Initialize
+        window.onload = () => {
+            switchTab('concept');
+        };
+
+    </script>
+</body>
+</html>

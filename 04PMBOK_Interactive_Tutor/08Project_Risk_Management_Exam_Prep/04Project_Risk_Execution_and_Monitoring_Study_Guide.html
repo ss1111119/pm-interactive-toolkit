@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案風險管理：實施與監視 - 互動學習指南</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #475569;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), #1e40af);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 { margin: 0; font-size: 1.8rem; }
+        header p { opacity: 0.9; margin-top: 10px; }
+
+        .tabs {
+            display: flex;
+            background: #e2e8f0;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--surface);
+            color: var(--primary);
+            border-top: 3px solid var(--primary);
+        }
+
+        .content-section {
+            display: none;
+            padding: 30px;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Concept Styles */
+        .concept-card {
+            background: #f1f5f9;
+            border-left: 5px solid var(--primary);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .analogy-box {
+            background: #fff7ed;
+            border: 1px solid #ffedd5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .analogy-title {
+            color: var(--accent);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Flashcard Styles */
+        .flashcards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            perspective: 1000px;
+            height: 200px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-front {
+            background-color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .card-back {
+            background-color: var(--primary);
+            color: white;
+            transform: rotateY(180deg);
+            font-size: 1rem;
+        }
+
+        /* Quiz Styles */
+        .question-box {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 20px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .option-btn.correct {
+            background-color: #dcfce7;
+            border-color: #22c55e;
+            color: #14532d;
+        }
+
+        .option-btn.wrong {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #7f1d1d;
+        }
+
+        .explanation {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            display: none;
+        }
+        
+        .explanation.show {
+            display: block;
+        }
+
+        .diagram {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px dashed #cbd5e1;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🚑 專案風險管理急診室</h1>
+        <p>給初學者的「實施風險因應」與「監視風險」備考指南</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('concept')">📚 核心觀念</button>
+        <button class="tab-btn" onclick="switchTab('terms')">📇 必考名詞卡</button>
+        <button class="tab-btn" onclick="switchTab('quiz')">✍️ 模擬測驗</button>
+    </div>
+
+    <div id="concept" class="content-section active">
+        <h2>如何理解這兩個流程？</h2>
+        <p>這兩個流程構成了風險管理的「行動與監控」迴圈。不要死記硬背，我們用「生病看醫生」來比喻：</p>
+
+        <div class="analogy-box">
+            <div class="analogy-title">💡 初學者譬喻：醫生與病人</div>
+            <p><strong>1. 實施風險因應 (Implement)：吃藥/開刀</strong></p>
+            <ul>
+                <li>你在之前的階段（規劃）已經拿到處方箋了。</li>
+                <li>這個階段就是<strong>「真的去執行」</strong>處方箋上的動作。</li>
+                <li><strong>重點：</strong> PM 需要「影響力」去盯著大家把藥吃下去（執行計畫）。</li>
+            </ul>
+            <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
+            <p><strong>2. 監視風險 (Monitor)：定期回診</strong></p>
+            <ul>
+                <li>吃了藥有效嗎？(驗證有效性)</li>
+                <li>有沒有副作用？(識別二次風險)</li>
+                <li>最近有新的流感病毒嗎？(識別新威脅)</li>
+                <li><strong>重點：</strong> 這是一個持續不斷的過程，直到病好了（專案結束）。</li>
+            </ul>
+        </div>
+
+        <h3>流程關鍵點整理</h3>
+        <div class="concept-card">
+            <h4>🔴 實施風險因應 (Implement Risk Responses)</h4>
+            <p>將「紙上的計畫」轉化為「實際的行動」。</p>
+            <ul>
+                <li><strong>PMBOK 演進：</strong> 這是後來新增的流程，強調「光說不練」沒用，必須確保執行。</li>
+                <li><strong>PM 的角色：</strong> 需要使用<strong>人際關係與團隊技能</strong>（特別是影響力），確保風險負責人真的有在做事。</li>
+                <li><strong>產出：</strong> 如果發現計畫不可行，就會提出<strong>變更請求</strong>。</li>
+            </ul>
+        </div>
+
+        <div class="concept-card">
+            <h4>🔵 監視風險 (Monitor Risks)</h4>
+            <p>即時監控雷達，確保專案免疫系統正常運作。</p>
+            <ul>
+                <li><strong>三大核心任務：</strong> 驗證有效性、抓出新威脅、監視殘餘風險。</li>
+                <li><strong>反饋迴圈：</strong> 透過數據分析（績效報告），告訴管理層現在安不安全。</li>
+                <li><strong>趨勢：</strong> 隨著專案進行，風險應該要<strong>逐漸降低</strong>。</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="terms" class="content-section">
+        <h2>翻轉卡片記憶法</h2>
+        <p>點擊卡片查看定義，這些都是考試常出現的術語。</p>
+        
+        <div class="flashcards-grid">
+            <div class="card" onclick="this.classList.toggle('flipped')">
+                <div class="card-inner">
+                    <div class="card-front">風險稽核<br>(Risk Audit)</div>
+                    <div class="card-back">
+                        檢查「流程」有沒有問題。<br>
+                        "我們的風險管理SOP做得好不好？大家有沒有遵守規則？"
+                    </div>
+                </div>
+            </div>
+            <div class="card" onclick="this.classList.toggle('flipped')">
+                <div class="card-inner">
+                    <div class="card-front">技術績效分析<br>(Technical Performance Analysis)</div>
+                    <div class="card-back">
+                        檢查「產品」有沒有問題。<br>
+                        "實際做出來的功能數據，跟計畫書上的一樣嗎？"
+                    </div>
+                </div>
+            </div>
+            <div class="card" onclick="this.classList.toggle('flipped')">
+                <div class="card-inner">
+                    <div class="card-front">準備金分析<br>(Reserve Analysis)</div>
+                    <div class="card-back">
+                        檢查「錢」夠不夠。<br>
+                        "剩下的風險準備金，夠不夠應付後面還沒發生的風險？"
+                    </div>
+                </div>
+            </div>
+            <div class="card" onclick="this.classList.toggle('flipped')">
+                <div class="card-inner">
+                    <div class="card-front">二次風險<br>(Secondary Risk)</div>
+                    <div class="card-back">
+                        因為實施了某個風險應對措施，<br>
+                        而「直接導致」的新風險。<br>
+                        (例如：為了防火裝灑水系統，結果灑水導致設備泡水)
+                    </div>
+                </div>
+            </div>
+            <div class="card" onclick="this.classList.toggle('flipped')">
+                <div class="card-inner">
+                    <div class="card-front">殘餘風險<br>(Residual Risk)</div>
+                    <div class="card-back">
+                        採取行動後，仍然剩下的風險。<br>
+                        (例如：打了疫苗，還是有輕微感染的機率)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="quiz" class="content-section">
+        <h2>模擬測驗</h2>
+        <p>根據學習內容，嘗試回答以下問題。點擊選項即可查看結果。</p>
+
+        <div class="question-box">
+            <h3>Q1. 關於「實施風險因應」流程，下列敘述何者正確？</h3>
+            <div class="options">
+                <button class="option-btn" onclick="checkAnswer(this, false, '解釋：這是在「識別風險」或「監視風險」做的事。')">主要目的是識別新的風險。</button>
+                <button class="option-btn" onclick="checkAnswer(this, true, '正確！這是此流程的核心目的：確保商定的計畫被具體執行。')">主要目的是執行已商定的風險因應計畫。</button>
+                <button class="option-btn" onclick="checkAnswer(this, false, '解釋：這是在「規劃風險因應」做的事。')">主要目的是為了規劃預算。</button>
+            </div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-box">
+            <h3>Q2. 專案經理在「實施風險因應」時，最需要哪一種技能來確保負責人執行行動？</h3>
+            <div class="options">
+                <button class="option-btn" onclick="checkAnswer(this, false, '解釋：這是硬技能，雖然需要但不是推動人員行動的核心。')">估算成本能力</button>
+                <button class="option-btn" onclick="checkAnswer(this, false, '解釋：這是技術能力。')">程式設計能力</button>
+                <button class="option-btn" onclick="checkAnswer(this, true, '正確！PM往往沒有直接指揮權，需依靠影響力來推動相關負責人執行行動。')">人際關係與團隊技能（如影響力）</button>
+            </div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-box">
+            <h3>Q3. 下列哪一個「不是」監視風險流程中常用的工具與技術？</h3>
+            <div class="options">
+                <button class="option-btn" onclick="checkAnswer(this, false, '解釋：這是監視風險的工具，用來檢查流程有效性。')">風險稽核 (Risk Audit)</button>
+                <button class="option-btn" onclick="checkAnswer(this, true, '正確！SWOT 分析通常用於專案初期的「識別風險」階段，而非監視階段。')">SWOT 分析</button>
+                <button class="option-btn" onclick="checkAnswer(this, false, '解釋：這是監視風險的工具，用來檢查剩餘資金是否足夠。')">準備金分析 (Reserve Analysis)</button>
+            </div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-box">
+            <h3>Q4. 根據資料，理想狀況下，隨著專案生命週期推進，整體專案風險應該呈現什麼趨勢？</h3>
+            <div class="options">
+                <button class="option-btn" onclick="checkAnswer(this, true, '正確！因為不確定性隨著工作完成而減少，有效的實施與監視會促成此趨勢。')">逐漸降低</button>
+                <button class="option-btn" onclick="checkAnswer(this, false, '解釋：如果風險升高，代表專案失控了。')">逐漸升高</button>
+                <button class="option-btn" onclick="checkAnswer(this, false, '解釋：風險應該是動態變化的，且理想上應下降。')">維持不變</button>
+            </div>
+            <div class="explanation"></div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function switchTab(tabId) {
+        // Hide all sections
+        document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+        // Remove active class from buttons
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        // Show selected section
+        document.getElementById(tabId).classList.add('active');
+        // Add active class to clicked button
+        event.currentTarget.classList.add('active');
+    }
+
+    function checkAnswer(btn, isCorrect, explanationText) {
+        const parent = btn.parentElement;
+        const explanationDiv = parent.nextElementSibling;
+        
+        // Disable all buttons in this question
+        const allBtns = parent.querySelectorAll('.option-btn');
+        allBtns.forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+            btn.classList.add('correct');
+            explanationDiv.innerHTML = "🎉 " + explanationText;
+        } else {
+            btn.classList.add('wrong');
+            explanationDiv.innerHTML = "❌ " + explanationText;
+            // Highlight the correct answer automatically
+            // In a real app we might want to let them guess again, but for study guide show answer is better
+        }
+        explanationDiv.classList.add('show');
+    }
+</script>
+
+</body>
+</html>

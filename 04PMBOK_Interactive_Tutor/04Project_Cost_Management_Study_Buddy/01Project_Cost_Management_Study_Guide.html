@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案成本管理：新手備考指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .card-flip {
+            perspective: 1000px;
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .card-flip:hover .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .card-front {
+            background-color: white;
+            color: #1f2937;
+        }
+        .card-back {
+            background-color: #3b82f6;
+            color: white;
+            transform: rotateY(180deg);
+            padding: 1.5rem;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .quiz-option:hover {
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Navigation -->
+    <nav class="bg-slate-800 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-coins text-yellow-400 text-2xl"></i>
+                    <span class="font-bold text-xl">專案成本管理備考</span>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <button onclick="switchTab('learn')" class="nav-btn hover:text-blue-300 transition" id="btn-learn">核心觀念</button>
+                    <button onclick="switchTab('quiz')" class="nav-btn hover:text-blue-300 transition" id="btn-quiz">情境測驗</button>
+                    <button onclick="switchTab('calc')" class="nav-btn hover:text-blue-300 transition" id="btn-calc">估計計算機</button>
+                </div>
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-700 px-4 py-2">
+            <button onclick="switchTab('learn')" class="block w-full text-left py-2 hover:bg-slate-600">核心觀念</button>
+            <button onclick="switchTab('quiz')" class="block w-full text-left py-2 hover:bg-slate-600">情境測驗</button>
+            <button onclick="switchTab('calc')" class="block w-full text-left py-2 hover:bg-slate-600">估計計算機</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8 min-h-screen">
+        
+        <!-- SECTION 1: LEARNING CARDS -->
+        <div id="tab-learn" class="tab-content fade-in">
+            <div class="text-center mb-10">
+                <h1 class="text-3xl font-bold text-slate-800 mb-2">估計成本核心知識點</h1>
+                <p class="text-slate-600">將滑鼠游標移到卡片上（或點擊）查看詳細解釋與記憶關鍵字。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="card-flip h-64">
+                    <div class="card-inner">
+                        <div class="card-front border-t-4 border-blue-500">
+                            <i class="fa-solid fa-scale-unbalanced text-4xl text-blue-500 mb-4"></i>
+                            <h3 class="text-xl font-bold">類比估計<br>(Analogous)</h3>
+                            <p class="text-sm text-gray-500 mt-2">適用於專案初期</p>
+                        </div>
+                        <div class="card-back bg-blue-600">
+                            <h4 class="font-bold text-lg mb-2">參考過去類似專案</h4>
+                            <p class="text-sm mb-4">這是一種「由上而下」的估計法。</p>
+                            <ul class="text-left text-sm list-disc pl-4 space-y-1">
+                                <li>優點：速度快、成本低。</li>
+                                <li>缺點：準確度最低 (ROM)。</li>
+                                <li>關鍵字：歷史資訊、專家判斷。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="card-flip h-64">
+                    <div class="card-inner">
+                        <div class="card-front border-t-4 border-green-500">
+                            <i class="fa-solid fa-calculator text-4xl text-green-500 mb-4"></i>
+                            <h3 class="text-xl font-bold">參數估計<br>(Parametric)</h3>
+                            <p class="text-sm text-gray-500 mt-2">統計數據關係</p>
+                        </div>
+                        <div class="card-back bg-green-600">
+                            <h4 class="font-bold text-lg mb-2">數學模型計算</h4>
+                            <p class="text-sm mb-4">利用歷史數據與變數的統計關係。</p>
+                            <ul class="text-left text-sm list-disc pl-4 space-y-1">
+                                <li>範例：每坪造價 $5,000 x 10坪 = $50,000。</li>
+                                <li>準確度：取決於數據的可靠性。</li>
+                                <li>關鍵字：單位成本、統計關係。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card-flip h-64">
+                    <div class="card-inner">
+                        <div class="card-front border-t-4 border-purple-500">
+                            <i class="fa-solid fa-layer-group text-4xl text-purple-500 mb-4"></i>
+                            <h3 class="text-xl font-bold">由下而上估計<br>(Bottom-up)</h3>
+                            <p class="text-sm text-gray-500 mt-2">最準確的方法</p>
+                        </div>
+                        <div class="card-back bg-purple-600">
+                            <h4 class="font-bold text-lg mb-2">細節累加</h4>
+                            <p class="text-sm mb-4">從 WBS 最底層的工作包逐一估計再向上累計。</p>
+                            <ul class="text-left text-sm list-disc pl-4 space-y-1">
+                                <li>優點：最為精確。</li>
+                                <li>缺點：最耗時、費力、成本高。</li>
+                                <li>關鍵字：WBS、工作包、累計。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="card-flip h-64">
+                    <div class="card-inner">
+                        <div class="card-front border-t-4 border-red-500">
+                            <i class="fa-solid fa-piggy-bank text-4xl text-red-500 mb-4"></i>
+                            <h3 class="text-xl font-bold">儲備分析<br>(Reserves)</h3>
+                            <p class="text-sm text-gray-500 mt-2">應對風險的錢</p>
+                        </div>
+                        <div class="card-back bg-red-600">
+                            <h4 class="font-bold text-lg mb-2">兩種類型的儲備</h4>
+                            <ul class="text-left text-sm list-disc pl-4 space-y-2">
+                                <li><strong>應變儲備</strong>：應對「已知的不確定性」(Known Unknowns)。含在成本基準內。</li>
+                                <li><strong>管理儲備</strong>：應對「未知的不確定性」(Unknown Unknowns)。不含在成本基準，但在總預算內。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">其他重要概念速記</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-start">
+                        <div class="bg-indigo-100 p-3 rounded-full mr-4 text-indigo-600">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg">學習曲線 (Learning Curve)</h4>
+                            <p class="text-gray-600 text-sm">做第一次最慢。隨著作業次數增加，熟練度提高，單位成本會遞減。估計大量重複性工作時必須考量。</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-indigo-100 p-3 rounded-full mr-4 text-indigo-600">
+                            <i class="fa-solid fa-tags"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg">直接 vs 間接成本</h4>
+                            <p class="text-gray-600 text-sm"><strong>直接：</strong>專案專用 (如：木材、專案團隊薪水)。<br><strong>間接：</strong>多專案分攤 (如：總公司電費、行政人員薪水)。</p>
+                        </div>
+                    </div>
+                    <!-- 新增：變動 vs 固定成本 -->
+                    <div class="flex items-start">
+                        <div class="bg-indigo-100 p-3 rounded-full mr-4 text-indigo-600">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg">變動 vs 固定成本</h4>
+                            <p class="text-gray-600 text-sm"><strong>變動：</strong>隨工作量增加而變動 (如：原料)。<br><strong>固定：</strong>不隨工作量改變 (如：設備租賃費)。</p>
+                        </div>
+                    </div>
+                    <!-- 新增：估計精確度 -->
+                    <div class="flex items-start">
+                        <div class="bg-indigo-100 p-3 rounded-full mr-4 text-indigo-600">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg">估計精確度與錯誤</h4>
+                            <p class="text-gray-600 text-sm"><strong>ROM (概略估算)：</strong>早期誤差大 (-25% ~ +75%)。<br><strong>錯誤主因：</strong>資訊缺乏、範疇蔓延、過度自信。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: QUIZ -->
+        <div id="tab-quiz" class="tab-content hidden fade-in">
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="bg-slate-800 text-white p-6">
+                    <h2 class="text-2xl font-bold">情境模擬測驗</h2>
+                    <p class="opacity-80">假設您是專案經理，面對以下情況該如何判斷？</p>
+                </div>
+                
+                <div id="quiz-container" class="p-6">
+                    <!-- Quiz content injected via JS -->
+                </div>
+                
+                <div class="bg-gray-50 p-4 border-t flex justify-between items-center" id="quiz-footer">
+                    <span id="score-display" class="font-bold text-lg text-slate-700">得分: 0 / 0</span>
+                    <button onclick="restartQuiz()" class="bg-slate-700 text-white px-4 py-2 rounded hover:bg-slate-600 transition">重新測驗</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: CALCULATOR -->
+        <div id="tab-calc" class="tab-content hidden fade-in">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800">三點估計計算機 (PERT)</h2>
+                    <p class="text-gray-600 mt-2">考試常考計算題：利用加權平均來降低估計的風險偏誤。</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Input Section -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="font-bold text-lg mb-4 text-indigo-600">輸入估計值 (單位：萬元)</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">樂觀值 (Optimistic, O)</label>
+                                <input type="number" id="val-o" class="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="一切順利的情況 (例如: 30)">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">最可能值 (Most Likely, M)</label>
+                                <input type="number" id="val-m" class="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="正常情況 (例如: 45)">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">悲觀值 (Pessimistic, P)</label>
+                                <input type="number" id="val-p" class="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="最糟情況 (例如: 90)">
+                            </div>
+                            <button onclick="calculatePERT()" class="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition font-bold mt-4">計算期望成本</button>
+                        </div>
+                    </div>
+
+                    <!-- Result Section -->
+                    <div class="bg-white p-6 rounded-lg shadow-md flex flex-col justify-center">
+                        <h3 class="font-bold text-lg mb-4 text-gray-800">計算結果</h3>
+                        
+                        <div class="mb-6">
+                            <span class="text-sm text-gray-500 block">貝塔分佈 (Beta Distribution) 公式：</span>
+                            <code class="bg-gray-100 p-1 rounded text-sm block mt-1 text-center font-mono">(O + 4M + P) / 6</code>
+                        </div>
+
+                        <div class="text-center bg-indigo-50 p-6 rounded-lg border border-indigo-100">
+                            <span class="block text-gray-500 text-sm mb-1">預期成本 (Expected Cost)</span>
+                            <span id="result-display" class="text-4xl font-bold text-indigo-600">--</span>
+                            <span class="text-lg text-indigo-600 ml-1">萬元</span>
+                        </div>
+                        
+                        <div class="mt-4 p-4 bg-yellow-50 rounded border border-yellow-100">
+                            <p class="text-xs text-yellow-800">
+                                <i class="fa-solid fa-lightbulb mr-1"></i>
+                                <strong>考試小撇步：</strong> 傳統的三角分佈公式是 (O+M+P)/3，但 PMP 考試若無特別說明，通常預設使用權重較重的貝塔分佈 (除以 6)。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-800 text-white py-6 mt-12">
+        <div class="text-center">
+            <p class="text-sm opacity-75">專案成本管理學習輔助工具 | Generated for NotebookLM Analysis</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Tab Switching Logic ---
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+            });
+            // Show selected tab
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            
+            // Update active state in menu (Desktop only for visual simplicity)
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-blue-300', 'font-bold');
+            });
+            // Add active class if button exists (mobile menu handles its own simple logic)
+            const btn = document.getElementById(`btn-${tabId}`);
+            if(btn) btn.classList.add('text-blue-300', 'font-bold');
+        }
+
+        // --- Quiz Logic ---
+        const questions = [
+            {
+                q: "專案剛剛啟動，高層想知道大約需要多少預算，但目前只有類似專案的歷史資訊，詳細規格還沒出來。您該用哪種估計法？",
+                options: ["由下而上估計", "參數估計", "類比估計", "三點估計"],
+                correct: 2,
+                explanation: "資訊不足的專案初期，參考過去類似專案的「類比估計」最快，但準確度較低 (ROM)。"
+            },
+            {
+                q: "為了確保預算的精確度，您要求團隊從 WBS 的最底層工作包開始估算，然後逐層加總。這是什麼方法？",
+                options: ["類比估計", "由下而上估計", "參數估計", "儲備分析"],
+                correct: 1,
+                explanation: "從最底層細節開始估算並向上累計，是「由下而上估計」，雖然精確但最耗時。"
+            },
+            {
+                q: "面對專案中「已知的不確定性」(例如已識別的風險)，您應該在預算中加入什麼？",
+                options: ["管理儲備", "利潤邊際", "應變儲備", "沈沒成本"],
+                correct: 2,
+                explanation: "「已知的不確定性」使用「應變儲備」(Contingency Reserves)，這包含在成本基準中。"
+            },
+            {
+                q: "工廠生產第一台機器花了 10 小時，但根據經驗，生產越多台速度會越快，成本會降低。這是什麼概念？",
+                options: ["邊際效益", "學習曲線", "沈沒成本", "機會成本"],
+                correct: 1,
+                explanation: "隨著作業次數增加，熟練度提高導致單位成本遞減，稱為「學習曲線」。"
+            },
+            {
+                q: "專案經理發現「未知的不確定性」發生了(例如突發天災)，這時候應該動用哪筆經費？",
+                options: ["專案經理的私房錢", "應變儲備", "直接成本", "管理儲備"],
+                correct: 3,
+                explanation: "針對未預見的變動(未知的不確定性)，應使用「管理儲備」，這通常不包含在成本基準中，但在專案總預算內。"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = ''; // Clear previous
+
+            if (currentQuestionIndex >= questions.length) {
+                // Quiz Finished
+                container.innerHTML = `
+                    <div class="text-center py-10">
+                        <i class="fa-solid fa-trophy text-6xl text-yellow-400 mb-4"></i>
+                        <h3 class="text-2xl font-bold mb-2">測驗結束!</h3>
+                        <p class="text-lg">您的得分是： ${score} / ${questions.length}</p>
+                        <p class="text-gray-500 mt-2">${score === questions.length ? "太強了！觀念全對！" : "再接再厲，複習一下觀念吧！"}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const q = questions[currentQuestionIndex];
+            
+            let html = `
+                <div class="mb-4">
+                    <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">題目 ${currentQuestionIndex + 1}/${questions.length}</span>
+                    <h3 class="text-xl font-bold mt-2 text-gray-800">${q.q}</h3>
+                </div>
+                <div class="space-y-3">
+            `;
+
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <button onclick="checkAnswer(${idx})" 
+                        class="quiz-option w-full text-left p-4 border rounded-lg hover:bg-slate-50 transition duration-200 border-gray-200 group">
+                        <span class="inline-block w-8 h-8 bg-gray-200 rounded-full text-center leading-8 mr-3 group-hover:bg-blue-500 group-hover:text-white transition">${String.fromCharCode(65+idx)}</span>
+                        ${opt}
+                    </button>
+                `;
+            });
+
+            html += `</div><div id="feedback-area" class="mt-4 hidden"></div>`;
+            container.innerHTML = html;
+        }
+
+        function checkAnswer(selectedIdx) {
+            const q = questions[currentQuestionIndex];
+            const feedbackEl = document.getElementById('feedback-area');
+            const buttons = document.querySelectorAll('.quiz-option');
+            
+            // Disable buttons
+            buttons.forEach(btn => btn.disabled = true);
+
+            let feedbackHtml = "";
+            
+            if (selectedIdx === q.correct) {
+                score++;
+                buttons[selectedIdx].classList.add('bg-green-100', 'border-green-500');
+                buttons[selectedIdx].querySelector('span').classList.add('bg-green-500', 'text-white');
+                feedbackHtml = `<div class="p-4 bg-green-50 border border-green-200 rounded text-green-800 flex items-start">
+                    <i class="fa-solid fa-check-circle mt-1 mr-2"></i>
+                    <div><strong>答對了！</strong><br>${q.explanation}</div>
+                </div>`;
+            } else {
+                buttons[selectedIdx].classList.add('bg-red-100', 'border-red-500');
+                buttons[selectedIdx].querySelector('span').classList.add('bg-red-500', 'text-white');
+                // Highlight correct one
+                buttons[q.correct].classList.add('bg-green-50', 'border-green-500');
+                
+                feedbackHtml = `<div class="p-4 bg-red-50 border border-red-200 rounded text-red-800 flex items-start">
+                    <i class="fa-solid fa-xmark-circle mt-1 mr-2"></i>
+                    <div><strong>答錯了。</strong><br>${q.explanation}</div>
+                </div>`;
+            }
+
+            feedbackHtml += `<button onclick="nextQuestion()" class="mt-4 bg-slate-800 text-white px-6 py-2 rounded hover:bg-slate-700 transition">下一題 <i class="fa-solid fa-arrow-right ml-1"></i></button>`;
+
+            feedbackEl.innerHTML = feedbackHtml;
+            feedbackEl.classList.remove('hidden');
+            
+            // Update score display
+            document.getElementById('score-display').innerText = `得分: ${score} / ${questions.length}`;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            renderQuiz();
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('score-display').innerText = `得分: 0 / 0`;
+            renderQuiz();
+        }
+
+        // --- Calculator Logic ---
+        function calculatePERT() {
+            const o = parseFloat(document.getElementById('val-o').value);
+            const m = parseFloat(document.getElementById('val-m').value);
+            const p = parseFloat(document.getElementById('val-p').value);
+            const resultDisplay = document.getElementById('result-display');
+
+            if (isNaN(o) || isNaN(m) || isNaN(p)) {
+                resultDisplay.innerText = "錯誤";
+                resultDisplay.classList.remove('text-indigo-600');
+                resultDisplay.classList.add('text-red-500');
+                alert("請輸入有效的數字！");
+                return;
+            }
+
+            // Beta Distribution Formula: (O + 4M + P) / 6
+            const result = (o + (4 * m) + p) / 6;
+
+            resultDisplay.classList.remove('text-red-500');
+            resultDisplay.classList.add('text-indigo-600');
+            resultDisplay.innerText = result.toFixed(2);
+        }
+
+        // Init
+        window.onload = function() {
+            renderQuiz();
+        };
+
+    </script>
+</body>
+</html>

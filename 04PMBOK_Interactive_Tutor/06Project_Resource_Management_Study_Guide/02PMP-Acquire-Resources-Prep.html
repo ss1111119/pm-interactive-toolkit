@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案資源管理：獲取資源 (完整全攻略)</title>
+    <style>
+        :root {
+            --primary: #4f46e5; /* 改為深紫色系區分版本 */
+            --secondary: #475569;
+            --success: #22c55e;
+            --error: #ef4444;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+            color: white;
+            padding: 2.5rem 1rem;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        h1 { margin: 0; font-size: 1.8rem; }
+        p.subtitle { opacity: 0.9; margin-top: 10px; font-weight: 300; }
+
+        .tag {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+
+        .section-title {
+            border-left: 5px solid var(--primary);
+            padding-left: 10px;
+            margin: 40px 0 20px;
+            font-size: 1.4rem;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        /* Card Flip Styles */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            height: 220px; /* 稍微加高以容納更多文字 */
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            box-sizing: border-box;
+            border-radius: 12px;
+            flex-direction: column;
+        }
+
+        .flip-card-front {
+            background-color: var(--card-bg);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .flip-card-front h3 { margin-bottom: 5px; font-size: 1.2rem; }
+        .flip-card-front p { font-size: 0.9rem; color: #666; }
+
+        .flip-card-back {
+            background-color: var(--primary);
+            color: white;
+            transform: rotateY(180deg);
+            font-size: 0.9rem;
+            text-align: left;
+            padding: 20px;
+            align-items: flex-start;
+        }
+        
+        .flip-card-back strong { color: #ffd700; display: block; margin-bottom: 5px; }
+
+        /* Scenario Styles */
+        .scenario-box {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            border-top: 4px solid var(--secondary);
+        }
+        
+        .scenario-box h3 { margin-top: 0; color: #1e293b; }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        @media(min-width: 600px) {
+            .options-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .btn {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background-color: #f1f5f9;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .btn:hover { background-color: #e2e8f0; transform: translateY(-2px); }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-weight: bold;
+            line-height: 1.5;
+        }
+
+        .feedback.correct { background-color: #dcfce7; color: #15803d; display: block; border-left: 4px solid #15803d; }
+        .feedback.wrong { background-color: #fee2e2; color: #b91c1c; display: block; border-left: 4px solid #b91c1c; }
+
+        /* Quiz Styles */
+        .quiz-item {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .quiz-question {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .quiz-options label {
+            display: block;
+            margin: 10px 0;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            transition: background 0.2s;
+        }
+
+        .quiz-options label:hover {
+            background-color: #f8fafc;
+            border-color: var(--primary);
+        }
+        
+        .quiz-options input { margin-right: 10px; }
+
+        .check-btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            margin-top: 30px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .check-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5); }
+
+        .hint-text {
+            font-size: 0.85rem;
+            color: #64748b;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .completeness-badge {
+            background-color: #fbbf24;
+            color: #78350f;
+            font-size: 0.8rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>專案資源管理全攻略</h1>
+    <p class="subtitle">單元：獲取資源 (Acquire Resources) <span class="tag">完整版</span></p>
+</header>
+
+<div class="container">
+
+    <div style="background: #e0e7ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #3730a3;">
+        <strong>📢 學習導航：</strong> 這是根據您提供的 NotebookLM 分析所製作的完整教材，涵蓋了核心工具、輸入產出及組織架構限制。
+    </div>
+
+    <h2 class="section-title">第一步：六大核心觀念卡</h2>
+    <p class="hint-text">包含之前的核心概念與新增的篩選工具</p>
+    
+    <div class="card-grid">
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <h3>協商</h3>
+                    <p>(Negotiation)</p>
+                </div>
+                <div class="flip-card-back">
+                    <strong>定義：</strong>
+                    與功能經理或外部供應商談判。
+                    <strong>重點：</strong>
+                    因為資源稀缺，且 PM 在功能型組織無實權，這是「最常用」的手段。
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <h3>預派</h3>
+                    <p>(Pre-assignment)</p>
+                </div>
+                <div class="flip-card-back">
+                    <strong>定義：</strong>
+                    專案啟動前已確定的資源。
+                    <strong>重點：</strong>
+                    通常來自「專案章程」指定，或「競標合約」承諾。
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <h3>虛擬團隊</h3>
+                    <p>(Virtual Teams)</p>
+                </div>
+                <div class="flip-card-back">
+                    <strong>定義：</strong>
+                    不同地點、透過科技合作。
+                    <strong>重點：</strong>
+                    解決地理限制、降低差旅費、納入行動不便者。是現代常用的工具。
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <h3>多準則決策分析 <span class="completeness-badge">補強</span></h3>
+                    <p>(MCDA)</p>
+                </div>
+                <div class="flip-card-back">
+                    <strong>定義：</strong>
+                    設定標準（成本、經驗、能力）來打分數。
+                    <strong>重點：</strong>
+                    當你有多個選擇時（例如選人、選供應商），用這個工具來客觀篩選。
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <h3>組織結構影響</h3>
+                    <p>(Functional vs Projectized)</p>
+                </div>
+                <div class="flip-card-back">
+                    <strong>功能型/弱矩陣：</strong> PM 權力小，資源需乞討(協商)。
+                    <strong>專案型/強矩陣：</strong> PM 權力大，資源可直接調度。
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <h3>關鍵產出</h3>
+                    <p>(Outputs)</p>
+                </div>
+                <div class="flip-card-back">
+                    <strong>1. 實體資源指派值：</strong> 物料清單。
+                    <strong>2. 專案團隊派任：</strong> 人員名單。
+                    <strong>3. 資源日曆：</strong> 誰在什麼時候有空。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">第二步：PM 實戰模擬 (含預算與篩選)</h2>
+
+    <div class="scenario-box" id="s1">
+        <h3>情境一：該選哪一個？(MCDA應用)</h3>
+        <p>你需要一位程式設計師。A君薪水低但技術普通；B君薪水高但技術頂尖；C君剛好符合預算且配合度高。你決定列出一個表格，針對「成本」、「能力」、「配合度」設定權重並評分。請問你正在使用什麼技術？</p>
+        <div class="options-grid">
+            <button class="btn" onclick="checkScenario(1, 'A')">人際關係與團隊技能</button>
+            <button class="btn" onclick="checkScenario(1, 'B')">多準則決策分析 (MCDA)</button>
+            <button class="btn" onclick="checkScenario(1, 'C')">預派 (Pre-assignment)</button>
+        </div>
+        <div id="feedback-1" class="feedback"></div>
+    </div>
+
+    <div class="scenario-box" id="s2">
+        <h3>情境二：外部採購與計畫書 (Inputs應用)</h3>
+        <p>公司內部沒有懂 AI 的工程師，你必須向外部廠商購買人力。在開始尋找廠商之前，你應該先查閱哪一份「輸入文件」，以確保符合公司的採購規範？</p>
+        <div class="options-grid">
+            <button class="btn" onclick="checkScenario(2, 'A')">資源日曆 (Resource Calendars)</button>
+            <button class="btn" onclick="checkScenario(2, 'B')">專案團隊派任 (Project Team Assignments)</button>
+            <button class="btn" onclick="checkScenario(2, 'C')">採購管理計畫書 (Procurement Mgmt Plan)</button>
+        </div>
+        <div id="feedback-2" class="feedback"></div>
+    </div>
+
+    <div class="scenario-box" id="s3">
+        <h3>情境三：權力遊戲 (組織結構)</h3>
+        <p>你在一個「強矩陣 (Strong Matrix)」組織中擔任專案經理。你需要調度行銷部門的小李進入專案。請問你的處境為何？</p>
+        <div class="options-grid">
+            <button class="btn" onclick="checkScenario(3, 'A')">我有較高的權力，通常可以直接調度，或協商時佔優勢。</button>
+            <button class="btn" onclick="checkScenario(3, 'B')">我完全沒有權力，必須求助專案贊助人。</button>
+            <button class="btn" onclick="checkScenario(3, 'C')">行銷經理擁有全權，我只能等待通知。</button>
+        </div>
+        <div id="feedback-3" class="feedback"></div>
+    </div>
+
+    <h2 class="section-title">第三步：全考點驗收</h2>
+    
+    <div id="quiz-area">
+        <div class="quiz-item">
+            <div class="quiz-question">1. 關於「獲取資源」的時機與特性，下列敘述何者正確？</div>
+            <div class="quiz-options">
+                <label><input type="radio" name="q1" value="wrong"> 屬於規劃過程組，是一次性的活動。</label>
+                <label><input type="radio" name="q1" value="correct"> 屬於執行過程組，是整個專案期間動態且定期執行的流程。</label>
+                <label><input type="radio" name="q1" value="wrong"> 屬於起始過程組，主要在專案章程發布時完成。</label>
+            </div>
+        </div>
+
+        <div class="quiz-item">
+            <div class="quiz-question">2. 專案經理發現內部資源不足，決定對外招募。在考量預算限制時，他最應該參考哪一份文件 (Input)？</div>
+            <div class="quiz-options">
+                <label><input type="radio" name="q2" value="wrong"> 專案時程表</label>
+                <label><input type="radio" name="q2" value="wrong"> 實體資源指派值</label>
+                <label><input type="radio" name="q2" value="correct"> 成本基準 (Cost Baseline)</label>
+            </div>
+        </div>
+
+        <div class="quiz-item">
+            <div class="quiz-question">3. 下列哪一項「不是」獲取資源的工具與技術？</div>
+            <div class="quiz-options">
+                <label><input type="radio" name="q3" value="wrong"> 協商 (Negotiation)</label>
+                <label><input type="radio" name="q3" value="correct"> 資源平滑 (Resource Smoothing)</label>
+                <label><input type="radio" name="q3" value="wrong"> 多準則決策分析 (MCDA)</label>
+            </div>
+            <p style="font-size: 0.8rem; color: #666; margin-left: 20px;">(提示：資源平滑是「控制時程」的工具，不是獲取資源的工具)</p>
+        </div>
+        
+        <button class="check-btn" onclick="checkQuiz()">交卷檢查 (Check Answers)</button>
+        <div id="quiz-result" style="margin-top: 20px; text-align: center; font-weight: bold; font-size: 1.2rem;"></div>
+    </div>
+
+</div>
+
+<script>
+    // Scenario Logic
+    function checkScenario(id, answer) {
+        const feedbackEl = document.getElementById(`feedback-${id}`);
+        feedbackEl.className = 'feedback'; // reset
+        
+        if (id === 1) {
+            if (answer === 'B') {
+                feedbackEl.textContent = "✅ 正確！設定權重與評分標準來篩選，就是「多準則決策分析」。";
+                feedbackEl.classList.add('correct');
+            } else {
+                feedbackEl.textContent = "❌ 錯誤。這是有客觀評分標準的篩選過程，關鍵字是「評估標準」或「打分數」。";
+                feedbackEl.classList.add('wrong');
+            }
+        }
+        
+        if (id === 2) {
+            if (answer === 'C') {
+                feedbackEl.textContent = "✅ 正確！要對外採購，必須遵循「採購管理計畫書」中的規範。";
+                feedbackEl.classList.add('correct');
+            } else if (answer === 'B') {
+                feedbackEl.textContent = "❌ 錯誤。「專案團隊派任」是獲取資源後的「產出(結果)」，不是開始前的參考文件。";
+                feedbackEl.classList.add('wrong');
+            } else {
+                feedbackEl.textContent = "❌ 錯誤。資源日曆是看時間的，看採購規範要看計畫書。";
+                feedbackEl.classList.add('wrong');
+            }
+        }
+
+        if (id === 3) {
+            if (answer === 'A') {
+                feedbackEl.textContent = "✅ 正確！在強矩陣或專案型組織，PM 權力較大，資源獲取較容易。";
+                feedbackEl.classList.add('correct');
+            } else {
+                feedbackEl.textContent = "❌ 錯誤。這是「功能型」或「弱矩陣」的悲慘處境，題目設定是強矩陣。";
+                feedbackEl.classList.add('wrong');
+            }
+        }
+    }
+
+    // Quiz Logic
+    function checkQuiz() {
+        let score = 0;
+        const total = 3;
+        const q1 = document.querySelector('input[name="q1"]:checked');
+        const q2 = document.querySelector('input[name="q2"]:checked');
+        const q3 = document.querySelector('input[name="q3"]:checked');
+        
+        // Reset colors
+        document.querySelectorAll('.quiz-item').forEach(el => el.style.border = "none");
+
+        if (q1 && q1.value === 'correct') score++;
+        else document.querySelectorAll('.quiz-item')[0].style.border = "2px solid red";
+
+        if (q2 && q2.value === 'correct') score++;
+        else document.querySelectorAll('.quiz-item')[1].style.border = "2px solid red";
+
+        if (q3 && q3.value === 'correct') score++;
+        else document.querySelectorAll('.quiz-item')[2].style.border = "2px solid red";
+
+        const resultDiv = document.getElementById('quiz-result');
+        resultDiv.textContent = `你的得分：${score} / ${total}`;
+        
+        if(score === total) {
+            resultDiv.style.color = "green";
+            resultDiv.innerHTML += "<br>🏆 完美！你現在完全掌握了這份筆記的所有細節！";
+        } else {
+            resultDiv.style.color = "red";
+            resultDiv.innerHTML += "<br>💪 加油，回頭看看翻翻卡，把細節補起來！";
+        }
+    }
+</script>
+
+</body>
+</html>

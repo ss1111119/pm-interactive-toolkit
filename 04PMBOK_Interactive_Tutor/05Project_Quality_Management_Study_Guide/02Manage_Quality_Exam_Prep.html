@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案品質管理：管理品質 (Manage Quality) 學習系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .card-flip {
+            perspective: 1000px;
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card-flip.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .card-back {
+            background-color: #3b82f6;
+            color: white;
+            transform: rotateY(180deg);
+        }
+        .card-front {
+            background-color: white;
+            color: #1f2937;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold"><i class="fas fa-tasks mr-2"></i>管理品質備考系統</h1>
+            <div class="space-x-4 text-sm md:text-base">
+                <button onclick="switchTab('learn')" id="btn-learn" class="font-bold opacity-100 hover:opacity-80 transition">觀念學習</button>
+                <button onclick="switchTab('compare')" id="btn-compare" class="opacity-70 hover:opacity-100 transition">QA vs QC</button>
+                <button onclick="switchTab('quiz')" id="btn-quiz" class="opacity-70 hover:opacity-100 transition">模擬測驗</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-4 md:p-8 max-w-5xl mx-auto w-full">
+
+        <!-- 1. Learn Section -->
+        <div id="learn-section" class="fade-in space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-500">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">什麼是「管理品質」？</h2>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    又稱為 <strong>品質保證 (Quality Assurance, QA)</strong>。它是專案管理「執行過程組」的一部分。
+                    簡單來說，它的目的是確保我們正在使用<span class="text-blue-600 font-bold">正確的流程</span>，來預防錯誤發生，建立大家對成品的信心。
+                </p>
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <p class="text-sm text-blue-800"><i class="fas fa-lightbulb mr-2"></i><strong>新手口訣：</strong>管理品質是「管過程」，不是管產品。是為了「預防」，不是為了檢查。</p>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-bold text-gray-700 mt-8 mb-4">核心觀念翻翻卡 (點擊卡片查看重點)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="card-flip h-48 cursor-pointer" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front border border-gray-200">
+                            <i class="fas fa-cogs text-4xl text-blue-500 mb-2"></i>
+                            <h4 class="text-lg font-bold">核心哲學</h4>
+                            <p class="text-sm text-gray-500 mt-2">點擊看詳解</p>
+                        </div>
+                        <div class="card-back bg-blue-600">
+                            <h4 class="font-bold text-lg mb-2">過程導向 (Process-oriented)</h4>
+                            <p class="text-sm">關注「怎麼做」。目標是預防缺陷、提高效率，並建立對未來的信心。</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div class="card-flip h-48 cursor-pointer" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front border border-gray-200">
+                            <i class="fas fa-search-dollar text-4xl text-green-500 mb-2"></i>
+                            <h4 class="text-lg font-bold">品質稽核 (Audits)</h4>
+                            <p class="text-sm text-gray-500 mt-2">這是最重要的工具</p>
+                        </div>
+                        <div class="card-back bg-green-600">
+                            <h4 class="font-bold text-lg mb-2">獨立審查</h4>
+                            <p class="text-sm">結構化的審查過程，檢查是否符合組織政策。用來識別優良實務與缺失。</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div class="card-flip h-48 cursor-pointer" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front border border-gray-200">
+                            <i class="fas fa-project-diagram text-4xl text-purple-500 mb-2"></i>
+                            <h4 class="text-lg font-bold">流程分析</h4>
+                            <p class="text-sm text-gray-500 mt-2">Process Analysis</p>
+                        </div>
+                        <div class="card-back bg-purple-600">
+                            <h4 class="font-bold text-lg mb-2">去蕪存菁</h4>
+                            <p class="text-sm">識別所需的改善，並找出「無價值（非加值型）」的活動加以剔除。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-lg font-bold mb-3 text-gray-700">輸入與產出 (Input & Output)</h3>
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex-1 bg-gray-50 p-4 rounded border border-gray-200 w-full">
+                        <div class="text-center font-bold text-gray-600 mb-2">投入 (Input)</div>
+                        <ul class="list-disc list-inside text-sm text-gray-600 space-y-1">
+                            <li>品質管理計畫書</li>
+                            <li>品質指標</li>
+                            <li>品質管制衡量結果</li>
+                        </ul>
+                    </div>
+                    <div class="text-gray-400"><i class="fas fa-arrow-right transform rotate-90 md:rotate-0 text-2xl"></i></div>
+                    <div class="flex-1 bg-blue-50 p-4 rounded border border-blue-200 w-full">
+                        <div class="text-center font-bold text-blue-800 mb-2">產出 (Output)</div>
+                        <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+                            <li><span class="font-bold">品質報告</span></li>
+                            <li>測試與評估文件</li>
+                            <li><span class="font-bold">變更請求</span> (為了改善流程)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Compare Section -->
+        <div id="compare-section" class="hidden fade-in">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">考試最大陷阱：管理 vs 管制</h2>
+            <p class="text-center text-gray-600 mb-8">滑動下方滑桿，看看兩者有什麼不同。</p>
+
+            <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div class="relative h-16 bg-gray-200 flex rounded-t-2xl">
+                    <button onclick="setCompareMode('manage')" class="flex-1 text-center font-bold z-10 transition-colors duration-300 py-4 focus:outline-none" id="tab-manage">管理品質 (Manage Quality)</button>
+                    <button onclick="setCompareMode('control')" class="flex-1 text-center font-bold z-10 transition-colors duration-300 py-4 text-gray-500 focus:outline-none" id="tab-control">管製品質 (Control Quality)</button>
+                    
+                    <!-- Slider background -->
+                    <div id="slider-bg" class="absolute top-0 left-0 w-1/2 h-full bg-blue-600 transition-transform duration-300 ease-in-out"></div>
+                </div>
+
+                <div class="p-8 min-h-[300px] flex items-center justify-center">
+                    <div id="content-manage" class="w-full">
+                        <div class="flex flex-col items-center text-center space-y-4">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-blue-800">管理品質 (QA)</h3>
+                            <p class="text-lg font-semibold text-gray-700">"我們的方法對嗎？"</p>
+                            <ul class="text-left space-y-3 bg-blue-50 p-6 rounded-lg w-full md:w-3/4">
+                                <li class="flex items-start"><i class="fas fa-check text-blue-500 mt-1 mr-3"></i> <span><strong>焦點：</strong>過程導向 (Process-oriented)。</span></li>
+                                <li class="flex items-start"><i class="fas fa-check text-blue-500 mt-1 mr-3"></i> <span><strong>目的：</strong>預防缺陷，建立信心。</span></li>
+                                <li class="flex items-start"><i class="fas fa-check text-blue-500 mt-1 mr-3"></i> <span><strong>誰負責：</strong>全體團隊成員。</span></li>
+                                <li class="flex items-start"><i class="fas fa-check text-blue-500 mt-1 mr-3"></i> <span><strong>關鍵工具：</strong>品質稽核、流程分析。</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div id="content-control" class="hidden w-full">
+                        <div class="flex flex-col items-center text-center space-y-4">
+                            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-red-600 text-2xl">
+                                <i class="fas fa-microscope"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-red-800">管製品質 (QC)</h3>
+                            <p class="text-lg font-semibold text-gray-700">"產品做對了嗎？"</p>
+                            <ul class="text-left space-y-3 bg-red-50 p-6 rounded-lg w-full md:w-3/4">
+                                <li class="flex items-start"><i class="fas fa-check text-red-500 mt-1 mr-3"></i> <span><strong>焦點：</strong>產品導向 (Product-oriented)。</span></li>
+                                <li class="flex items-start"><i class="fas fa-check text-red-500 mt-1 mr-3"></i> <span><strong>目的：</strong>發現並修正缺陷，確保交付成果合格。</span></li>
+                                <li class="flex items-start"><i class="fas fa-check text-red-500 mt-1 mr-3"></i> <span><strong>誰負責：</strong>通常是品質管制部門或特定檢驗人員。</span></li>
+                                <li class="flex items-start"><i class="fas fa-check text-red-500 mt-1 mr-3"></i> <span><strong>關鍵工具：</strong>檢查、測試、抽樣。</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Quiz Section -->
+        <div id="quiz-section" class="hidden fade-in max-w-2xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">模擬小考</h2>
+            <div id="quiz-container" class="space-y-6">
+                <!-- Question 1 -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <p class="font-bold text-lg mb-4">1. 在專案執行期間，專案經理安排了一位獨立的第三方人員來檢查專案團隊是否遵循了公司的品質政策與標準程序。請問這是使用了哪項工具技術？</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left p-3 rounded border hover:bg-gray-50 transition">A. 檢查 (Inspection)</button>
+                        <button onclick="checkAnswer(this, true)" class="w-full text-left p-3 rounded border hover:bg-gray-50 transition">B. 品質稽核 (Quality Audits)</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left p-3 rounded border hover:bg-gray-50 transition">C. 標竿對照 (Benchmarking)</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left p-3 rounded border hover:bg-gray-50 transition">D. 統計抽樣 (Statistical Sampling)</button>
+                    </div>
+                    <div class="feedback hidden mt-3 p-3 bg-blue-50 text-blue-800 rounded text-sm">
+                        <strong>解析：</strong>B 正確。題目提到「獨立檢查是否遵循政策與程序」，這是「品質稽核」的標準定義。檢查(A)通常是用於檢查產品本身的缺陷(QC)。
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <p class="font-bold text-lg mb-4">2. 關於「管理品質」與「管製品質」的區別，下列敘述何者正確？</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left p-3 rounded border hover:bg-gray-50 transition">A. 管理品質關注的是產品是否正確，管製品質關注的是流程。</button>
+                        <button onclick="checkAnswer(this, true)" class="w-full text-left p-3 rounded border hover:bg-gray-50 transition">B. 管理品質是過程導向 (Process-oriented)，管製品質是產品導向。</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left p-3 rounded border hover:bg-gray-50 transition">C. 管理品質僅由品質經理負責，團隊成員不需參與。</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left p-3 rounded border hover:bg-gray-50 transition">D. 管理品質屬於監控過程組。</button>
+                    </div>
+                    <div class="feedback hidden mt-3 p-3 bg-blue-50 text-blue-800 rounded text-sm">
+                        <strong>解析：</strong>B 正確。筆記明確指出管理品質是「過程導向」，管製品質關注最終產品。C 錯誤，應為全員參與。D 錯誤，屬於執行過程組。
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <p class="font-bold text-lg mb-4">3. 專案團隊正在進行流程分析，目的是識別並移除那些「非加值型」的活動。請問這是為了達成什麼目標？</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, true)" class="w-full text-left p-3 rounded border hover:bg-gray-50 transition">A. 提高效率 (Efficiency)</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left p-3 rounded border hover:bg-gray-50 transition">B. 定義範疇</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left p-3 rounded border hover:bg-gray-50 transition">C. 建立品質指標</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left p-3 rounded border hover:bg-gray-50 transition">D. 驗收交付標的</button>
+                    </div>
+                    <div class="feedback hidden mt-3 p-3 bg-blue-50 text-blue-800 rounded text-sm">
+                        <strong>解析：</strong>A 正確。流程分析的主要目的之一就是識別無效流程與無價值活動，以優化執行效率。
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 text-center">
+                <button onclick="resetQuiz()" class="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700 transition">重置測驗</button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white p-4 text-center mt-8">
+        <p class="text-sm">Created for Learning Project Management | Based on NotebookLM analysis</p>
+    </footer>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabName) {
+            // Hide all sections
+            document.getElementById('learn-section').classList.add('hidden');
+            document.getElementById('compare-section').classList.add('hidden');
+            document.getElementById('quiz-section').classList.add('hidden');
+            
+            // Show selected section
+            document.getElementById(tabName + '-section').classList.remove('hidden');
+
+            // Update Navbar buttons
+            const buttons = ['learn', 'compare', 'quiz'];
+            buttons.forEach(btn => {
+                const el = document.getElementById('btn-' + btn);
+                if (btn === tabName) {
+                    el.classList.remove('opacity-70');
+                    el.classList.add('font-bold', 'opacity-100');
+                } else {
+                    el.classList.add('opacity-70');
+                    el.classList.remove('font-bold', 'opacity-100');
+                }
+            });
+        }
+
+        // Card Flip Logic
+        function flipCard(card) {
+            card.classList.toggle('flipped');
+        }
+
+        // Compare Slider Logic
+        function setCompareMode(mode) {
+            const slider = document.getElementById('slider-bg');
+            const tabManage = document.getElementById('tab-manage');
+            const tabControl = document.getElementById('tab-control');
+            const contentManage = document.getElementById('content-manage');
+            const contentControl = document.getElementById('content-control');
+
+            if (mode === 'manage') {
+                slider.style.transform = 'translateX(0%)';
+                slider.classList.add('bg-blue-600');
+                slider.classList.remove('bg-red-600');
+                
+                tabManage.classList.add('text-white');
+                tabManage.classList.remove('text-gray-500');
+                tabControl.classList.remove('text-white');
+                tabControl.classList.add('text-gray-500');
+
+                contentManage.classList.remove('hidden');
+                contentControl.classList.add('hidden');
+            } else {
+                slider.style.transform = 'translateX(100%)';
+                slider.classList.remove('bg-blue-600');
+                slider.classList.add('bg-red-600');
+
+                tabManage.classList.remove('text-white');
+                tabManage.classList.add('text-gray-500');
+                tabControl.classList.add('text-white');
+                tabControl.classList.remove('text-gray-500');
+
+                contentManage.classList.add('hidden');
+                contentControl.classList.remove('hidden');
+            }
+        }
+
+        // Initialize Slider State
+        setCompareMode('manage');
+
+        // Quiz Logic
+        function checkAnswer(btn, isCorrect) {
+            const parent = btn.parentElement;
+            const buttons = parent.querySelectorAll('button');
+            const feedback = parent.parentElement.querySelector('.feedback');
+
+            // Disable all buttons in this question
+            buttons.forEach(b => {
+                b.disabled = true;
+                b.classList.remove('hover:bg-gray-50');
+                if (b === btn) {
+                    if (isCorrect) {
+                        b.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                        b.innerHTML += ' <i class="fas fa-check"></i>';
+                    } else {
+                        b.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+                        b.innerHTML += ' <i class="fas fa-times"></i>';
+                    }
+                }
+            });
+
+            // Show feedback
+            feedback.classList.remove('hidden');
+        }
+
+        function resetQuiz() {
+            const container = document.getElementById('quiz-container');
+            const buttons = container.querySelectorAll('button');
+            const feedbacks = container.querySelectorAll('.feedback');
+
+            buttons.forEach(b => {
+                b.disabled = false;
+                b.classList.remove('bg-green-100', 'border-green-500', 'text-green-800', 'bg-red-100', 'border-red-500', 'text-red-800');
+                b.classList.add('hover:bg-gray-50');
+                // Remove icons text hack (simple way)
+                b.innerHTML = b.innerText; 
+            });
+
+            feedbacks.forEach(f => f.classList.add('hidden'));
+        }
+    </script>
+</body>
+</html>

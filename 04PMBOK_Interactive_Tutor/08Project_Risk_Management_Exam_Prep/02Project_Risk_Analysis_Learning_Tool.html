@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案風險分析：質性 vs 量化 - 考試衝刺教練</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #475569;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 { margin: 0; font-size: 2em; }
+        p.subtitle { opacity: 0.9; margin-top: 10px; }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-top: -25px;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            background: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            color: var(--secondary);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .content-section {
+            display: none;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.5s;
+        }
+
+        .content-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Concept Cards */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-grid { grid-template-columns: 1fr; }
+        }
+
+        .concept-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+
+        .concept-card:hover { transform: scale(1.02); }
+        .concept-card h3 { color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 10px; display: inline-block;}
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .tag-qual { background: #dbeafe; color: #1e40af; }
+        .tag-quan { background: #ffedd5; color: #9a3412; }
+
+        /* Quiz Styles */
+        .quiz-question {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 10px 15px;
+            margin: 8px 0;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .options button:hover { background: #e2e8f0; }
+        .options button.correct { background: #dcfce7; border-color: #22c55e; color: #166534; }
+        .options button.wrong { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+        
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        /* Analogy Section */
+        .analogy-box {
+            background: #f0f9ff;
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .key-tool {
+            font-weight: bold;
+            color: #d97706;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>專案風險管理衝刺班</h1>
+            <p class="subtitle">質性分析 (過濾器) vs. 量化分析 (模擬器)</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('concept')">1. 核心觀念</button>
+            <button class="tab-btn" onclick="switchTab('scenario')">2. 情境模擬</button>
+            <button class="tab-btn" onclick="switchTab('exam')">3. 模擬試題</button>
+        </div>
+
+        <div id="concept" class="content-section active">
+            <h2>這兩者有什麼不同？</h2>
+            <div class="analogy-box">
+                <p>💡 <strong>記憶口訣：</strong><br>
+                <strong>質性分析</strong>是「快篩」，用來排優先順序（這個比較急，那個還好）。<br>
+                <strong>量化分析</strong>是「精算」，用數學算出具體會賠多少錢、晚多少天。</p>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="concept-card">
+                    <h3>1. 執行質性風險分析</h3>
+                    <span class="tag tag-qual">優先排序</span>
+                    <span class="tag tag-qual">主觀判斷</span>
+                    <span class="tag tag-qual">必要流程</span>
+                    <p><strong>定義：</strong>評估風險發生的「機率」與「衝擊」，進行優先順序排序。</p>
+                    <p><strong>目的：</strong>當作「過濾器」，讓團隊專注在高風險事項，提高效率。</p>
+                    <p><strong>核心工具：</strong>
+                        <ul>
+                            <li><span class="key-tool">機率與衝擊矩陣</span> (P-I Matrix)</li>
+                            <li>專家判斷</li>
+                            <li>風險資料品質評估</li>
+                        </ul>
+                    </p>
+                </div>
+
+                <div class="concept-card">
+                    <h3>2. 執行量化風險分析</h3>
+                    <span class="tag tag-quan">數值化</span>
+                    <span class="tag tag-quan">客觀數據</span>
+                    <span class="tag tag-quan">選用流程</span>
+                    <p><strong>定義：</strong>利用數據模型，分析風險對專案目標（成本、時程）的「整體影響」。</p>
+                    <p><strong>目的：</strong>當作「模擬器」，提供科學預測（如：完工機率、期望損失金額）。</p>
+                    <p><strong>核心工具：</strong>
+                        <ul>
+                            <li><span class="key-tool">模擬技術 (蒙地卡羅)</span></li>
+                            <li>敏感度分析 (龍捲風圖)</li>
+                            <li>期望貨幣價值 (EMV)</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+            <div style="margin-top: 20px; text-align: center; color: #64748b; font-size: 0.9em;">
+                * 來源：NotebookLM 分析之課本內容
+            </div>
+        </div>
+
+        <div id="scenario" class="content-section">
+            <h2>你是專案經理，該用哪一招？</h2>
+            <p>點擊下方卡片翻牌，看看在不同情況下，你應該使用質性還是量化分析。</p>
+            
+            <div class="comparison-grid">
+                <div class="concept-card" onclick="toggleScenario(this)" style="cursor: pointer; text-align: center;">
+                    <h4 style="color:var(--text)">情況 A</h4>
+                    <p>專案剛開始，團隊識別出了 100 個潛在風險。我們沒有時間跟預算去詳細計算每一個，只想知道哪 10 個最危險。</p>
+                    <div class="answer" style="display:none; margin-top:15px; border-top:1px dashed #ccc; padding-top:10px;">
+                        <strong style="color:var(--primary)">👉 執行質性風險分析</strong>
+                        <p>原因：需要快速「過濾」與「排序」。使用 P-I 矩陣找出高優先級風險。</p>
+                    </div>
+                    <p style="color:var(--accent); font-size:0.8em; margin-top:10px;">(點擊查看答案)</p>
+                </div>
+
+                <div class="concept-card" onclick="toggleScenario(this)" style="cursor: pointer; text-align: center;">
+                    <h4 style="color:var(--text)">情況 B</h4>
+                    <p>老闆問：「如果那幾個主要風險發生，我們專案延期超過 1 個月的機率是多少？」</p>
+                    <div class="answer" style="display:none; margin-top:15px; border-top:1px dashed #ccc; padding-top:10px;">
+                        <strong style="color: #9a3412">👉 執行量化風險分析</strong>
+                        <p>原因：老闆問的是「機率」與「具體影響」。需要用蒙地卡羅模擬出機率分佈。</p>
+                    </div>
+                    <p style="color:var(--accent); font-size:0.8em; margin-top:10px;">(點擊查看答案)</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="exam" class="content-section">
+            <h2>模擬測驗</h2>
+            <p>根據課本重點，嘗試回答下列問題：</p>
+
+            <div class="quiz-question" id="q1">
+                <p><strong>1. 關於「執行質性風險分析」，下列敘述何者正確？</strong></p>
+                <div class="options">
+                    <button onclick="checkAnswer(this, false, '這是量化分析的目的（如蒙地卡羅）。')">A. 主要產出是專案完工的機率分佈圖。</button>
+                    <button onclick="checkAnswer(this, true, '正確！質性分析就是透過機率與衝擊來排列優先順序。')">B. 透過評估機率與衝擊，對風險進行優先排序。</button>
+                    <button onclick="checkAnswer(this, false, '質性分析依賴主觀判斷（專家訪談），量化才強調客觀數值。')">C. 必須完全排除主觀判斷，僅依賴數學模型。</button>
+                </div>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="quiz-question" id="q2">
+                <p><strong>2. 專案經理想要計算「期望貨幣價值 (EMV)」來協助決策，請問他正在進行哪一個流程？</strong></p>
+                <div class="options">
+                    <button onclick="checkAnswer(this, false, '識別風險只是找出風險，還沒開始分析數值。')">A. 識別風險</button>
+                    <button onclick="checkAnswer(this, false, '質性分析使用 P-I 矩陣，不算具體貨幣價值。')">B. 執行質性風險分析</button>
+                    <button onclick="checkAnswer(this, true, '正確！EMV 是量化風險分析的關鍵工具之一。')">C. 執行量化風險分析</button>
+                </div>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="quiz-question" id="q3">
+                <p><strong>3. 下列哪一個工具被視為風險管理的「過濾器」，負責確保團隊不迷失在大量細節中？</strong></p>
+                <div class="options">
+                    <button onclick="checkAnswer(this, true, '正確！它幫助你在進入複雜計算前，先篩選出重要的風險。')">A. 執行質性風險分析</button>
+                    <button onclick="checkAnswer(this, false, '量化分析是「模擬器」，處理被篩選過後的風險。')">B. 執行量化風險分析</button>
+                    <button onclick="checkAnswer(this, false, '這是量化分析中的一種工具。')">C. 蒙地卡羅分析</button>
+                </div>
+                <div class="feedback"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            // Remove active class from buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(tabId).classList.add('active');
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        function toggleScenario(card) {
+            const answer = card.querySelector('.answer');
+            const hint = card.querySelector('p:last-child');
+            if (answer.style.display === 'none') {
+                answer.style.display = 'block';
+                hint.style.display = 'none';
+            } else {
+                answer.style.display = 'none';
+                hint.style.display = 'block';
+            }
+        }
+
+        function checkAnswer(btn, isCorrect, explanation) {
+            const parent = btn.parentElement;
+            const feedback = parent.nextElementSibling;
+            
+            // Disable all buttons in this question
+            const buttons = parent.querySelectorAll('button');
+            buttons.forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                feedback.style.backgroundColor = '#dcfce7';
+                feedback.style.color = '#166534';
+                feedback.innerHTML = `<strong>✅ 正確！</strong> ${explanation}`;
+            } else {
+                btn.classList.add('wrong');
+                feedback.style.backgroundColor = '#fee2e2';
+                feedback.style.color = '#991b1b';
+                feedback.innerHTML = `<strong>❌ 錯誤。</strong> ${explanation}`;
+            }
+            feedback.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

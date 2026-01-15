@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案資源管理學習指南</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fade-in { animation: fadeIn 0.5s ease-in; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Icons components wrapper (using Font Awesome)
+        const iconMap = {
+            'book-open': 'fa-solid fa-book-open',
+            'file-text': 'fa-solid fa-file-text',
+            'trending-up': 'fa-solid fa-arrow-trend-up',
+            'alert-triangle': 'fa-solid fa-triangle-exclamation',
+            'trophy': 'fa-solid fa-trophy',
+            'award': 'fa-solid fa-award',
+            'check': 'fa-solid fa-check',
+            'x': 'fa-solid fa-x',
+            'arrow-right': 'fa-solid fa-arrow-right',
+            'puzzle-piece': 'fa-solid fa-puzzle-piece', // Added for Integration
+            'globe': 'fa-solid fa-earth-asia'
+        };
+        
+        const Icon = ({ name, size = 24, className = '' }) => {
+            const faClass = iconMap[name] || `fa-solid fa-${name}`;
+            return <i className={`${faClass} ${className}`} style={{ fontSize: `${size}px` }}></i>;
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('learn');
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    <header className="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-10">
+                        <div className="max-w-4xl mx-auto flex justify-between items-center">
+                            <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
+                                <Icon name="book-open" /> 專案資源管理學習指南
+                            </h1>
+                            <nav className="flex space-x-2">
+                                <button 
+                                    onClick={() => setActiveTab('learn')}
+                                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${activeTab === 'learn' ? 'bg-white text-blue-600' : 'bg-blue-500 hover:bg-blue-400'}`}
+                                >
+                                    核心觀念
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('tools')}
+                                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${activeTab === 'tools' ? 'bg-white text-blue-600' : 'bg-blue-500 hover:bg-blue-400'}`}
+                                >
+                                    圖表工具
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('quiz')}
+                                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${activeTab === 'quiz' ? 'bg-white text-blue-600' : 'bg-blue-500 hover:bg-blue-400'}`}
+                                >
+                                    模擬測驗
+                                </button>
+                            </nav>
+                        </div>
+                    </header>
+
+                    <main className="flex-grow p-4 md:p-8 max-w-4xl mx-auto w-full">
+                        {activeTab === 'learn' && <LearnSection />}
+                        {activeTab === 'tools' && <ToolsSection />}
+                        {activeTab === 'quiz' && <QuizSection />}
+                    </main>
+
+                    <footer className="bg-slate-800 text-slate-400 p-4 text-center text-sm">
+                        <p>專案管理 PMP 備考輔助工具 | 基於 NotebookLM 分析內容製作</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        // Section 1: Learning Cards
+        const LearnSection = () => {
+            const concepts = [
+                {
+                    title: "1. 管理範疇的擴張",
+                    icon: "globe",
+                    color: "bg-blue-100 text-blue-800",
+                    content: "過去只管「人」（人力資源），現在是「全方位資源」。這包括：團隊資源（Team）+ 實體資源（設備、材料、設施）。",
+                    key: "重點：不只是管人，還要管東西。"
+                },
+                {
+                    title: "2. 規劃的核心產出",
+                    icon: "file-text",
+                    color: "bg-green-100 text-green-800",
+                    content: (
+                        <ul className="list-disc pl-5 space-y-2">
+                            <li><strong>資源管理計畫書 (Resource Management Plan)：</strong> 指南/說明書。定義如何分類、獲取、管理資源。</li>
+                            <li><strong>團隊章程 (Team Charter)：</strong> 班規/家訓。定義價值觀、溝通準則、衝突解決方式。</li>
+                        </ul>
+                    ),
+                    key: "分辨：計畫書是硬性規則(How-to)，章程是軟性文化(Values)。"
+                },
+                {
+                    title: "3. 整合與連動性 (補強)",
+                    icon: "puzzle-piece",
+                    color: "bg-orange-100 text-orange-800",
+                    content: (
+                        <ul className="list-disc pl-5 space-y-2">
+                            <li><strong>非孤立流程：</strong> 需參考「範疇基準」與「品質」，因為資源直接影響交付成果。</li>
+                            <li><strong>漸進明細 (Progressive Elaboration)：</strong> 資源規劃不是一次定案，會隨著需求與風險更明確而不斷調整更新。</li>
+                        </ul>
+                    ),
+                    key: "重點：資源規劃是動態的，隨專案資訊明朗而更新。"
+                },
+                {
+                    title: "4. 現代管理趨勢",
+                    icon: "trending-up",
+                    color: "bg-purple-100 text-purple-800",
+                    content: (
+                        <ul className="list-disc pl-5 space-y-2">
+                            <li><strong>情緒智商 (EQ)：</strong> 管理團隊時需考量成員情緒。</li>
+                            <li><strong>虛擬團隊 (Virtual Teams)：</strong> 善用通訊技術管理分散成員。</li>
+                            <li><strong>自我組織團隊 (Self-organizing)：</strong> 敏捷概念，團隊自行決定如何執行工作。</li>
+                        </ul>
+                    ),
+                    key: "重點：軟實力(EQ)與新型態團隊架構。"
+                }
+            ];
+
+            return (
+                <div className="space-y-6 animate-fade-in">
+                    <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-500">
+                        <h2 className="text-2xl font-bold mb-2 text-slate-800">規劃資源管理 (Plan Resource Management)</h2>
+                        <p className="text-slate-600">這是整個資源生命週期的藍圖。它的目的是確保在正確的時間，將正確的資源（人與物）投入到正確的工作中。</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {concepts.map((item, idx) => (
+                            <div key={idx} className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition-shadow">
+                                <div className={`inline-flex p-2 rounded-lg mb-3 ${item.color}`}>
+                                    <Icon name={item.icon} />
+                                </div>
+                                <h3 className="text-xl font-bold mb-2 text-slate-800">{item.title}</h3>
+                                <div className="text-slate-600 mb-4 text-sm leading-relaxed">{item.content}</div>
+                                <div className="bg-slate-50 p-2 rounded text-xs font-semibold text-slate-500 border border-slate-200">
+                                    💡 {item.key}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // Section 2: Interactive Tools (RACI & RBS)
+        const ToolsSection = () => {
+            const [selectedTool, setSelectedTool] = useState('RACI');
+
+            return (
+                <div className="space-y-6">
+                    <div className="flex justify-center space-x-4 mb-6">
+                        <button 
+                            onClick={() => setSelectedTool('RACI')}
+                            className={`px-4 py-2 rounded-lg font-bold transition-all ${selectedTool === 'RACI' ? 'bg-blue-600 text-white shadow-lg scale-105' : 'bg-white text-slate-600 border'}`}
+                        >
+                            RACI 責任分配矩陣
+                        </button>
+                        <button 
+                            onClick={() => setSelectedTool('Hierarchical')}
+                            className={`px-4 py-2 rounded-lg font-bold transition-all ${selectedTool === 'Hierarchical' ? 'bg-blue-600 text-white shadow-lg scale-105' : 'bg-white text-slate-600 border'}`}
+                        >
+                            層級結構圖 (WBS/OBS/RBS)
+                        </button>
+                    </div>
+
+                    {selectedTool === 'RACI' ? <RACIExplainer /> : <HierarchyExplainer />}
+                </div>
+            );
+        };
+
+        const RACIExplainer = () => {
+            const roles = [
+                { code: 'R', name: 'Responsible (當責者)', desc: '實際動手做這件事的人。' },
+                { code: 'A', name: 'Accountable (負責者)', desc: '負起最終成敗責任的人（通常這欄只能有一個人，負責簽核）。' },
+                { code: 'C', name: 'Consult (諮詢)', desc: '做決定前需要詢問意見的專家（雙向溝通）。' },
+                { code: 'I', name: 'Inform (告知)', desc: '做完之後需要被通知結果的人（單向溝通）。' },
+            ];
+
+            return (
+                <div className="bg-white p-6 rounded-xl shadow-md">
+                    <h3 className="text-xl font-bold mb-4 text-slate-800">RAM 與 RACI 矩陣</h3>
+                    <p className="mb-4 text-slate-600">RAM (責任指派矩陣) 顯示資源與活動的連結，而 RACI 是最常見的一種 RAM。</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        {roles.map((r, i) => (
+                            <div key={i} className="border p-4 rounded-lg bg-slate-50 hover:bg-blue-50 transition-colors">
+                                <span className="text-2xl font-black text-blue-600 block mb-1">{r.code}</span>
+                                <h4 className="font-bold text-slate-800">{r.name}</h4>
+                                <p className="text-sm text-slate-500">{r.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                        <h4 className="font-bold text-yellow-800 flex items-center gap-2">
+                            <Icon name="alert-triangle" size={18} /> 考試陷阱
+                        </h4>
+                        <p className="text-sm text-yellow-700 mt-1">
+                            考試常問：「誰要對這項任務的成敗負起最終責任？」答案是 <strong>Accountable (A)</strong>，不是 Responsible (R)。
+                            此外，A 通常只能有一個人，以免權責不清。
+                        </p>
+                    </div>
+                </div>
+            );
+        };
+
+        const HierarchyExplainer = () => {
+            return (
+                <div className="bg-white p-6 rounded-xl shadow-md space-y-6">
+                    <h3 className="text-xl font-bold text-slate-800">三種層級圖表的差異</h3>
+                    <p className="text-slate-600">這三個長得很像，但分類邏輯不同。考試會描述一個圖表，問你它是哪一種。</p>
+
+                    <div className="grid gap-4">
+                        <div className="border rounded-lg overflow-hidden">
+                            <div className="bg-blue-600 text-white p-3 font-bold flex items-center justify-between">
+                                <span>WBS (工作分解結構)</span>
+                                <span className="text-xs bg-blue-500 px-2 py-1 rounded">專注於「事」</span>
+                            </div>
+                            <div className="p-4 bg-slate-50 text-sm">
+                                <div className="flex flex-col items-center">
+                                    <div className="border border-slate-300 bg-white px-3 py-1 mb-2">專案目標</div>
+                                    <div className="h-4 w-px bg-slate-300"></div>
+                                    <div className="flex gap-2">
+                                        <div className="border border-slate-300 bg-white px-2 py-1">工作包 A</div>
+                                        <div className="border border-slate-300 bg-white px-2 py-1">工作包 B</div>
+                                    </div>
+                                </div>
+                                <p className="mt-3 text-slate-500">定義「做什麼工作」。</p>
+                            </div>
+                        </div>
+
+                        <div className="border rounded-lg overflow-hidden">
+                            <div className="bg-indigo-600 text-white p-3 font-bold flex items-center justify-between">
+                                <span>OBS (組織分解結構)</span>
+                                <span className="text-xs bg-indigo-500 px-2 py-1 rounded">專注於「部門」</span>
+                            </div>
+                            <div className="p-4 bg-slate-50 text-sm">
+                                <div className="flex flex-col items-center">
+                                    <div className="border border-slate-300 bg-white px-3 py-1 mb-2">公司總部</div>
+                                    <div className="h-4 w-px bg-slate-300"></div>
+                                    <div className="flex gap-2">
+                                        <div className="border border-slate-300 bg-white px-2 py-1">資訊部</div>
+                                        <div className="border border-slate-300 bg-white px-2 py-1">行銷部</div>
+                                    </div>
+                                </div>
+                                <p className="mt-3 text-slate-500">顯示哪個「部門」負責哪些工作。</p>
+                            </div>
+                        </div>
+
+                        <div className="border rounded-lg overflow-hidden">
+                            <div className="bg-emerald-600 text-white p-3 font-bold flex items-center justify-between">
+                                <span>RBS (資源分解結構)</span>
+                                <span className="text-xs bg-emerald-500 px-2 py-1 rounded">專注於「資源類別」</span>
+                            </div>
+                            <div className="p-4 bg-slate-50 text-sm">
+                                <div className="flex flex-col items-center">
+                                    <div className="border border-slate-300 bg-white px-3 py-1 mb-2">專案資源</div>
+                                    <div className="h-4 w-px bg-slate-300"></div>
+                                    <div className="flex gap-4">
+                                        <div className="flex flex-col items-center">
+                                            <div className="border border-slate-300 bg-white px-2 py-1 mb-1">人力</div>
+                                            <div className="text-xs text-slate-400">工程師, 設計師</div>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <div className="border border-slate-300 bg-white px-2 py-1 mb-1">材料</div>
+                                            <div className="text-xs text-slate-400">伺服器, 軟體</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p className="mt-3 text-slate-500">WBS 的衍生物，按「類別」顯示資源。可用於追蹤成本。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Section 3: Quiz
+        const QuizSection = () => {
+            const questions = [
+                {
+                    q: "現在的「專案資源管理」與過去的「人力資源管理」最大的不同是什麼？",
+                    options: [
+                        "只關注虛擬團隊",
+                        "只關注實體設備的採購",
+                        "除了管人（團隊），也包含實體資源（材料、設備）的管理",
+                        "不需要制定資源管理計畫書"
+                    ],
+                    ans: 2,
+                    expl: "規劃流程必須同時涵蓋團隊資源（人力）與實體資源（設備、材料、設施、基礎建設）。"
+                },
+                {
+                    q: "哪一份文件用於建立團隊價值觀、溝通準則及決策流程？",
+                    options: [
+                        "資源管理計畫書 (Resource Management Plan)",
+                        "團隊章程 (Team Charter)",
+                        "RACI 矩陣",
+                        "專案範疇說明書"
+                    ],
+                    ans: 1,
+                    expl: "團隊章程是規劃階段的關鍵產出，用以建立團隊運作的「軟性」規則與共識。"
+                },
+                {
+                    q: "在 RACI 矩陣中，負責「核准」工作且對最終結果負全責的人是？",
+                    options: [
+                        "R (Responsible)",
+                        "A (Accountable)",
+                        "C (Consult)",
+                        "I (Inform)"
+                    ],
+                    ans: 1,
+                    expl: "A (Accountable) 是當責者，負責最終的核准與成敗責任，通常一項工作只有一位。"
+                },
+                {
+                    q: "如果你想看專案所需的資源是屬於「人力類」還是「材料類」的層級結構，你應該看哪張圖？",
+                    options: [
+                        "WBS (工作分解結構)",
+                        "OBS (組織分解結構)",
+                        "RBS (資源分解結構)",
+                        "網路圖 (Network Diagram)"
+                    ],
+                    ans: 2,
+                    expl: "RBS (資源分解結構) 按資源類別（如人力、材料）顯示資源的層級結構。"
+                }
+            ];
+
+            const [currentQ, setCurrentQ] = useState(0);
+            const [score, setScore] = useState(0);
+            const [showResult, setShowResult] = useState(false);
+            const [selectedOption, setSelectedOption] = useState(null);
+            const [isAnswered, setIsAnswered] = useState(false);
+
+            const handleAnswer = (idx) => {
+                if (isAnswered) return;
+                setSelectedOption(idx);
+                setIsAnswered(true);
+                if (idx === questions[currentQ].ans) {
+                    setScore(score + 1);
+                }
+            };
+
+            const nextQuestion = () => {
+                if (currentQ < questions.length - 1) {
+                    setCurrentQ(currentQ + 1);
+                    setSelectedOption(null);
+                    setIsAnswered(false);
+                } else {
+                    setShowResult(true);
+                }
+            };
+
+            const restart = () => {
+                setCurrentQ(0);
+                setScore(0);
+                setShowResult(false);
+                setSelectedOption(null);
+                setIsAnswered(false);
+            };
+
+            if (showResult) {
+                return (
+                    <div className="bg-white p-8 rounded-xl shadow-md text-center animate-fade-in">
+                        <Icon name={score === questions.length ? "trophy" : "award"} size={64} className={`mx-auto mb-4 ${score === questions.length ? "text-yellow-500" : "text-blue-500"}`} />
+                        <h2 className="text-3xl font-bold mb-4">測驗結果</h2>
+                        <p className="text-xl mb-6">你答對了 <span className="font-bold text-blue-600">{score}</span> / {questions.length} 題</p>
+                        <p className="text-slate-600 mb-8">
+                            {score === questions.length ? "太棒了！你已經掌握了規劃資源管理的核心概念！" : "再複習一下觀念，你一定可以拿滿分！"}
+                        </p>
+                        <button onClick={restart} className="bg-blue-600 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-700 transition-colors">
+                            重新測驗
+                        </button>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="bg-white p-6 md:p-8 rounded-xl shadow-md max-w-2xl mx-auto">
+                    <div className="flex justify-between items-center mb-6">
+                        <span className="text-sm font-bold text-slate-400">Question {currentQ + 1} of {questions.length}</span>
+                        <span className="text-sm font-bold text-blue-600">Score: {score}</span>
+                    </div>
+
+                    <h3 className="text-xl font-bold mb-6 text-slate-800">{questions[currentQ].q}</h3>
+
+                    <div className="space-y-3 mb-6">
+                        {questions[currentQ].options.map((opt, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => handleAnswer(idx)}
+                                disabled={isAnswered}
+                                className={`w-full text-left p-4 rounded-lg border transition-all ${
+                                    isAnswered 
+                                        ? idx === questions[currentQ].ans 
+                                            ? "bg-green-100 border-green-500 text-green-800" 
+                                            : idx === selectedOption 
+                                                ? "bg-red-100 border-red-500 text-red-800"
+                                                : "bg-slate-50 border-slate-200 opacity-50"
+                                        : "hover:bg-blue-50 border-slate-200 hover:border-blue-300"
+                                }`}
+                            >
+                                <div className="flex items-center">
+                                    <div className={`w-6 h-6 rounded-full border flex items-center justify-center mr-3 ${
+                                        isAnswered && idx === questions[currentQ].ans ? "bg-green-500 border-green-500 text-white" :
+                                        isAnswered && idx === selectedOption ? "bg-red-500 border-red-500 text-white" :
+                                        "border-slate-300"
+                                    }`}>
+                                        {isAnswered && idx === questions[currentQ].ans ? <Icon name="check" size={14} /> : 
+                                         isAnswered && idx === selectedOption ? <Icon name="x" size={14} /> : 
+                                         <span className="text-xs">{String.fromCharCode(65 + idx)}</span>}
+                                    </div>
+                                    {opt}
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+
+                    {isAnswered && (
+                        <div className="animate-fade-in">
+                            <div className="bg-blue-50 p-4 rounded-lg mb-4 text-sm text-blue-800 border border-blue-200">
+                                <strong>解析：</strong> {questions[currentQ].expl}
+                            </div>
+                            <button onClick={nextQuestion} className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                                {currentQ < questions.length - 1 ? "下一題" : "查看結果"} <Icon name="arrow-right" size={18} />
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

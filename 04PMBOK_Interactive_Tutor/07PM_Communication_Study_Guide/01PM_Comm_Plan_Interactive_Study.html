@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案溝通管理 - 全方位備考指南 (完整版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f0f4f8; }
+        .card { perspective: 1000px; cursor: pointer; }
+        .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .card.flipped .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card-front { background-color: #ffffff; color: #2d3748; border: 2px solid #4299e1; }
+        .card-back { background-color: #4299e1; color: white; transform: rotateY(180deg); }
+        .highlight { color: #e53e3e; font-weight: bold; }
+        /* Table Styles */
+        .cheat-table th { background-color: #edf2f7; color: #2d3748; font-weight: bold; padding: 12px; border: 1px solid #e2e8f0; }
+        .cheat-table td { padding: 12px; border: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-blue-700 mb-2">專案溝通管理 (Chapter 10)</h1>
+            <p class="text-lg text-gray-600">完整備考版：包含計算、情境與詳細知識點清單</p>
+            <div class="mt-4 p-4 bg-yellow-100 rounded-lg text-left text-sm border-l-4 border-yellow-500">
+                <strong>導師筆記：</strong> 我們已將 NotebookLM 分析的所有重點（包含維度、輸入文件、工具矩陣）全數整合。現在這份是您的終極複習講義。
+            </div>
+        </header>
+
+        <div class="flex flex-wrap justify-center mb-8 gap-2">
+            <button onclick="switchTab('concepts')" id="btn-concepts" class="px-5 py-2 rounded-full bg-blue-600 text-white font-bold shadow hover:bg-blue-700 transition">核心觀念卡</button>
+            <button onclick="switchTab('cheatsheet')" id="btn-cheatsheet" class="px-5 py-2 rounded-full bg-white text-blue-600 font-bold shadow hover:bg-gray-100 transition">重點速查表 (新增)</button>
+            <button onclick="switchTab('calculator')" id="btn-calculator" class="px-5 py-2 rounded-full bg-white text-blue-600 font-bold shadow hover:bg-gray-100 transition">溝通管道計算</button>
+            <button onclick="switchTab('quiz')" id="btn-quiz" class="px-5 py-2 rounded-full bg-white text-blue-600 font-bold shadow hover:bg-gray-100 transition">情境模擬考題</button>
+        </div>
+
+        <div id="concepts" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6 text-center">核心定義與產出 (點擊翻轉)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card h-48" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div>
+                                <h3 class="text-xl font-bold">規劃溝通管理的目的</h3>
+                                <p class="text-sm text-gray-500 mt-2">為什麼要做這件事？</p>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <p>1. 預防溝通失敗（士氣低落、延誤）。<br>2. 確保在正確時間，把正確訊息傳給正確的人。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card h-48" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div>
+                                <h3 class="text-xl font-bold">溝通模型 7 要素</h3>
+                                <p class="text-sm text-gray-500 mt-2">傳遞訊息的科學過程</p>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <ul class="text-left list-disc pl-5 text-sm">
+                                <li>發訊者 (Sender) / 受訊者 (Receiver)</li>
+                                <li>編碼 (Encoding) / 解碼 (Decoding)</li>
+                                <li>訊息 (Message) / 媒介 (Medium)</li>
+                                <li><strong class="text-yellow-300">噪音 (Noise)</strong>：任何干擾理解的因素</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card h-48" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div>
+                                <h3 class="text-xl font-bold">核心產出 (Output)</h3>
+                                <p class="text-sm text-gray-500 mt-2">這流程最重要的文件？</p>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <p class="font-bold text-xl">溝通管理計畫書</p>
+                            <p class="text-sm mt-2">包含：負責人、頻率、格式(Email/會議)、爭議解決流程(Escalation Process)。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card h-48" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div>
+                                <h3 class="text-xl font-bold">人與現代趨勢</h3>
+                                <p class="text-sm text-gray-500 mt-2">除了文件還要考慮什麼？</p>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <ul class="text-left list-disc pl-5 text-sm">
+                                <li><strong>社群運算</strong>：多利用通訊軟體 (Line, Teams)。</li>
+                                <li><strong>利害關係人整合</strong>：需深入了解期望，而非只單向報告。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="cheatsheet" class="tab-content hidden">
+            <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                <h2 class="text-2xl font-bold mb-6 text-center text-blue-800">知識點速查表 (補完計畫)</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold mb-3 border-b-2 border-blue-500 pb-2">1. 溝通維度 (Dimensions)</h3>
+                        <p class="text-sm text-gray-600 mb-2">規劃時需決定採用哪種形式：</p>
+                        <table class="w-full text-left border-collapse cheat-table text-sm">
+                            <thead>
+                                <tr>
+                                    <th>維度類型</th>
+                                    <th>說明與範例</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>正式 (Formal)</strong></td>
+                                    <td>報告、會議記錄、合約 (白紙黑字)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>非正式 (Informal)</strong></td>
+                                    <td>Email、便條、茶水間談話 (建立關係)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>垂直 (Vertical)</strong></td>
+                                    <td>向上(報告老闆)、向下(指導部屬)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>水平 (Horizontal)</strong></td>
+                                    <td>與同儕、其他部門同事溝通</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>外部 (External)</strong></td>
+                                    <td>顧客、媒體、大眾</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-bold mb-3 border-b-2 border-blue-500 pb-2">2. 關鍵輸入 (Inputs)</h3>
+                            <ul class="list-disc pl-5 space-y-2 text-sm text-gray-700">
+                                <li><strong>專案章程 (Project Charter)</strong>：提供專案的高層級資訊。</li>
+                                <li><strong>利害關係人登錄簿 (Stakeholder Register)</strong>：知道要溝通的對象是誰。</li>
+                                <li><strong>資源管理計畫書</strong>：了解團隊成員的配置與層級。</li>
+                                <li><strong>需求文件</strong>：了解利害關係人對資訊的具體需求。</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-bold mb-3 border-b-2 border-blue-500 pb-2">3. 重要工具與技術</h3>
+                            <ul class="list-disc pl-5 space-y-2 text-sm text-gray-700">
+                                <li><strong>利害關係人互動評估矩陣</strong>：<br>
+                                    <span class="text-gray-500 text-xs">識別利害關係人「目前」與「期望」參與程度的差距 (Gap Analysis)。</span>
+                                </li>
+                                <li><strong>政治意識 (Political Awareness)</strong>：<br>
+                                    <span class="text-gray-500 text-xs">了解組織內的權力結構，誰說話有份量。</span>
+                                </li>
+                                <li><strong>文化意識 (Cultural Awareness)</strong>：<br>
+                                    <span class="text-gray-500 text-xs">跨國專案需注意語言與溝通習慣差異。</span>
+                                </li>
+                                <li><strong>溝通風格評估</strong>：<br>
+                                    <span class="text-gray-500 text-xs">根據對象調整語氣與方式。</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="calculator" class="tab-content hidden">
+            <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                <h2 class="text-2xl font-bold mb-4 text-center">溝通管道複雜度計算</h2>
+                <p class="mb-6 text-gray-600 text-center">公式：<span class="text-2xl font-mono text-blue-600 font-bold">N(N-1) / 2</span></p>
+                
+                <div class="flex flex-col items-center space-y-4">
+                    <div class="w-full max-w-md">
+                        <label class="block text-gray-700 font-bold mb-2">輸入專案人數 (N):</label>
+                        <input type="number" id="stakeholders" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl text-center" placeholder="例如：5" oninput="calculateChannels()">
+                    </div>
+                    
+                    <div class="text-center p-6 bg-blue-50 rounded-lg w-full max-w-md">
+                        <p class="text-gray-600">潛在溝通管道數量：</p>
+                        <p id="result" class="text-5xl font-bold text-blue-600 mt-2">0</p>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-center">
+                    <canvas id="networkCanvas" width="300" height="300" class="bg-white border rounded-full shadow-inner"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz" class="tab-content hidden">
+            <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                <h2 class="text-2xl font-bold mb-6 text-center">情境判斷：溝通方法</h2>
+                <p class="mb-6 text-center text-gray-600">判斷情境是：<span class="font-bold text-blue-600">推式</span>、<span class="font-bold text-green-600">拉式</span> 還是 <span class="font-bold text-purple-600">互動式</span>。</p>
+
+                <div id="quiz-container" class="space-y-6">
+                    <div class="border-b pb-4">
+                        <p class="font-bold text-lg mb-3">Q1. 專案經理發現需求不明確，需要與利害關係人進行多向訊息交換，以澄清誤解。</p>
+                        <div class="space-x-2">
+                            <button onclick="checkAnswer(this, 'interactive')" class="px-4 py-2 border rounded hover:bg-gray-100">互動式</button>
+                            <button onclick="checkAnswer(this, 'wrong')" class="px-4 py-2 border rounded hover:bg-gray-100">推式</button>
+                            <button onclick="checkAnswer(this, 'wrong')" class="px-4 py-2 border rounded hover:bg-gray-100">拉式</button>
+                        </div>
+                        <p class="feedback hidden mt-2"></p>
+                    </div>
+
+                    <div class="border-b pb-4">
+                        <p class="font-bold text-lg mb-3">Q2. 公司發布新的資安政策，透過 Email 寄給全體員工，但不確定員工是否已閱讀。</p>
+                        <div class="space-x-2">
+                            <button onclick="checkAnswer(this, 'wrong')" class="px-4 py-2 border rounded hover:bg-gray-100">互動式</button>
+                            <button onclick="checkAnswer(this, 'push')" class="px-4 py-2 border rounded hover:bg-gray-100">推式</button>
+                            <button onclick="checkAnswer(this, 'wrong')" class="px-4 py-2 border rounded hover:bg-gray-100">拉式</button>
+                        </div>
+                        <p class="feedback hidden mt-2"></p>
+                    </div>
+
+                    <div class="border-b pb-4">
+                        <p class="font-bold text-lg mb-3">Q3. 專案累積了大量的技術文件與歷史紀錄，放置於內網 SharePoint 供成員隨時查閱。</p>
+                        <div class="space-x-2">
+                            <button onclick="checkAnswer(this, 'wrong')" class="px-4 py-2 border rounded hover:bg-gray-100">互動式</button>
+                            <button onclick="checkAnswer(this, 'wrong')" class="px-4 py-2 border rounded hover:bg-gray-100">推式</button>
+                            <button onclick="checkAnswer(this, 'pull')" class="px-4 py-2 border rounded hover:bg-gray-100">拉式</button>
+                        </div>
+                        <p class="feedback hidden mt-2"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            const buttons = ['btn-concepts', 'btn-cheatsheet', 'btn-calculator', 'btn-quiz'];
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btnId === 'btn-' + tabId) {
+                    btn.classList.remove('bg-white', 'text-blue-600');
+                    btn.classList.add('bg-blue-600', 'text-white');
+                } else {
+                    btn.classList.add('bg-white', 'text-blue-600');
+                    btn.classList.remove('bg-blue-600', 'text-white');
+                }
+            });
+            if(tabId === 'calculator') calculateChannels();
+        }
+
+        function calculateChannels() {
+            const n = parseInt(document.getElementById('stakeholders').value) || 0;
+            const result = n * (n - 1) / 2;
+            document.getElementById('result').innerText = result >= 0 ? result : 0;
+            drawNetwork(n);
+        }
+
+        function drawNetwork(n) {
+            const canvas = document.getElementById('networkCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const radius = 120;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            ctx.clearRect(0, 0, width, height);
+            if (n <= 1) return;
+            if (n > 20) {
+                ctx.fillStyle = "#2d3748"; ctx.font = "16px Arial"; ctx.textAlign = "center";
+                ctx.fillText("節點過多，僅顯示數值", centerX, centerY); return;
+            }
+            const points = [];
+            for (let i = 0; i < n; i++) {
+                const angle = (i * 2 * Math.PI) / n;
+                points.push({ x: centerX + radius * Math.cos(angle), y: centerY + radius * Math.sin(angle) });
+            }
+            ctx.strokeStyle = "#cbd5e0"; ctx.lineWidth = 1;
+            for (let i = 0; i < n; i++) {
+                for (let j = i + 1; j < n; j++) {
+                    ctx.beginPath(); ctx.moveTo(points[i].x, points[i].y); ctx.lineTo(points[j].x, points[j].y); ctx.stroke();
+                }
+            }
+            ctx.fillStyle = "#4299e1";
+            for (let i = 0; i < n; i++) {
+                ctx.beginPath(); ctx.arc(points[i].x, points[i].y, 5, 0, 2 * Math.PI); ctx.fill();
+            }
+        }
+
+        function checkAnswer(btn, type) {
+            const feedback = btn.parentElement.nextElementSibling;
+            feedback.classList.remove('hidden');
+            const siblings = btn.parentElement.children;
+            for(let sib of siblings) { sib.classList.remove('bg-green-500', 'bg-red-500', 'text-white'); sib.classList.add('hover:bg-gray-100'); }
+            
+            if (type === 'interactive' || type === 'push' || type === 'pull') {
+                btn.classList.remove('hover:bg-gray-100'); btn.classList.add('bg-green-500', 'text-white');
+                feedback.innerHTML = "<span class='text-green-600 font-bold'>✅ 答對了！</span>";
+            } else {
+                btn.classList.remove('hover:bg-gray-100'); btn.classList.add('bg-red-500', 'text-white');
+                feedback.innerHTML = "<span class='text-red-600 font-bold'>❌ 答錯了。</span>";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理入門：蒐集需求 (Collect Requirements)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f0fdf4; }
+        .card-flip { transition: transform 0.6s; transform-style: preserve-3d; }
+        .card-container:hover .card-flip { transform: rotateY(180deg); }
+        .front, .back { backface-visibility: hidden; position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .back { transform: rotateY(180deg); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Custom Icon Components
+        const Icons = {
+            Brain: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/><path d="M3.477 10.896a4 4 0 0 1 .585-.396"/><path d="M19.938 10.5a4 4 0 0 1 .585.396"/><path d="M6 18a4 4 0 0 1-1.97-3.284"/><path d="M17.97 14.716A4 4 0 0 1 16 18"/></svg>,
+            Check: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+            BookOpen: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>,
+            Target: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
+            Scissors: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>,
+            FileText: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>,
+            AlertCircle: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+            Award: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>,
+            Users: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+            Search: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+            Layout: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>,
+            ArrowRight: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('concept');
+
+            return (
+                <div className="min-h-screen bg-slate-50 text-slate-800">
+                    {/* Header */}
+                    <header className="bg-emerald-600 text-white p-4 shadow-lg sticky top-0 z-50">
+                        <div className="max-w-4xl mx-auto flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                                <Icons.BookOpen />
+                                <h1 className="text-xl font-bold">專案管理入門：蒐集需求</h1>
+                            </div>
+                            <div className="text-sm bg-emerald-700 px-3 py-1 rounded-full">Project Scope Management</div>
+                        </div>
+                    </header>
+
+                    {/* Navigation */}
+                    <nav className="max-w-4xl mx-auto mt-6 px-4 mb-6">
+                        <div className="flex flex-wrap gap-2 justify-center bg-white p-2 rounded-xl shadow-sm">
+                            <NavButton active={activeTab === 'concept'} onClick={() => setActiveTab('concept')} icon={<Icons.Scissors />} label="觀念譬喻" />
+                            <NavButton active={activeTab === 'tools'} onClick={() => setActiveTab('tools')} icon={<Icons.Users />} label="工具與技術" />
+                            <NavButton active={activeTab === 'matrix'} onClick={() => setActiveTab('matrix')} icon={<Icons.Layout />} label="追蹤矩陣" />
+                            <NavButton active={activeTab === 'quiz'} onClick={() => setActiveTab('quiz')} icon={<Icons.Brain />} label="模擬考題" />
+                        </div>
+                    </nav>
+
+                    {/* Main Content */}
+                    <main className="max-w-4xl mx-auto px-4 pb-20">
+                        {activeTab === 'concept' && <ConceptSection />}
+                        {activeTab === 'tools' && <ToolsSection />}
+                        {activeTab === 'matrix' && <MatrixSection />}
+                        {activeTab === 'quiz' && <QuizSection />}
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="bg-slate-800 text-slate-400 py-6 mt-10 text-center text-sm">
+                        <p>Based on NotebookLM Analysis | Project Management Learning Kit</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        const NavButton = ({ active, onClick, icon, label }) => (
+            <button 
+                onClick={onClick}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${active ? 'bg-emerald-600 text-white shadow-md transform scale-105' : 'hover:bg-slate-100 text-slate-600'}`}
+            >
+                {icon}
+                <span className="font-medium">{label}</span>
+            </button>
+        );
+
+        // Section 1: Concept & Metaphor
+        const ConceptSection = () => (
+            <div className="space-y-6 animate-fade-in">
+                <div className="bg-white p-6 rounded-2xl shadow-md border-l-4 border-emerald-500">
+                    <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                        <Icons.Scissors className="text-emerald-600" />
+                        訂製西裝的譬喻
+                    </h2>
+                    <p className="text-lg leading-relaxed text-slate-700 mb-4">
+                        試想一下，如果專案是為客戶<b>「訂製一套西裝」</b>：
+                    </p>
+                    <div className="grid md:grid-cols-3 gap-4 mt-6">
+                        <div className="bg-emerald-50 p-4 rounded-xl text-center">
+                            <div className="text-3xl mb-2">🗣️</div>
+                            <h3 className="font-bold text-emerald-800">師傅量身 & 對話</h3>
+                            <p className="text-sm text-slate-600 mt-1">這就是 <b>蒐集需求</b></p>
+                            <p className="text-xs text-slate-500 mt-2">不能只聽客人說「想要好看」，要用訪談挖掘真實想法。</p>
+                        </div>
+                        <div className="bg-blue-50 p-4 rounded-xl text-center">
+                            <div className="text-3xl mb-2">📝</div>
+                            <h3 className="font-bold text-blue-800">取貨單 & 尺寸表</h3>
+                            <p className="text-sm text-slate-600 mt-1">這就是 <b>需求文件 & 追蹤矩陣</b></p>
+                            <p className="text-xs text-slate-500 mt-2">紀錄口袋幾個、腰圍多少。確保最後做出來的一模一樣。</p>
+                        </div>
+                        <div className="bg-purple-50 p-4 rounded-xl text-center">
+                            <div className="text-3xl mb-2">🤵</div>
+                            <h3 className="font-bold text-purple-800">試穿驗收</h3>
+                            <p className="text-sm text-slate-600 mt-1">這就是 <b>驗證範疇</b></p>
+                            <p className="text-xs text-slate-500 mt-2">如果當初沒量好（蒐集需求失敗），最後西裝再美，客人也不付錢。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                    {/* Input Sources - Added for Completeness */}
+                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <h3 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <Icons.FileText className="w-5 h-5 text-indigo-600" />
+                            廣泛的輸入來源 (Inputs)
+                        </h3>
+                        <p className="text-sm text-slate-500 mb-2">做西裝前，師傅手上已經有的資料：</p>
+                        <ul className="space-y-2 text-sm">
+                            <li className="flex gap-2">
+                                <span className="text-indigo-600 font-bold">1. 專案章程：</span>
+                                <span>大方向的成功準則（如：我要一件適合婚禮的西裝）。</span>
+                            </li>
+                            <li className="flex gap-2">
+                                <span className="text-indigo-600 font-bold">2. 利害關係人名冊：</span>
+                                <span>誰會影響這件西裝？（如：新郎本人、新娘、付錢的長輩）。</span>
+                            </li>
+                            <li className="flex gap-2">
+                                <span className="text-indigo-600 font-bold">3. 商務文件：</span>
+                                <span>確認需求是否符合商業價值（如：預算考量）。</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div className="bg-amber-50 p-6 rounded-2xl border border-amber-200">
+                        <h3 className="font-bold text-amber-800 mb-2 flex items-center gap-2">
+                            <Icons.AlertCircle className="w-5 h-5" />
+                            核心重點
+                        </h3>
+                        <ul className="list-disc list-inside space-y-2 text-amber-900 text-sm">
+                            <li><b>範疇管理的基石：</b> 需求蒐集不全 = 後續全部歪掉。</li>
+                            <li><b>防止鍍金 (Gold Plating)：</b> 透過嚴謹紀錄，防止團隊成員自己加戲做多餘的功能。</li>
+                            <li><b>漸進明細：</b> 需求可能會隨著專案進行越來越清楚，不是一次定死的。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        );
+
+        // Section 2: Tools Flashcards
+        const ToolsSection = () => {
+            const tools = [
+                { title: "訪談 (Interviews)", icon: "🗣️", desc: "一對一與利害關係人對話，挖掘機密或潛在需求。" },
+                { title: "焦點小組 (Focus Groups)", icon: "👥", desc: "找一群專家或用戶，由主持人引導討論，收斂意見。" },
+                { title: "雛型法 (Prototype)", icon: "🧩", desc: "做模型給你看！在實際製造前先獲取回饋，降低風險。" },
+                { title: "問卷調查 (Surveys)", icon: "📊", desc: "受眾太多時使用，或是需要數據統計分析時。" },
+                { title: "標竿學習 (Benchmarking)", icon: "🏆", desc: "參考業界最佳實務或競爭對手，看看別人怎麼做。" },
+                { title: "決策技術 (Decision Making)", icon: "🗳️", desc: "投票、多準則決策。當需求太多，用來決定優先順序。" },
+                { title: "脈絡圖 (Context Diagrams)", icon: "🕸️", desc: "畫出產品與人、其他系統的互動關係（輸入/輸出）。" },
+                { title: "親和圖 (Affinity Diagrams)", icon: "🏷️", desc: "把大量創意或需求分類歸納（像整理便利貼）。" },
+            ];
+
+            return (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-bold mb-4 text-slate-800">蒐集需求的工具箱</h2>
+                    <p className="text-slate-600 mb-6">已補齊筆記中提到的所有工具，點擊卡片翻面學習。</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        {tools.map((tool, idx) => (
+                            <FlipCard key={idx} data={tool} />
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const FlipCard = ({ data }) => {
+            const [flipped, setFlipped] = useState(false);
+
+            return (
+                <div 
+                    className="card-container h-48 cursor-pointer group perspective-1000"
+                    onClick={() => setFlipped(!flipped)}
+                >
+                    <div className={`relative w-full h-full text-center transition-transform duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`} style={{transformStyle: 'preserve-3d', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)'}}>
+                        {/* Front */}
+                        <div className="absolute w-full h-full backface-hidden bg-white rounded-xl shadow-md border-2 border-slate-100 flex flex-col items-center justify-center p-4 hover:border-emerald-400 transition-colors">
+                            <div className="text-4xl mb-2">{data.icon}</div>
+                            <h3 className="text-base font-bold text-slate-800">{data.title}</h3>
+                            <p className="text-xs text-slate-400 mt-2">點擊查看詳解</p>
+                        </div>
+                        {/* Back */}
+                        <div className="absolute w-full h-full backface-hidden bg-emerald-600 rounded-xl shadow-md flex items-center justify-center p-4 text-white" style={{transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}>
+                            <p className="text-sm font-medium">{data.desc}</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Section 3: RTM Simulator
+        const MatrixSection = () => {
+            return (
+                <div className="space-y-6">
+                    <div className="bg-white p-6 rounded-2xl shadow-md">
+                        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                            <Icons.Layout className="text-blue-600" />
+                            需求追蹤矩陣 (RTM)
+                        </h2>
+                        <p className="mb-4 text-slate-600">
+                            這是來源資料中最強調的文件。它確保<b>「每一個交付標的 (Deliverable)」</b>都能回溯到<b>「原始需求」</b>。
+                            <br/><span className="text-sm text-red-500 font-bold">如果表格裡有一行是空的（沒連結到需求），那就是「鍍金」！</span>
+                        </p>
+
+                        {/* Interactive Table Visualization */}
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full text-sm text-left text-slate-600">
+                                <thead className="text-xs text-slate-700 uppercase bg-slate-100">
+                                    <tr>
+                                        <th className="px-6 py-3 rounded-tl-lg">ID</th>
+                                        <th className="px-6 py-3">原始需求描述</th>
+                                        <th className="px-6 py-3">利害關係人</th>
+                                        <th className="px-6 py-3">對應的交付標的 (WBS)</th>
+                                        <th className="px-6 py-3 rounded-tr-lg">狀態</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="bg-white border-b hover:bg-slate-50">
+                                        <td className="px-6 py-4 font-bold">REQ-001</td>
+                                        <td className="px-6 py-4">西裝要有三個內袋</td>
+                                        <td className="px-6 py-4">客戶A</td>
+                                        <td className="px-6 py-4 text-emerald-600 font-bold">縫製內裏組件</td>
+                                        <td className="px-6 py-4"><span className="bg-green-100 text-green-800 px-2 py-1 rounded">完成</span></td>
+                                    </tr>
+                                    <tr className="bg-white border-b hover:bg-slate-50">
+                                        <td className="px-6 py-4 font-bold">REQ-002</td>
+                                        <td className="px-6 py-4">使用透氣羊毛布料</td>
+                                        <td className="px-6 py-4">客戶A</td>
+                                        <td className="px-6 py-4 text-emerald-600 font-bold">布料採購單</td>
+                                        <td className="px-6 py-4"><span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">進行中</span></td>
+                                    </tr>
+                                    <tr className="bg-red-50 border-b border-red-200">
+                                        <td className="px-6 py-4 font-bold text-red-600">REQ-???</td>
+                                        <td className="px-6 py-4 text-red-600 italic">無原始需求 (沒人要求!)</td>
+                                        <td className="px-6 py-4">-</td>
+                                        <td className="px-6 py-4 text-red-600 font-bold">加縫亮片裝飾</td>
+                                        <td className="px-6 py-4"><span className="bg-red-100 text-red-800 px-2 py-1 rounded">這就是鍍金！</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Section 4: Quiz
+        const QuizSection = () => {
+            const [currentQ, setCurrentQ] = useState(0);
+            const [score, setScore] = useState(0);
+            const [showResult, setShowResult] = useState(false);
+            const [selected, setSelected] = useState(null);
+
+            const questions = [
+                {
+                    q: "根據來源資料，哪一份文件是用來「確保在整個生命週期中，每一項需求都能被追蹤，防止在執行過程中遺失」？",
+                    options: ["專案章程", "需求追蹤矩陣 (RTM)", "利害關係人名冊", "商務個案"],
+                    ans: 1,
+                    expl: "RTM 將產品需求從原始來源連結到交付標的，是防止遺漏和鍍金的關鍵。"
+                },
+                {
+                    q: "為了「降低風險」，在實際製造產品前先做出模型以獲取回饋，這是哪種技術？",
+                    options: ["標竿學習", "腦力激盪", "雛型法 (Prototype)", "脈絡圖"],
+                    ans: 2,
+                    expl: "來源明確指出：雛型法是在實際製造前，先做出模型以獲取回饋，降低風險。"
+                },
+                {
+                    q: "若團隊成員自行增加了客戶未要求的「額外功能」，這在專案管理中稱為什麼？應如何防範？",
+                    options: ["加值服務；應鼓勵", "鍍金 (Gold Plating)；透過需求追蹤矩陣防範", "範疇蔓延；透過訪談防範", "漸進明細；無法防範"],
+                    ans: 1,
+                    expl: "自行增加不必要的功能稱為「鍍金」。透過嚴謹的需求蒐集與追蹤(RTM)可以明確專案「該做什麼」來防止。"
+                },
+                {
+                    q: "根據筆記，下列何者「不是」蒐集需求的輸入來源？",
+                    options: ["專案章程", "利害關係人名冊", "商務文件", "最終驗收報告"],
+                    ans: 3,
+                    expl: "「驗收報告」是做完才有的。專案章程、名冊、商務文件才是做需求蒐集前要參考的輸入。"
+                }
+            ];
+
+            const handleAnswer = (idx) => {
+                setSelected(idx);
+                if (idx === questions[currentQ].ans) {
+                    setScore(score + 1);
+                }
+                setTimeout(() => {
+                    if (currentQ < questions.length - 1) {
+                        setCurrentQ(currentQ + 1);
+                        setSelected(null);
+                    } else {
+                        setShowResult(true);
+                    }
+                }, 2000);
+            };
+
+            const resetQuiz = () => {
+                setCurrentQ(0);
+                setScore(0);
+                setShowResult(false);
+                setSelected(null);
+            };
+
+            if (showResult) {
+                return (
+                    <div className="bg-white p-8 rounded-2xl shadow-lg text-center animate-fade-in">
+                        <Icons.Award className="w-20 h-20 text-yellow-500 mx-auto mb-4" />
+                        <h2 className="text-2xl font-bold mb-2">測驗完成！</h2>
+                        <p className="text-xl mb-6">你的得分：<span className="text-emerald-600 font-bold text-3xl">{score}</span> / {questions.length}</p>
+                        <p className="text-slate-600 mb-6">
+                            {score === questions.length ? "太棒了！你已經完全掌握筆記中的所有細節。" : "再複習一下觀念和工具，你一定可以的！"}
+                        </p>
+                        <button onClick={resetQuiz} className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors">
+                            重新測驗
+                        </button>
+                    </div>
+                );
+            }
+
+            const q = questions[currentQ];
+            return (
+                <div className="max-w-2xl mx-auto">
+                    <div className="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-emerald-500">
+                        <div className="flex justify-between text-sm text-slate-400 mb-4">
+                            <span>Question {currentQ + 1} of {questions.length}</span>
+                            <span>Score: {score}</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-slate-800 mb-6">{q.q}</h3>
+                        <div className="space-y-3">
+                            {q.options.map((opt, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => selected === null && handleAnswer(idx)}
+                                    className={`w-full text-left p-4 rounded-xl border transition-all duration-200 flex justify-between items-center
+                                        ${selected === null ? 'hover:bg-slate-50 hover:border-emerald-300 cursor-pointer' : ''}
+                                        ${selected === idx ? (idx === q.ans ? 'bg-green-100 border-green-500 text-green-800' : 'bg-red-100 border-red-500 text-red-800') : ''}
+                                        ${selected !== null && idx === q.ans ? 'bg-green-100 border-green-500 text-green-800' : ''}
+                                        ${selected !== null && idx !== q.ans && selected !== idx ? 'opacity-50' : ''}
+                                    `}
+                                >
+                                    <span>{opt}</span>
+                                    {selected !== null && idx === q.ans && <Icons.Check className="w-5 h-5" />}
+                                </button>
+                            ))}
+                        </div>
+                        {selected !== null && (
+                            <div className="mt-4 p-4 bg-slate-50 rounded-lg text-sm text-slate-600 border border-slate-200 animate-fade-in">
+                                💡 <b>解析：</b> {q.expl}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

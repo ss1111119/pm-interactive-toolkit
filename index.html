@@ -37,6 +37,7 @@
         h1 {
             color: var(--primary-color);
             margin: 0;
+            font-size: 2.5em;
         }
 
         p.subtitle {
@@ -77,7 +78,7 @@
         .module-header {
             background: #ecf0f1;
             padding: 15px 20px;
-            font-size: 1.2em;
+            font-size: 1.3em;
             font-weight: bold;
             color: var(--primary-color);
             display: flex;
@@ -102,7 +103,7 @@
         .file-link {
             display: flex;
             align-items: center;
-            padding: 15px 20px;
+            padding: 12px 20px;
             text-decoration: none;
             color: var(--text-color);
             transition: background 0.2s;
@@ -116,6 +117,8 @@
         .file-icon {
             margin-right: 15px;
             font-size: 1.2em;
+            min-width: 30px;
+            text-align: center;
         }
 
         .file-info {
@@ -125,37 +128,32 @@
         .file-name {
             font-weight: 600;
             display: block;
+            font-size: 1.05em;
         }
 
         .file-path {
             font-size: 0.85em;
             color: #888;
-            margin-top: 4px;
-        }
-
-        .badge {
-            background: var(--accent-color);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.75em;
-            margin-left: 10px;
+            margin-top: 2px;
+            font-family: Consolas, monospace;
         }
 
         /* 處理巢狀結構 (Module 04) */
         .sub-module {
-            margin: 10px 20px;
-            border: 1px solid #eee;
+            margin: 15px 20px;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
             background-color: #fafafa;
+            overflow: hidden;
         }
         
         .sub-module-header {
             padding: 10px 15px;
             font-weight: bold;
-            background-color: #e8e8e8;
-            color: #555;
-            font-size: 0.95em;
+            background-color: #e9ecef;
+            color: #495057;
+            font-size: 1em;
+            border-bottom: 1px solid #dee2e6;
         }
 
         @media (max-width: 600px) {
@@ -381,14 +379,14 @@
         </ul>
 
         <div class="sub-module">
-            <div class="sub-module-header">📂 專案整合管理 (Integration Management)</div>
+            <div class="sub-module-header">📂 專案整合管理 (Integration)</div>
             <ul class="file-list">
                 <li>
                     <a href="04PMBOK_Interactive_Tutor/01Project_Integration_Management_Study_Guide/Project_Integration_Management_Study_Guide.html" class="file-link">
                         <span class="file-icon">🧩</span>
                         <div class="file-info">
                             <span class="file-name">整合管理主頁</span>
-                            <span class="file-path">.../Project_Integration_Management_Study_Guide.html</span>
+                            <span class="file-path">01Project_Integration_Management_Study_Guide/Project_Integration_Management_Study_Guide.html</span>
                         </div>
                     </a>
                 </li>
@@ -396,8 +394,8 @@
                     <a href="04PMBOK_Interactive_Tutor/01Project_Integration_Management_Study_Guide/01Project_Charter_Interactive_Guide.html" class="file-link">
                         <span class="file-icon">📜</span>
                         <div class="file-info">
-                            <span class="file-name">專案章程 (Project Charter)</span>
-                            <span class="file-path">.../01Project_Charter_Interactive_Guide.html</span>
+                            <span class="file-name">01. 專案章程 (Charter)</span>
+                            <span class="file-path">01Project_Integration_Management_Study_Guide/01Project_Charter_Interactive_Guide.html</span>
                         </div>
                     </a>
                 </li>
@@ -405,8 +403,8 @@
                     <a href="04PMBOK_Interactive_Tutor/01Project_Integration_Management_Study_Guide/02Project_Management_Plan_Study_Tool.html" class="file-link">
                         <span class="file-icon">📑</span>
                         <div class="file-info">
-                            <span class="file-name">專案管理計畫書</span>
-                            <span class="file-path">.../02Project_Management_Plan_Study_Tool.html</span>
+                            <span class="file-name">02. 專案管理計畫書</span>
+                            <span class="file-path">01Project_Integration_Management_Study_Guide/02Project_Management_Plan_Study_Tool.html</span>
                         </div>
                     </a>
                 </li>
@@ -414,8 +412,8 @@
                     <a href="04PMBOK_Interactive_Tutor/01Project_Integration_Management_Study_Guide/03Project_Execution_Interactive_Guide.html" class="file-link">
                         <span class="file-icon">🔨</span>
                         <div class="file-info">
-                            <span class="file-name">指導與管理專案工作</span>
-                            <span class="file-path">.../03Project_Execution_Interactive_Guide.html</span>
+                            <span class="file-name">03. 指導與管理專案工作</span>
+                            <span class="file-path">01Project_Integration_Management_Study_Guide/03Project_Execution_Interactive_Guide.html</span>
                         </div>
                     </a>
                 </li>
@@ -423,13 +421,404 @@
                     <a href="04PMBOK_Interactive_Tutor/01Project_Integration_Management_Study_Guide/04Integrated_Change_Control_Study_Tool.html" class="file-link">
                         <span class="file-icon">🔀</span>
                         <div class="file-info">
-                            <span class="file-name">整合變更控制</span>
-                            <span class="file-path">.../04Integrated_Change_Control_Study_Tool.html</span>
+                            <span class="file-name">04. 整合變更控制</span>
+                            <span class="file-path">01Project_Integration_Management_Study_Guide/04Integrated_Change_Control_Study_Tool.html</span>
                         </div>
                     </a>
                 </li>
             </ul>
         </div>
+
+        <div class="sub-module">
+            <div class="sub-module-header">📂 專案範疇管理 (Scope)</div>
+            <ul class="file-list">
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/02Project_Scope_Mastery_Hub/Project_Scope_Mastery_Hub.html" class="file-link">
+                        <span class="file-icon">🎯</span>
+                        <div class="file-info">
+                            <span class="file-name">範疇管理主頁 (Hub)</span>
+                            <span class="file-path">02Project_Scope_Mastery_Hub/Project_Scope_Mastery_Hub.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/02Project_Scope_Mastery_Hub/01Scope_Management_Exam_Prep.html" class="file-link">
+                        <span class="file-icon">📋</span>
+                        <div class="file-info">
+                            <span class="file-name">01. 規劃範疇管理</span>
+                            <span class="file-path">02Project_Scope_Mastery_Hub/01Scope_Management_Exam_Prep.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/02Project_Scope_Mastery_Hub/02Project_Requirements_Mastery.html" class="file-link">
+                        <span class="file-icon">📝</span>
+                        <div class="file-info">
+                            <span class="file-name">02. 收集需求 (Requirements)</span>
+                            <span class="file-path">02Project_Scope_Mastery_Hub/02Project_Requirements_Mastery.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/02Project_Scope_Mastery_Hub/03Project_Scope_Mastery_Guide.html" class="file-link">
+                        <span class="file-icon">📏</span>
+                        <div class="file-info">
+                            <span class="file-name">03. 定義範疇 (Define Scope)</span>
+                            <span class="file-path">02Project_Scope_Mastery_Hub/03Project_Scope_Mastery_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/02Project_Scope_Mastery_Hub/04WBS_Mastery_Guide.html" class="file-link">
+                        <span class="file-icon">🌳</span>
+                        <div class="file-info">
+                            <span class="file-name">04. 建立 WBS</span>
+                            <span class="file-path">02Project_Scope_Mastery_Hub/04WBS_Mastery_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+                 <li>
+                    <a href="04PMBOK_Interactive_Tutor/02Project_Scope_Mastery_Hub/05Scope_Management_Exam_Prep.html" class="file-link">
+                        <span class="file-icon">✅</span>
+                        <div class="file-info">
+                            <span class="file-name">05. 確認與控制範疇</span>
+                            <span class="file-path">02Project_Scope_Mastery_Hub/05Scope_Management_Exam_Prep.html</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sub-module">
+            <div class="sub-module-header">📂 專案時程管理 (Schedule)</div>
+            <ul class="file-list">
+                 <li>
+                    <a href="04PMBOK_Interactive_Tutor/03Project_Schedule_Management_Study_Guide/Project_Schedule_Exam_Prep.html" class="file-link">
+                        <span class="file-icon">📅</span>
+                        <div class="file-info">
+                            <span class="file-name">時程管理主頁 (Exam Prep)</span>
+                            <span class="file-path">03Project_Schedule_Management_Study_Guide/Project_Schedule_Exam_Prep.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/03Project_Schedule_Management_Study_Guide/01Project_Schedule_Define_Activity_Guide.html" class="file-link">
+                        <span class="file-icon">📌</span>
+                        <div class="file-info">
+                            <span class="file-name">01. 定義活動</span>
+                            <span class="file-path">03Project_Schedule_Management_Study_Guide/01Project_Schedule_Define_Activity_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/03Project_Schedule_Management_Study_Guide/02Project_Schedule_Management_Study_Guide.html" class="file-link">
+                        <span class="file-icon">🔗</span>
+                        <div class="file-info">
+                            <span class="file-name">02. 排列活動順序</span>
+                            <span class="file-path">03Project_Schedule_Management_Study_Guide/02Project_Schedule_Management_Study_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/03Project_Schedule_Management_Study_Guide/03EstimateActivityDurations_ExamPrep.html" class="file-link">
+                        <span class="file-icon">⏱️</span>
+                        <div class="file-info">
+                            <span class="file-name">03. 估算活動持續時間</span>
+                            <span class="file-path">03Project_Schedule_Management_Study_Guide/03EstimateActivityDurations_ExamPrep.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/03Project_Schedule_Management_Study_Guide/04Project_Schedule_Exam_Prep.html" class="file-link">
+                        <span class="file-icon">🗓️</span>
+                        <div class="file-info">
+                            <span class="file-name">04. 發展時程</span>
+                            <span class="file-path">03Project_Schedule_Management_Study_Guide/04Project_Schedule_Exam_Prep.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/03Project_Schedule_Management_Study_Guide/06PM_Schedule_Control_Master.html" class="file-link">
+                        <span class="file-icon">🚦</span>
+                        <div class="file-info">
+                            <span class="file-name">06. 控制時程 (Master)</span>
+                            <span class="file-path">03Project_Schedule_Management_Study_Guide/06PM_Schedule_Control_Master.html</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sub-module">
+            <div class="sub-module-header">📂 專案成本管理 (Cost)</div>
+            <ul class="file-list">
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/04Project_Cost_Management_Study_Buddy/Project_Cost_Management_Study_Buddy.html" class="file-link">
+                        <span class="file-icon">💰</span>
+                        <div class="file-info">
+                            <span class="file-name">成本管理主頁 (Study Buddy)</span>
+                            <span class="file-path">04Project_Cost_Management_Study_Buddy/Project_Cost_Management_Study_Buddy.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/04Project_Cost_Management_Study_Buddy/01Project_Cost_Management_Study_Guide.html" class="file-link">
+                        <span class="file-icon">🧮</span>
+                        <div class="file-info">
+                            <span class="file-name">01. 估算成本</span>
+                            <span class="file-path">04Project_Cost_Management_Study_Buddy/01Project_Cost_Management_Study_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/04Project_Cost_Management_Study_Buddy/02project_budget_study_tool.html" class="file-link">
+                        <span class="file-icon">🏦</span>
+                        <div class="file-info">
+                            <span class="file-name">02. 決定預算</span>
+                            <span class="file-path">04Project_Cost_Management_Study_Buddy/02project_budget_study_tool.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/04Project_Cost_Management_Study_Buddy/03EVM_Study_Interactive_Guide.html" class="file-link">
+                        <span class="file-icon">📈</span>
+                        <div class="file-info">
+                            <span class="file-name">03. 實獲值管理 (EVM)</span>
+                            <span class="file-path">04Project_Cost_Management_Study_Buddy/03EVM_Study_Interactive_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sub-module">
+            <div class="sub-module-header">📂 專案品質管理 (Quality)</div>
+            <ul class="file-list">
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/05Project_Quality_Management_Study_Guide/Project_Quality_Management_Study_Guide.html" class="file-link">
+                        <span class="file-icon">💎</span>
+                        <div class="file-info">
+                            <span class="file-name">品質管理主頁</span>
+                            <span class="file-path">05Project_Quality_Management_Study_Guide/Project_Quality_Management_Study_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/05Project_Quality_Management_Study_Guide/01Interactive_Study_Guide_Plan_Quality_Management.html" class="file-link">
+                        <span class="file-icon">📐</span>
+                        <div class="file-info">
+                            <span class="file-name">01. 規劃品質管理</span>
+                            <span class="file-path">05Project_Quality_Management_Study_Guide/01Interactive_Study_Guide_Plan_Quality_Management.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/05Project_Quality_Management_Study_Guide/02Manage_Quality_Exam_Prep.html" class="file-link">
+                        <span class="file-icon">🛠️</span>
+                        <div class="file-info">
+                            <span class="file-name">02. 管理品質 (QA)</span>
+                            <span class="file-path">05Project_Quality_Management_Study_Guide/02Manage_Quality_Exam_Prep.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/05Project_Quality_Management_Study_Guide/03project_quality_management_study_guide.html" class="file-link">
+                        <span class="file-icon">🔍</span>
+                        <div class="file-info">
+                            <span class="file-name">03. 管制品質 (QC)</span>
+                            <span class="file-path">05Project_Quality_Management_Study_Guide/03project_quality_management_study_guide.html</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sub-module">
+            <div class="sub-module-header">📂 專案資源管理 (Resource)</div>
+            <ul class="file-list">
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/06Project_Resource_Management_Study_Guide/Project_Resource_Management_Study_Guide.html" class="file-link">
+                        <span class="file-icon">👥</span>
+                        <div class="file-info">
+                            <span class="file-name">資源管理主頁</span>
+                            <span class="file-path">06Project_Resource_Management_Study_Guide/Project_Resource_Management_Study_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/06Project_Resource_Management_Study_Guide/01Project_Resource_Management_Study_Guide.html" class="file-link">
+                        <span class="file-icon">📋</span>
+                        <div class="file-info">
+                            <span class="file-name">01. 規劃資源管理</span>
+                            <span class="file-path">06Project_Resource_Management_Study_Guide/01Project_Resource_Management_Study_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/06Project_Resource_Management_Study_Guide/02PMP-Acquire-Resources-Prep.html" class="file-link">
+                        <span class="file-icon">🤝</span>
+                        <div class="file-info">
+                            <span class="file-name">02. 獲取資源</span>
+                            <span class="file-path">06Project_Resource_Management_Study_Guide/02PMP-Acquire-Resources-Prep.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/06Project_Resource_Management_Study_Guide/03PM_Resource_Management_Exam_Prep.html" class="file-link">
+                        <span class="file-icon">💪</span>
+                        <div class="file-info">
+                            <span class="file-name">03. 發展與管理團隊</span>
+                            <span class="file-path">06Project_Resource_Management_Study_Guide/03PM_Resource_Management_Exam_Prep.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/06Project_Resource_Management_Study_Guide/04PM_Exam_Prep_Control_Resources.html" class="file-link">
+                        <span class="file-icon">🎮</span>
+                        <div class="file-info">
+                            <span class="file-name">04. 監控資源</span>
+                            <span class="file-path">06Project_Resource_Management_Study_Guide/04PM_Exam_Prep_Control_Resources.html</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sub-module">
+            <div class="sub-module-header">📂 專案溝通管理 (Communication)</div>
+            <ul class="file-list">
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/07PM_Communication_Study_Guide/PM_Communication_Study_Guide.html" class="file-link">
+                        <span class="file-icon">📢</span>
+                        <div class="file-info">
+                            <span class="file-name">溝通管理主頁</span>
+                            <span class="file-path">07PM_Communication_Study_Guide/PM_Communication_Study_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/07PM_Communication_Study_Guide/01PM_Comm_Plan_Interactive_Study.html" class="file-link">
+                        <span class="file-icon">📡</span>
+                        <div class="file-info">
+                            <span class="file-name">01. 規劃溝通管理</span>
+                            <span class="file-path">07PM_Communication_Study_Guide/01PM_Comm_Plan_Interactive_Study.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/07PM_Communication_Study_Guide/02PM_Manage_Communications_Exam_Prep.html" class="file-link">
+                        <span class="file-icon">💬</span>
+                        <div class="file-info">
+                            <span class="file-name">02. 管理溝通</span>
+                            <span class="file-path">07PM_Communication_Study_Guide/02PM_Manage_Communications_Exam_Prep.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/07PM_Communication_Study_Guide/03Monitor_Communications_Exam_Prep.html" class="file-link">
+                        <span class="file-icon">👀</span>
+                        <div class="file-info">
+                            <span class="file-name">03. 監控溝通</span>
+                            <span class="file-path">07PM_Communication_Study_Guide/03Monitor_Communications_Exam_Prep.html</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sub-module">
+            <div class="sub-module-header">📂 專案風險管理 (Risk)</div>
+            <ul class="file-list">
+                 <li>
+                    <a href="04PMBOK_Interactive_Tutor/08Project_Risk_Management_Exam_Prep/Project_Risk_Management_Exam_Prep.html" class="file-link">
+                        <span class="file-icon">⚠️</span>
+                        <div class="file-info">
+                            <span class="file-name">風險管理主頁</span>
+                            <span class="file-path">08Project_Risk_Management_Exam_Prep/Project_Risk_Management_Exam_Prep.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/08Project_Risk_Management_Exam_Prep/01project_risk_identification_mastery.html" class="file-link">
+                        <span class="file-icon">🔎</span>
+                        <div class="file-info">
+                            <span class="file-name">01. 辨識風險</span>
+                            <span class="file-path">08Project_Risk_Management_Exam_Prep/01project_risk_identification_mastery.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/08Project_Risk_Management_Exam_Prep/02Project_Risk_Analysis_Learning_Tool.html" class="file-link">
+                        <span class="file-icon">⚖️</span>
+                        <div class="file-info">
+                            <span class="file-name">02. 風險分析 (定性/定量)</span>
+                            <span class="file-path">08Project_Risk_Management_Exam_Prep/02Project_Risk_Analysis_Learning_Tool.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/08Project_Risk_Management_Exam_Prep/03Project_Risk_Response_Mastery.html" class="file-link">
+                        <span class="file-icon">🛡️</span>
+                        <div class="file-info">
+                            <span class="file-name">03. 規劃風險回應</span>
+                            <span class="file-path">08Project_Risk_Management_Exam_Prep/03Project_Risk_Response_Mastery.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/08Project_Risk_Management_Exam_Prep/04Project_Risk_Execution_and_Monitoring_Study_Guide.html" class="file-link">
+                        <span class="file-icon">🚔</span>
+                        <div class="file-info">
+                            <span class="file-name">04. 執行與監控風險</span>
+                            <span class="file-path">08Project_Risk_Management_Exam_Prep/04Project_Risk_Execution_and_Monitoring_Study_Guide.html</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sub-module">
+            <div class="sub-module-header">📂 專案採購管理 (Procurement)</div>
+            <ul class="file-list">
+                 <li>
+                    <a href="04PMBOK_Interactive_Tutor/09Project_Procurement_Mastery_Tool/Project_Procurement_Mastery_Tool.html" class="file-link">
+                        <span class="file-icon">🛍️</span>
+                        <div class="file-info">
+                            <span class="file-name">採購管理主頁</span>
+                            <span class="file-path">09Project_Procurement_Mastery_Tool/Project_Procurement_Mastery_Tool.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/09Project_Procurement_Mastery_Tool/01Project_Procurement_Mastery_Tool.html" class="file-link">
+                        <span class="file-icon">📃</span>
+                        <div class="file-info">
+                            <span class="file-name">01. 規劃採購管理</span>
+                            <span class="file-path">09Project_Procurement_Mastery_Tool/01Project_Procurement_Mastery_Tool.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/09Project_Procurement_Mastery_Tool/02Project_Procurement_Study_Guide_Complete.html" class="file-link">
+                        <span class="file-icon">🤝</span>
+                        <div class="file-info">
+                            <span class="file-name">02. 執行採購</span>
+                            <span class="file-path">09Project_Procurement_Mastery_Tool/02Project_Procurement_Study_Guide_Complete.html</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="04PMBOK_Interactive_Tutor/09Project_Procurement_Mastery_Tool/03PM_Control_Procurements_Study_Tool.html" class="file-link">
+                        <span class="file-icon">🔦</span>
+                        <div class="file-info">
+                            <span class="file-name">03. 控制採購</span>
+                            <span class="file-path">09Project_Procurement_Mastery_Tool/03PM_Control_Procurements_Study_Tool.html</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
     </div>
 
 </div>
@@ -438,25 +827,49 @@
     // 簡單的搜尋功能
     document.getElementById('searchInput').addEventListener('keyup', function(e) {
         const searchText = e.target.value.toLowerCase();
-        const modules = document.querySelectorAll('.module-section');
+        // 搜尋所有的 file-link
+        const links = document.querySelectorAll('.file-link');
         
-        modules.forEach(module => {
-            const links = module.querySelectorAll('li');
-            let hasVisibleLinks = false;
+        links.forEach(link => {
+            const text = link.innerText.toLowerCase();
+            // 找到該連結所屬的 li 元素
+            const li = link.closest('li');
+            
+            if(text.includes(searchText)) {
+                li.style.display = 'block';
+            } else {
+                li.style.display = 'none';
+            }
+        });
 
-            links.forEach(link => {
-                const text = link.innerText.toLowerCase();
-                if(text.includes(searchText)) {
-                    link.style.display = 'block';
-                    hasVisibleLinks = true;
-                } else {
-                    link.style.display = 'none';
-                }
+        // 處理 Sub-modules 的顯示/隱藏
+        document.querySelectorAll('.sub-module').forEach(sub => {
+            const visibleLinks = sub.querySelectorAll('li[style="display: block;"]');
+            // 如果該 sub-module 內沒有任何可見連結（且不在初始狀態），則隱藏
+            // 注意：這裡是簡化邏輯，若 li 從未被設定 display 屬性，則視為可見
+            const allLinks = sub.querySelectorAll('li');
+            let hasVisible = false;
+            allLinks.forEach(l => {
+                if(l.style.display !== 'none') hasVisible = true;
+            });
+            
+            if(hasVisible) {
+                sub.style.display = 'block';
+            } else {
+                sub.style.display = 'none';
+            }
+        });
+
+        // 處理主 Module Section 的顯示/隱藏
+        document.querySelectorAll('.module-section').forEach(module => {
+            // 檢查該模組下是否有任何可見的 li
+            const allLinks = module.querySelectorAll('li');
+            let hasVisible = false;
+            allLinks.forEach(l => {
+                if(l.style.display !== 'none') hasVisible = true;
             });
 
-            // 如果該區塊內沒有符合的連結，則隱藏整個區塊（除非是標題本身符合搜尋？）
-            // 這裡簡單處理：只要該模組內有連結符合，就顯示模組
-            if(hasVisibleLinks) {
+            if(hasVisible) {
                 module.style.display = 'block';
             } else {
                 module.style.display = 'none';

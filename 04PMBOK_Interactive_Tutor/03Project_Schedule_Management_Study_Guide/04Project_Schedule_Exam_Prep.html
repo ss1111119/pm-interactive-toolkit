@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案時程管理 - 備考衝刺工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f9ff;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold mb-2">Ch.06 專案時程管理 - 備考神器</h1>
+            <p class="opacity-90">針對初學者設計：觀念解析、公式計算與模擬試題</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex">
+            <button onclick="switchTab('concepts')" class="flex-1 py-4 text-center font-bold text-blue-600 border-b-4 border-blue-600 hover:bg-gray-50 transition" id="btn-concepts">核心觀念</button>
+            <button onclick="switchTab('calculator')" class="flex-1 py-4 text-center font-bold text-gray-500 hover:bg-gray-50 transition" id="btn-calculator">PERT 計算機</button>
+            <button onclick="switchTab('quiz')" class="flex-1 py-4 text-center font-bold text-gray-500 hover:bg-gray-50 transition" id="btn-quiz">模擬測驗</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto p-6 min-h-screen">
+
+        <!-- Tab 1: Concepts -->
+        <div id="concepts" class="tab-content active space-y-6">
+            
+            <!-- Intro -->
+            <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+                <h2 class="text-xl font-bold mb-2 text-blue-800">建立專案時程 (Develop Schedule)</h2>
+                <p class="mb-4">將所有規劃（活動、順序、資源）整合成一個具體的「行動時間表」。</p>
+                <div class="bg-blue-50 p-3 rounded text-sm text-blue-900">
+                    <strong>考試關鍵字：</strong><br>
+                    產出物 = <strong>時程基準 (Schedule Baseline)</strong><br>
+                    這是未來監控進度的唯一標準。
+                </div>
+            </div>
+
+            <!-- Comparison Table -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-bold mb-4 text-indigo-800">CPM vs. PERT 超級比一比</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-indigo-100 text-indigo-900">
+                                <th class="p-3 rounded-tl-lg">比較項目</th>
+                                <th class="p-3">要徑法 (CPM)</th>
+                                <th class="p-3 rounded-tr-lg">計畫評核術 (PERT)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="border-b">
+                                <td class="p-3 font-bold bg-gray-50">性質</td>
+                                <td class="p-3">確定性 (Deterministic)<br><span class="text-gray-500">已知做多久</span></td>
+                                <td class="p-3">機率性 (Probabilistic)<br><span class="text-gray-500">用猜的/統計</span></td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="p-3 font-bold bg-gray-50">起源背景</td>
+                                <td class="p-3">杜邦公司 (DuPont)<br><span class="text-gray-500">一般工程專案</span></td>
+                                <td class="p-3">美國海軍 (US Navy)<br><span class="text-gray-500">北極星飛彈計畫</span></td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="p-3 font-bold bg-gray-50">適用專案</td>
+                                <td class="p-3">重複性高、風險低<br>(如：營建工程)</td>
+                                <td class="p-3">研發型、獨一無二<br>(如：新藥開發)</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="p-3 font-bold bg-gray-50">關注焦點</td>
+                                <td class="p-3 text-red-600 font-bold">成本與時間的權衡</td>
+                                <td class="p-3 text-blue-600 font-bold">時間管理 (風險)</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold bg-gray-50">估算方式</td>
+                                <td class="p-3">單時估計 (一個數字)</td>
+                                <td class="p-3">三點估計 (樂觀/悲觀/可能)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- CPM Deep Dive (New Section) -->
+            <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-purple-500">
+                <h2 class="text-xl font-bold mb-4 text-purple-800">CPM 技術細節與專有名詞</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-bold text-gray-700 mb-2">推算邏輯</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-sm text-gray-600">
+                            <li><strong>向前推算 (Forward Pass)：</strong><br>從開始往結束算，計算「最早開始 (ES)」與「最早結束 (EF)」。</li>
+                            <li><strong>向後推算 (Backward Pass)：</strong><br>從結束往回算，計算「最晚開始 (LS)」與「最晚結束 (LF)」。</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-700 mb-2">關鍵概念</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-sm text-gray-600">
+                            <li><strong>要徑 (Critical Path)：</strong><br>網狀圖中<span class="text-red-500 font-bold">時間最長</span>的路徑，決定專案<span class="text-red-500 font-bold">最短工期</span>。</li>
+                            <li><strong>總浮時 (Total Float)：</strong><br>活動可以延誤但不影響專案完工的時間。要徑上的浮時通常為 <span class="font-bold">0</span>。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Optimization Techniques -->
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-green-500 card">
+                    <h3 class="font-bold text-lg mb-2">資源調整技術</h3>
+                    <ul class="list-disc pl-5 space-y-2 text-sm">
+                        <li><strong>資源平衡 (Leveling)：</strong>資源不足時使用。通常會導致<span class="text-red-500 font-bold">工期延後</span>。</li>
+                        <li><strong>資源平滑 (Smoothing)：</strong>利用浮時微調。不會改變要徑，不影響總工期。</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-orange-500 card">
+                    <h3 class="font-bold text-lg mb-2">時程壓縮 (趕時間用)</h3>
+                    <ul class="list-disc pl-5 space-y-2 text-sm">
+                        <li><strong>趕工 (Crashing)：</strong><span class="text-orange-600 font-bold">拿錢換時間</span>。增加資源來縮短工期。</li>
+                        <li><strong>快速跟進 (Fast-tracking)：</strong><span class="text-orange-600 font-bold">並行施工</span>。風險高，容易導致重做。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: PERT Calculator -->
+        <div id="calculator" class="tab-content space-y-6">
+            <div class="bg-white p-8 rounded-lg shadow-lg text-center max-w-lg mx-auto">
+                <h2 class="text-2xl font-bold mb-4 text-blue-700">PERT 三點估計計算機</h2>
+                <p class="mb-6 text-gray-600">考試必考題！請輸入三個估計值來計算期望工期。</p>
+                
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-green-600">樂觀時間 (Optimistic, tO)</label>
+                        <input type="number" id="optTime" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-400 outline-none" placeholder="一切順利的時間 (例: 2)">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-blue-600">最可能時間 (Most Likely, tM)</label>
+                        <input type="number" id="mostTime" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-400 outline-none" placeholder="正常情況的時間 (例: 5)">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-red-600">悲觀時間 (Pessimistic, tP)</label>
+                        <input type="number" id="pessTime" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-400 outline-none" placeholder="最糟情況的時間 (例: 14)">
+                    </div>
+                </div>
+
+                <button onclick="calculatePERT()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded mt-6 hover:bg-blue-700 transition">
+                    計算期望工期 (tE)
+                </button>
+
+                <div id="resultArea" class="hidden mt-6 bg-gray-100 p-4 rounded border border-gray-300">
+                    <p class="text-sm text-gray-500">計算公式：(樂觀 + 4×最可能 + 悲觀) ÷ 6</p>
+                    <p class="text-3xl font-bold text-blue-800 mt-2" id="calcResult">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Quiz -->
+        <div id="quiz" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-xl font-bold text-gray-800">初學者自我檢測</h2>
+                    <span id="score" class="text-lg font-bold text-blue-600">得分: 0 / 0</span>
+                </div>
+
+                <div id="quiz-container" class="space-y-8">
+                    <!-- Questions will be injected here by JS -->
+                </div>
+                
+                <div id="quiz-footer" class="mt-8 text-center hidden">
+                    <button onclick="resetQuiz()" class="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700">重新測驗</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 py-6 text-center mt-auto">
+        <p>Project Schedule Management Study Tool</p>
+    </footer>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Reset buttons
+            document.querySelectorAll('nav button').forEach(el => {
+                el.classList.remove('text-blue-600', 'border-b-4', 'border-blue-600');
+                el.classList.add('text-gray-500');
+            });
+
+            // Show selected content
+            document.getElementById(tabId).classList.add('active');
+            // Highlight button
+            const btn = document.getElementById('btn-' + tabId);
+            btn.classList.remove('text-gray-500');
+            btn.classList.add('text-blue-600', 'border-b-4', 'border-blue-600');
+        }
+
+        // PERT Calculator Logic
+        function calculatePERT() {
+            const o = parseFloat(document.getElementById('optTime').value);
+            const m = parseFloat(document.getElementById('mostTime').value);
+            const p = parseFloat(document.getElementById('pessTime').value);
+
+            if (isNaN(o) || isNaN(m) || isNaN(p)) {
+                alert("請在三個欄位中輸入有效的數字！");
+                return;
+            }
+
+            // Formula: (O + 4M + P) / 6
+            const result = (o + (4 * m) + p) / 6;
+            
+            const resultArea = document.getElementById('resultArea');
+            const resultText = document.getElementById('calcResult');
+            
+            resultArea.classList.remove('hidden');
+            resultText.innerText = result.toFixed(2) + " 天";
+        }
+
+        // Quiz Logic
+        const questions = [
+            {
+                q: "關於「建立專案時程」產出的「時程基準」，下列敘述何者正確？",
+                options: [
+                    "只是一個參考，隨時可以更改不需紀錄",
+                    "是專案監控與管制的唯一比較標準",
+                    "主要用途是計算成本，與時間無關",
+                    "是專案開始前隨意寫下的日期"
+                ],
+                ans: 1, // Index of correct answer
+                note: "解析：來源資料指出，時程基準是後續監控與管制進度的唯一比較標準。"
+            },
+            {
+                q: "若您的專案是「研發新型疫苗」，具有高度不確定性，應採用哪種技術？",
+                options: [
+                    "要徑法 (CPM)",
+                    "計畫評核術 (PERT)",
+                    "甘特圖法",
+                    "單時估計法"
+                ],
+                ans: 1,
+                note: "解析：PERT 適用於研發型或獨一無二、高度不確定的專案。"
+            },
+            {
+                q: "關於 CPM (要徑法) 的敘述，何者錯誤？",
+                options: [
+                    "源於美國杜邦公司",
+                    "使用單時估計法 (Deterministic)",
+                    "要徑上的總浮時 (Total Float) 通常為零",
+                    "主要著重於時間管理的機率分析"
+                ],
+                ans: 3,
+                note: "解析：CPM 著重於「時間與成本」的權衡，PERT 才是著重於機率分析。"
+            },
+            {
+                q: "若為了縮短工期，決定增加資源（例如花錢請更多工人），這屬於哪種技術？",
+                options: [
+                    "資源平衡 (Resource Leveling)",
+                    "快速跟進 (Fast-tracking)",
+                    "趕工 (Crashing)",
+                    "資源平滑 (Resource Smoothing)"
+                ],
+                ans: 2,
+                note: "解析：趕工 (Crashing) 是透過增加資源（通常會增加成本）來換取時間。"
+            },
+            {
+                q: "關於要徑 (Critical Path) 的定義，下列何者正確？",
+                options: [
+                    "是專案中工期最短的路徑",
+                    "是專案中工期最長的路徑，決定了最短完工時間",
+                    "要徑上的活動都有很多的浮時 (Float)",
+                    "要徑一旦確定就永遠不會改變"
+                ],
+                ans: 1,
+                note: "解析：要徑是網狀圖中最長的路徑，因為這條路徑沒做完，專案就不能結束，所以它決定了專案最短完工時間。"
+            }
+        ];
+
+        let userScore = 0;
+        let answeredCount = 0;
+
+        function initQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            userScore = 0;
+            answeredCount = 0;
+            updateScore();
+            document.getElementById('quiz-footer').classList.add('hidden');
+
+            questions.forEach((item, index) => {
+                const qEl = document.createElement('div');
+                qEl.className = 'border p-4 rounded-lg bg-gray-50';
+                
+                let optionsHtml = '';
+                item.options.forEach((opt, optIndex) => {
+                    optionsHtml += `
+                        <button onclick="checkAnswer(${index}, ${optIndex}, this)" 
+                                class="block w-full text-left p-3 mt-2 rounded border hover:bg-blue-50 transition q-btn-${index}">
+                            ${opt}
+                        </button>
+                    `;
+                });
+
+                qEl.innerHTML = `
+                    <h3 class="font-bold text-lg mb-2">${index + 1}. ${item.q}</h3>
+                    <div class="space-y-2">${optionsHtml}</div>
+                    <div id="feedback-${index}" class="hidden mt-3 p-3 rounded text-sm font-bold"></div>
+                `;
+                container.appendChild(qEl);
+            });
+        }
+
+        function checkAnswer(qIndex, optIndex, btn) {
+            // Prevent re-answering
+            const buttons = document.querySelectorAll(`.q-btn-${qIndex}`);
+            buttons.forEach(b => b.disabled = true);
+
+            const isCorrect = optIndex === questions[qIndex].ans;
+            const feedback = document.getElementById(`feedback-${qIndex}`);
+            
+            if (isCorrect) {
+                btn.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+                feedback.className = "mt-3 p-3 rounded text-sm font-bold bg-green-100 text-green-800 block";
+                feedback.innerHTML = "✅ 答對了！ " + questions[qIndex].note;
+                userScore++;
+            } else {
+                btn.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
+                feedback.className = "mt-3 p-3 rounded text-sm font-bold bg-red-100 text-red-800 block";
+                feedback.innerHTML = "❌ 答錯了。 " + questions[qIndex].note;
+            }
+
+            answeredCount++;
+            updateScore();
+
+            if (answeredCount === questions.length) {
+                document.getElementById('quiz-footer').classList.remove('hidden');
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').innerText = `得分: ${userScore} / ${questions.length}`;
+        }
+
+        function resetQuiz() {
+            initQuiz();
+            window.scrollTo(0, 0);
+        }
+
+        // Initialize on load
+        initQuiz();
+
+    </script>
+</body>
+</html>

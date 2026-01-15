@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案採購管理：執行採購 (完整版) - 互動學習手冊</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --secondary: #475569;
+            --success: #10b981;
+            --error: #ef4444;
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 20px;
+        }
+
+        h1 { color: var(--primary); margin: 0; }
+        p.subtitle { color: var(--secondary); font-size: 0.9em; }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px;
+            border: none;
+            background: #e2e8f0;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+            color: var(--secondary);
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+        }
+
+        .content-section { display: none; animation: fadeIn 0.5s; }
+        .content-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Flowchart Styles */
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .flow-step {
+            background: white;
+            border: 2px solid var(--primary-light);
+            padding: 15px;
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .flow-step:hover {
+            transform: scale(1.02);
+            border-color: var(--primary);
+        }
+
+        .flow-step h3 { margin: 0 0 5px 0; color: var(--primary); }
+        .flow-step .desc { font-size: 0.9em; color: #666; display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd;}
+        
+        .arrow { text-align: center; font-size: 20px; color: var(--secondary); }
+
+        /* Quiz Styles */
+        .quiz-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        
+        .option-btn {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover { background: var(--primary-light); }
+        
+        .option-btn.correct { background: #d1fae5; border-color: var(--success); color: #065f46; }
+        .option-btn.wrong { background: #fee2e2; border-color: var(--error); color: #991b1b; }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+            font-size: 0.9em;
+        }
+
+        .tag {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+        }
+
+        /* Flashcard Styles */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .flashcard {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        
+        .flashcard.flipped { background: white; color: #333; border: 2px solid var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>專案採購管理：執行採購</h1>
+        <p class="subtitle">Chapter 12 互動式學習指南 (完整版)</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('concept')">1. 流程圖解</button>
+        <button class="tab-btn" onclick="switchTab('cards')">2. 關鍵字速記</button>
+        <button class="tab-btn" onclick="switchTab('quiz')">3. 模擬測驗</button>
+    </div>
+
+    <div id="concept" class="content-section active">
+        <div style="background: #e0f2fe; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <strong>💡 學習心法：</strong> 將這個過程想像成「公司要發包工程」。我們需要把規格講清楚（輸入），透過廣告與公平機制選廠商（工具），最後簽合約（產出）。<br>
+            <small>👇 點擊下方方塊可查看詳細說明</small>
+        </div>
+
+        <div class="flow-container">
+            <div class="flow-step" onclick="toggleDesc(this)">
+                <span class="tag">輸入 (Input)</span>
+                <h3>📄 招標與提案</h3>
+                <div class="desc">
+                    <strong>關鍵文件：</strong><br>
+                    1. 招標文件/SOW：告訴廠商我們要什麼，確保需求清晰。<br>
+                    2. 賣方提案書 (Proposals)：廠商說他們能做什麼、要多少錢（最重要的外部輸入）。<br>
+                    3. 獨立成本估算：心中的底價，用來檢查廠商有沒有亂報價。
+                </div>
+            </div>
+            
+            <div class="arrow">⬇️ 進行評選與談判</div>
+
+            <div class="flow-step" onclick="toggleDesc(this)">
+                <span class="tag">工具與技術 (Tools)</span>
+                <h3>⚖️ 廣告、會議與協商</h3>
+                <div class="desc">
+                    <strong>核心活動：</strong><br>
+                    1. <strong>廣告 (Advertising)：</strong> 刊登資訊以擴大潛在供應商範圍，促進競爭。<br>
+                    2. <strong>投標者會議：</strong> 確保所有廠商對規格理解一致，公平公開。<br>
+                    3. <strong>建議書評估：</strong> 使用加權評分，不只看價格，也看技術。<br>
+                    4. <strong>協商 (Negotiation)：</strong> 簽約前的最後一哩路，達成雙方共識。
+                </div>
+            </div>
+
+            <div class="arrow">⬇️ 確立法律關係</div>
+
+            <div class="flow-step" onclick="toggleDesc(this)">
+                <span class="tag">產出 (Output)</span>
+                <h3>🤝 選定賣方與合約</h3>
+                <div class="desc">
+                    <strong>最終成果：</strong><br>
+                    1. 選定的賣方：贏得標案的廠商。<br>
+                    2. 合約 (Agreements)：具法律約束力的文件，包含權利、義務、爭議處理機制。<br>
+                    3. 變更請求：因為選了廠商，可能需要調整時程或成本計畫。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cards" class="content-section">
+        <p style="text-align: center; margin-bottom: 20px;">👆 點擊卡片查看定義與考試重點</p>
+        <div class="grid">
+            <div class="flashcard" onclick="flipCard(this)">
+                <span>投標者會議<br>(Bidder Conferences)</span>
+                <span style="display:none; font-size: 0.9em;">確保所有賣方對採購需求有「清楚一致」的認知，避免資訊不對稱。</span>
+            </div>
+            <div class="flashcard" onclick="flipCard(this)">
+                <span>合約<br>(Agreements)</span>
+                <span style="display:none; font-size: 0.9em;">具備「法律約束力」的文件，詳列權利義務與爭議處理。</span>
+            </div>
+            <div class="flashcard" onclick="flipCard(this)">
+                <span>賣方提案書<br>(Seller Proposals)</span>
+                <span style="display:none; font-size: 0.9em;">最重要的「外部輸入」，評估廠商技術與成本的依據。</span>
+            </div>
+            <div class="flashcard" onclick="flipCard(this)">
+                <span>廣告<br>(Advertising)</span>
+                <span style="display:none; font-size: 0.9em;">工具技術之一，用來擴大潛在供應商的範圍，以促進市場競爭。</span>
+            </div>
+            <div class="flashcard" onclick="flipCard(this)">
+                <span>SOW<br>(工作說明書)</span>
+                <span style="display:none; font-size: 0.9em;">提供賣方報價的依據，確保需求描述清晰。</span>
+            </div>
+            <div class="flashcard" onclick="flipCard(this)">
+                <span>協商/談判<br>(Negotiation)</span>
+                <span style="display:none; font-size: 0.9em;">授予合約前的最後步驟，旨在達成雙方共識。</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="quiz" class="content-section">
+        <div id="quiz-container"></div>
+    </div>
+
+</div>
+
+<script>
+    // Tab Switching Logic
+    function switchTab(tabId) {
+        document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // Flowchart Interaction
+    function toggleDesc(element) {
+        const desc = element.querySelector('.desc');
+        if (desc.style.display === 'block') {
+            desc.style.display = 'none';
+        } else {
+            desc.style.display = 'block';
+        }
+    }
+
+    // Flashcard Interaction
+    function flipCard(card) {
+        card.classList.toggle('flipped');
+        const spans = card.querySelectorAll('span');
+        spans.forEach(span => {
+            span.style.display = span.style.display === 'none' ? 'block' : 'none';
+        });
+    }
+
+    // Quiz Data & Logic
+    const questions = [
+        {
+            q: "專案經理小明正在進行採購，為了確保所有潛在廠商對技術規格有一致的理解，且不會有廠商獲得特權資訊，他應該舉辦什麼活動？",
+            options: ["獨立成本估算", "投標者會議 (Bidder Conferences)", "合約變更控制", "採購稽核"],
+            correct: 1,
+            explanation: "解析：投標者會議的主要目的就是確保所有潛在賣方對採購需求有清楚一致的認知，並維持公平性。"
+        },
+        {
+            q: "在「執行採購」過程中，哪一份文件被視為具備法律約束力，且詳列了雙方的權利與義務？",
+            options: ["工作說明書 (SOW)", "賣方提案書", "合約 (Agreements)", "資源需求單"],
+            correct: 2,
+            explanation: "解析：合約是對買賣雙方具備法律約束力的文件，是執行採購最重要的產出。"
+        },
+        {
+            q: "在評選賣方時，為了避免僅憑價格決定，專案團隊使用了一套預先設定的標準來評分。這是使用了什麼技術？",
+            options: ["專家判斷", "採購談判", "建議書評估技術 (Proposal Evaluation)", "績效審查"],
+            correct: 2,
+            explanation: "解析：建議書評估技術常利用加權評分系統，根據來源選定準則從眾多提案中篩選出最佳候選人。"
+        },
+        {
+            q: "專案團隊覺得目前的潛在供應商太少，想要擴大搜尋範圍以增加市場競爭，應該使用什麼工具？",
+            options: ["協商", "廣告 (Advertising)", "投標者會議", "變更控制"],
+            correct: 1,
+            explanation: "解析：廣告的主要目的是擴大潛在供應商的範圍，以促進市場競爭。"
+        }
+    ];
+
+    function renderQuiz() {
+        const container = document.getElementById('quiz-container');
+        let html = '';
+        questions.forEach((q, index) => {
+            html += `
+                <div class="quiz-card">
+                    <strong>Q${index + 1}: ${q.q}</strong>
+                    <div class="options">
+                        ${q.options.map((opt, i) => `
+                            <button class="option-btn" onclick="checkAnswer(this, ${index}, ${i})">${opt}</button>
+                        `).join('')}
+                    </div>
+                    <div class="feedback" id="feedback-${index}"></div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    function checkAnswer(btn, qIndex, optIndex) {
+        const question = questions[qIndex];
+        const feedbackEl = document.getElementById(`feedback-${qIndex}`);
+        const parent = btn.parentElement;
+        
+        // Disable all buttons in this question
+        const buttons = parent.querySelectorAll('.option-btn');
+        buttons.forEach(b => b.disabled = true);
+
+        if (optIndex === question.correct) {
+            btn.classList.add('correct');
+            feedbackEl.style.display = 'block';
+            feedbackEl.style.background = '#d1fae5';
+            feedbackEl.style.color = '#065f46';
+            feedbackEl.innerHTML = `✅ 答對了！<br>${question.explanation}`;
+        } else {
+            btn.classList.add('wrong');
+            buttons[question.correct].classList.add('correct'); // Show correct answer
+            feedbackEl.style.display = 'block';
+            feedbackEl.style.background = '#fee2e2';
+            feedbackEl.style.color = '#991b1b';
+            feedbackEl.innerHTML = `❌ 答錯了。<br>${question.explanation}`;
+        }
+    }
+
+    // Initialize Quiz
+    renderQuiz();
+</script>
+
+</body>
+</html>

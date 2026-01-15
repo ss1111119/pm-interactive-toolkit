@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案溝通管理 - 互動式備考教練</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #475569;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Microsoft JhengHei, sans-serif;
+            background-color: var(--bg);
+            color: #1e293b;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary), #1e40af);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 { margin: 0; font-size: 1.8rem; }
+        header p { opacity: 0.9; margin-top: 10px; }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            background-color: white;
+            color: var(--secondary);
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn.active {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Content Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--primary);
+        }
+
+        .card h3 { color: var(--primary); margin-top: 0; }
+        .highlight { background-color: #fef3c7; padding: 2px 5px; border-radius: 4px; font-weight: bold; }
+
+        /* Lifecycle Diagram */
+        .lifecycle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .step {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+            border: 2px solid #e2e8f0;
+            position: relative;
+        }
+
+        .step::after {
+            content: '→';
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: var(--primary);
+            display: block;
+        }
+
+        .step:last-child::after { display: none; }
+        
+        @media (max-width: 600px) {
+            .lifecycle-container { flex-direction: column; }
+            .step::after { content: '↓'; right: 50%; top: auto; bottom: -25px; transform: translateX(50%); }
+            .step { width: 100%; margin-bottom: 20px; }
+            .step:last-child { margin-bottom: 0; }
+        }
+
+        /* Quiz & Scenario */
+        .question-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            padding: 12px;
+            text-align: left;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover { border-color: var(--primary); background-color: #eff6ff; }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .feedback.correct { background-color: #dcfce7; color: #166534; border-left: 5px solid var(--success); }
+        .feedback.incorrect { background-color: #fee2e2; color: #991b1b; border-left: 5px solid var(--danger); }
+
+        /* Scenario Game */
+        .scenario-scene {
+            background: #1e293b;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            background: var(--primary);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>專案管理備考教練：管理溝通</h1>
+        <p>Project Communications Management - Executing Process</p>
+        <p style="font-size: 0.9rem; margin-top: 5px;">適合資安講師/初學者的速成指南</p>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="nav-btn active" onclick="switchTab('concepts')">1. 核心觀念</button>
+        <button class="nav-btn" onclick="switchTab('lifecycle')">2. 資訊流向</button>
+        <button class="nav-btn" onclick="switchTab('scenario')">3. 情境模擬</button>
+        <button class="nav-btn" onclick="switchTab('quiz')">4. 考題實戰</button>
+    </div>
+
+    <div id="concepts" class="section active">
+        <div class="card-grid">
+            <div class="card">
+                <h3>🔍 定義與定位</h3>
+                <p>「管理溝通」屬於<span class="highlight">執行過程組</span>。</p>
+                <p>這不是寫計畫，而是<strong>按計畫辦事</strong>。任務是確保資訊被有效地收集、分發、儲存與處置。</p>
+                <p><strong>口訣：</strong>計畫是靜態的劇本，管理溝通是動態的演出。</p>
+            </div>
+            <div class="card">
+                <h3>🌐 溝通維度</h3>
+                <ul>
+                    <li><strong>正式 vs. 非正式：</strong>
+                        <br>報告/計畫書 (正式) ↔ Email/閒聊 (非正式)
+                    </li>
+                    <li><strong>垂直 vs. 水平：</strong>
+                        <br>對老闆/下屬 (垂直) ↔ 對同事 (水平)
+                    </li>
+                    <li><strong>內 vs. 外：</strong>
+                        <br>團隊成員 (內) ↔ 客戶/媒體 (外)
+                    </li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>🛠️ 關鍵工具 (PMIS)</h3>
+                <p><strong>專案管理資訊系統 (PMIS)</strong> 是核心。</p>
+                <p>想像成公司的 Slack + Jira + File Server。用來儲存、檢索和分發資訊。</p>
+                <p>還有<strong>專案報告系統</strong>，用來產生給利害關係人的報表。</p>
+            </div>
+            <div class="card">
+                <h3>👤 PM 的角色</h3>
+                <p>PM 是資訊交換的<strong>中樞 (Hub)</strong>。</p>
+                <ul>
+                    <li>指導會議</li>
+                    <li>與外部專家互動</li>
+                    <li>維持密切聯繫</li>
+                </ul>
+                <p style="color:var(--danger); font-size: 0.9em;">⚠️ 溝通不善會導致：士氣低落、進度延誤。</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="lifecycle" class="section">
+        <div class="card">
+            <h3>🔄 資訊的生命週期 (Life Cycle)</h3>
+            <p>這是一個從生到死的過程，考試重點在於順序與最後一步。</p>
+            
+            <div class="lifecycle-container">
+                <div class="step">
+                    <div style="font-size: 2rem;">📥</div>
+                    <strong>1. 收集</strong>
+                    <div style="font-size:0.8rem; color:#666;">彙整數據<br>轉化為資訊</div>
+                </div>
+                <div class="step">
+                    <div style="font-size: 2rem;">📤</div>
+                    <strong>2. 分發</strong>
+                    <div style="font-size:0.8rem; color:#666;">傳遞給<br>正確的人</div>
+                </div>
+                <div class="step">
+                    <div style="font-size: 2rem;">💾</div>
+                    <strong>3. 儲存</strong>
+                    <div style="font-size:0.8rem; color:#666;">建立索引<br>以便檢索</div>
+                </div>
+                <div class="step">
+                    <div style="font-size: 2rem;">🗑️</div>
+                    <strong>4. 處置</strong>
+                    <div style="font-size:0.8rem; color:#666;">最終處理<br>廢棄管理</div>
+                </div>
+            </div>
+            
+            <div style="background: #eff6ff; padding: 15px; border-radius: 8px;">
+                <strong>💡 資安人視角：</strong>
+                <p>這就像 Log Management：
+                Collection (收集) → Forwarding (分發) → Archiving (儲存) → Retention Policy/Purging (處置)。</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="scenario" class="section">
+        <div class="card">
+            <h3>🎮 模擬：你是專案經理</h3>
+            <p>專案發生了狀況，請根據「溝通管理計畫書」的邏輯，選擇最恰當的行動。</p>
+            <hr>
+            
+            <div id="scenario-1">
+                <div class="scenario-scene">
+                    <span class="role-badge">情境 1</span>
+                    <p>專案開發進度因為技術難題嚴重落後，這將影響到下個月對「外部大客戶」的交付。你需要告知客戶這個壞消息。</p>
+                    <p><strong>你的目標：</strong> 專業、正式地傳達延遲，並提出解決方案。</p>
+                </div>
+                <div class="options">
+                    <button class="option-btn" onclick="checkScenario(1, 'A')">A. 寫一封 Email 給客戶的窗口，簡單說會晚點交。</button>
+                    <button class="option-btn" onclick="checkScenario(1, 'B')">B. 準備一份正式的狀態報告與變更請求，安排會議進行簡報。</button>
+                    <button class="option-btn" onclick="checkScenario(1, 'C')">C. 在每週的內部團隊例會上提到這件事，希望客戶會看會議記錄。</button>
+                </div>
+                <div id="fb-s1" class="feedback"></div>
+            </div>
+
+            <div id="scenario-2" style="display:none; margin-top:30px;">
+                <div class="scenario-scene">
+                    <span class="role-badge">情境 2</span>
+                    <p>團隊內部（工程師之間）對於採用哪種資料庫架構爭論不休，氣氛緊張，效率低落。</p>
+                    <p><strong>你的目標：</strong> 解決衝突，恢復團隊士氣。</p>
+                </div>
+                <div class="options">
+                    <button class="option-btn" onclick="checkScenario(2, 'A')">A. 透過 PMIS 發布正式公文，強制規定使用某種資料庫。</button>
+                    <button class="option-btn" onclick="checkScenario(2, 'B')">B. 召開面對面的腦力激盪會議（非正式/互動），引導雙方交換意見。</button>
+                    <button class="option-btn" onclick="checkScenario(2, 'C')">C. 暫時不處理，讓他們自己去吵，這是「放任型」管理。</button>
+                </div>
+                <div id="fb-s2" class="feedback"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="quiz" class="section">
+        <div class="card">
+            <h3>📝 模擬測驗</h3>
+            <p>根據 NotebookLM 分析的重點進行測驗。</p>
+        </div>
+
+        <div class="question-box">
+            <p><strong>1. 「管理溝通」在專案管理過程中，屬於哪一個過程組？</strong></p>
+            <div class="options">
+                <button class="option-btn" onclick="checkQuiz(this, false)">A. 規劃過程組 (Planning)</button>
+                <button class="option-btn" onclick="checkQuiz(this, true)">B. 執行過程組 (Executing)</button>
+                <button class="option-btn" onclick="checkQuiz(this, false)">C. 監控過程組 (Monitoring & Controlling)</button>
+            </div>
+            <div class="feedback">正確答案是 B。管理溝通是「落實」計畫的過程，屬於執行階段。</div>
+        </div>
+
+        <div class="question-box">
+            <p><strong>2. 關於資訊生命週期的敘述，下列何者包含「建立索引與存檔機制」？</strong></p>
+            <div class="options">
+                <button class="option-btn" onclick="checkQuiz(this, false)">A. 收集與建立</button>
+                <button class="option-btn" onclick="checkQuiz(this, false)">B. 分發與傳遞</button>
+                <button class="option-btn" onclick="checkQuiz(this, true)">C. 儲存與檢索</button>
+                <button class="option-btn" onclick="checkQuiz(this, false)">D. 最終處理</button>
+            </div>
+            <div class="feedback">正確答案是 C。儲存與檢索負責確保資訊可被調閱。</div>
+        </div>
+
+        <div class="question-box">
+            <p><strong>3. 若專案經理未能有效執行「管理溝通」，下列何者「不是」來源資料中提到的直接後果？</strong></p>
+            <div class="options">
+                <button class="option-btn" onclick="checkQuiz(this, false)">A. 成員士氣低落</button>
+                <button class="option-btn" onclick="checkQuiz(this, false)">B. 專案進度延誤</button>
+                <button class="option-btn" onclick="checkQuiz(this, true)">C. 專案預算增加 (資料未提及)</button>
+                <button class="option-btn" onclick="checkQuiz(this, false)">D. 團隊效能不佳</button>
+            </div>
+            <div class="feedback">正確答案是 C。雖然預算可能會增加，但來源資料中明確列出的後果是：士氣低落、進度延誤、效能不佳。</div>
+        </div>
+
+        <div class="question-box">
+            <p><strong>4. 下列哪一項屬於「管理溝通」的正式產出物 (Artifacts)？</strong></p>
+            <div class="options">
+                <button class="option-btn" onclick="checkQuiz(this, false)">A. 團隊成員的私下抱怨</button>
+                <button class="option-btn" onclick="checkQuiz(this, true)">B. 專案進度報告與新聞稿</button>
+                <button class="option-btn" onclick="checkQuiz(this, false)">C. 尚未確認的謠言</button>
+            </div>
+            <div class="feedback">正確答案是 B。專案溝通產出物包含：新聞稿、狀況說明、進度表及簡報文件。</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function switchTab(tabId) {
+        // Hide all sections
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        // Deactivate all buttons
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+        
+        // Show target section
+        document.getElementById(tabId).classList.add('active');
+        // Activate target button
+        const btnIndex = ['concepts', 'lifecycle', 'scenario', 'quiz'].indexOf(tabId);
+        document.querySelectorAll('.nav-btn')[btnIndex].classList.add('active');
+    }
+
+    function checkScenario(scenarioId, answer) {
+        const feedbackEl = document.getElementById(`fb-s${scenarioId}`);
+        feedbackEl.style.display = 'block';
+        feedbackEl.className = 'feedback'; // reset classes
+
+        if (scenarioId === 1) {
+            if (answer === 'B') {
+                feedbackEl.innerHTML = "<strong>✅ 正確！</strong><br>面對外部客戶且涉及重大延誤（正式/外部），必須使用正式報告與會議。Email 過於草率（非正式），內部會議紀錄客戶看不到（溝通斷層）。";
+                feedbackEl.classList.add('correct');
+                // Show next scenario button
+                setTimeout(() => document.getElementById('scenario-2').style.display = 'block', 1500);
+            } else {
+                feedbackEl.innerHTML = "<strong>❌ 錯誤</strong><br>這是一個嚴重的外部溝通情境。Email 太隨意（非正式），內部會議無法傳達給外部。請選擇更正式、針對外部的溝通方式。";
+                feedbackEl.classList.add('incorrect');
+            }
+        } else if (scenarioId === 2) {
+            if (answer === 'B') {
+                feedbackEl.innerHTML = "<strong>✅ 正確！</strong><br>處理內部衝突與技術討論，面對面、雙向互動（諮詢與互動）是最有效的。公文太過僵化（單向），放任則會導致士氣低落。";
+                feedbackEl.classList.add('correct');
+            } else {
+                feedbackEl.innerHTML = "<strong>❌ 錯誤</strong><br>內部技術爭議需要「雙向溝通」與「互動」。公文是單向命令，不適合解決爭議。";
+                feedbackEl.classList.add('incorrect');
+            }
+        }
+    }
+
+    function checkQuiz(btn, isCorrect) {
+        const parent = btn.parentElement;
+        const feedback = parent.nextElementSibling;
+        
+        // Disable all buttons in this question
+        const allBtns = parent.querySelectorAll('.option-btn');
+        allBtns.forEach(b => {
+            b.disabled = true;
+            b.style.opacity = '0.6';
+        });
+
+        feedback.style.display = 'block';
+        
+        if (isCorrect) {
+            btn.style.backgroundColor = '#dcfce7';
+            btn.style.borderColor = '#16a34a';
+            feedback.classList.add('correct');
+        } else {
+            btn.style.backgroundColor = '#fee2e2';
+            btn.style.borderColor = '#dc2626';
+            feedback.classList.add('incorrect');
+            
+            // Highlight the correct one
+            // In a real app we'd mark the correct one specifically, 
+            // but here the feedback text explains the answer.
+        }
+    }
+</script>
+
+</body>
+</html>

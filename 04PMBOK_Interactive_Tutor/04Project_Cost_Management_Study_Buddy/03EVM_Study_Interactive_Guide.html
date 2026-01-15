@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案成本管理 EVM 互動學習指南 (完整版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .tab-active {
+            border-bottom: 2px solid #2563eb;
+            color: #2563eb;
+            font-weight: 600;
+        }
+        .status-good { color: #16a34a; font-weight: bold; }
+        .status-bad { color: #dc2626; font-weight: bold; }
+        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-600 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 3.666V14m-3 3h3m-3-6h6m-9 0H6m6-3H9m-3 6H5a2 2 0 00-2 2v1a2 2 0 002 2h14a2 2 0 002-2v-1a2 2 0 00-2-2h-1M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2" />
+                </svg>
+                專案成本管理 EVM 救生圈
+            </h1>
+            <span class="text-xs md:text-sm bg-blue-700 px-3 py-1 rounded-full">完整備考版</span>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 md:p-6 max-w-5xl">
+        
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-200 mb-6 overflow-x-auto">
+            <button onclick="switchTab('concept')" id="tab-concept" class="tab-active px-6 py-3 focus:outline-none whitespace-nowrap">1. 核心觀念 & 預測</button>
+            <button onclick="switchTab('calculator')" id="tab-calculator" class="px-6 py-3 text-gray-500 hover:text-blue-500 focus:outline-none whitespace-nowrap">2. 互動計算機 (含預測)</button>
+            <button onclick="switchTab('quiz')" id="tab-quiz" class="px-6 py-3 text-gray-500 hover:text-blue-500 focus:outline-none whitespace-nowrap">3. 模擬考題</button>
+        </div>
+
+        <!-- Section 1: Concepts -->
+        <div id="content-concept" class="space-y-6">
+            <!-- Part 1: Basics -->
+            <div class="bg-white p-6 rounded-lg card-shadow border-l-4 border-blue-500">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">基礎篇：用「刷油漆」秒懂 EVM</h2>
+                <p class="mb-4 text-lg">假設你要粉刷房間，計畫是 <span class="font-bold text-blue-600">4天</span> 刷完 <span class="font-bold text-blue-600">4面牆</span>，總預算 <span class="font-bold text-blue-600">$4,000</span> (一面牆 $1,000)。今天是第 2 天晚上...</p>
+                
+                <div class="grid md:grid-cols-3 gap-6 mt-6">
+                    <!-- PV -->
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-gray-200 text-gray-700 font-bold px-2 py-1 rounded">PV</span>
+                            <h3 class="font-bold text-lg">計畫價值</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Planned Value</p>
+                        <p class="font-medium text-sm">「原本計畫該做多少？」</p>
+                        <p class="mt-1 text-sm text-gray-500">第2天應刷完 2 面牆 ($2,000)。</p>
+                    </div>
+
+                    <!-- EV -->
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200 ring-2 ring-yellow-400">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-yellow-400 text-yellow-900 font-bold px-2 py-1 rounded">EV</span>
+                            <h3 class="font-bold text-lg">實獲值 (主角)</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Earned Value</p>
+                        <p class="font-medium text-sm">「實際完成了多少價值？」</p>
+                        <p class="mt-1 text-sm text-gray-500">實際只刷完 1 面牆 ($1,000)。</p>
+                    </div>
+
+                    <!-- AC -->
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-gray-200 text-gray-700 font-bold px-2 py-1 rounded">AC</span>
+                            <h3 class="font-bold text-lg">實際成本</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Actual Cost</p>
+                        <p class="font-medium text-sm">「實際付出去多少錢？」</p>
+                        <p class="mt-1 text-sm text-gray-500">油漆漲價花了 $1,500。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part 2: Forecasting (New) -->
+            <div class="bg-white p-6 rounded-lg card-shadow border-l-4 border-purple-500">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">進階篇：水晶球預測 (Forecasting)</h2>
+                <p class="mb-4">EVM 不只能看現在，還能「算命」。既然現在效率是這樣 (CPI)，那將來會如何？</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-bold text-lg text-purple-700 mb-2">關鍵名詞</h3>
+                        <ul class="space-y-3">
+                            <li class="bg-purple-50 p-2 rounded">
+                                <strong>BAC (完工預算)：</strong> 專案一開始核定的總預算 ($4,000)。
+                            </li>
+                            <li class="bg-purple-50 p-2 rounded">
+                                <strong>EAC (完工估計)：</strong> 按照現在的效率，做完要花多少錢？<br>
+                                <code class="text-sm bg-gray-200 px-1 rounded">公式：EAC = BAC / CPI</code>
+                            </li>
+                            <li class="bg-purple-50 p-2 rounded">
+                                <strong>VAC (完工變異)：</strong> 做完時會超支多少？<br>
+                                <code class="text-sm bg-gray-200 px-1 rounded">公式：VAC = BAC - EAC</code>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded text-sm">
+                        <h4 class="font-bold mb-2">實例演練：</h4>
+                        <p class="mb-2">如果你的油漆工效率很差 (CPI = 0.5)，原本預算 $4,000 的工程...</p>
+                        <p class="mb-2">👉 <strong>完工估計 (EAC)</strong> 會變成 $8,000 (你需要雙倍預算)。</p>
+                        <p>👉 <strong>完工變異 (VAC)</strong> 就是 -$4,000 (你會超支 4000)。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part 3: Management Context (New) -->
+            <div class="bg-white p-6 rounded-lg card-shadow">
+                <h2 class="text-xl font-bold mb-4 text-gray-800">管理架構與 WBS 整合</h2>
+                <div class="grid md:grid-cols-2 gap-6 text-sm">
+                    <div>
+                        <h3 class="font-bold mb-2">控制帳戶 (Control Accounts)</h3>
+                        <p class="text-gray-600 mb-2">EVM 不是對「整個大專案」算一個數字就好，通常會細分。</p>
+                        <p class="text-gray-600">在 WBS (工作分解結構) 中，我們會設定特定的節點為「控制帳戶」。這是計算 EVM 的單位，可以精確抓出是「哪一個部分」成本失控。</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold mb-2">管制成本的核心目的</h3>
+                        <p class="text-gray-600 mb-2">不只是「記帳」，而是「管理變更」。</p>
+                        <ul class="list-disc list-inside text-gray-600">
+                            <li>找出實際與計畫的差異 (變異分析)。</li>
+                            <li>採取<strong>矯正措施</strong>。</li>
+                            <li>確保所有基準的變更都經過核准。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Calculator -->
+        <div id="content-calculator" class="hidden space-y-6">
+            <div class="grid md:grid-cols-12 gap-6">
+                <!-- Inputs -->
+                <div class="md:col-span-4 bg-white p-6 rounded-lg card-shadow h-fit">
+                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <span>🧮</span> 專案數據輸入
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="pb-4 border-b">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">BAC (總預算) <span class="text-xs text-gray-400">總共多少錢?</span></label>
+                            <input type="number" id="input-bac" value="4000" class="w-full p-2 border border-purple-300 rounded focus:ring-2 focus:ring-purple-500" oninput="calculateEVM()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">PV (計畫價值)</label>
+                            <input type="number" id="input-pv" value="2000" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500" oninput="calculateEVM()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">EV (實獲值) <span class="text-xs text-red-500 font-bold">*關鍵</span></label>
+                            <input type="number" id="input-ev" value="1000" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-yellow-500 bg-yellow-50" oninput="calculateEVM()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">AC (實際成本)</label>
+                            <input type="number" id="input-ac" value="1500" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-red-500" oninput="calculateEVM()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outputs -->
+                <div class="md:col-span-8 space-y-6">
+                    <!-- Current Status -->
+                    <div class="bg-white p-6 rounded-lg card-shadow">
+                        <h2 class="text-xl font-bold mb-4 border-b pb-2">📊 目前狀態 (Current Status)</h2>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="p-3 bg-gray-50 rounded text-center">
+                                <p class="text-xs text-gray-500">CPI (成本效率)</p>
+                                <p id="res-cpi" class="text-2xl font-bold">--</p>
+                                <p id="desc-cpi" class="text-[10px] font-medium">--</p>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded text-center">
+                                <p class="text-xs text-gray-500">SPI (進度效率)</p>
+                                <p id="res-spi" class="text-2xl font-bold">--</p>
+                                <p id="desc-spi" class="text-[10px] font-medium">--</p>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded text-center">
+                                <p class="text-xs text-gray-500">CV (成本差異)</p>
+                                <p id="res-cv" class="text-lg font-bold">--</p>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded text-center">
+                                <p class="text-xs text-gray-500">SV (進度差異)</p>
+                                <p id="res-sv" class="text-lg font-bold">--</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm bg-blue-50 p-3 rounded text-blue-800">
+                            <strong>診斷：</strong> <span id="diagnosis-text">--</span>
+                        </div>
+                    </div>
+
+                    <!-- Future Forecast -->
+                    <div class="bg-white p-6 rounded-lg card-shadow border border-purple-100">
+                        <h2 class="text-xl font-bold mb-4 border-b pb-2 flex items-center gap-2">
+                            🔮 未來預測 (Forecasting)
+                            <span class="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">基於目前 CPI 預估</span>
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-4 bg-purple-50 rounded border border-purple-100">
+                                <p class="text-xs text-gray-600 mb-1">EAC (預估完工總花費)</p>
+                                <p id="res-eac" class="text-2xl font-bold text-purple-700">--</p>
+                                <p class="text-[10px] text-gray-500">原本預算: <span id="disp-bac">--</span></p>
+                            </div>
+                            <div class="p-4 bg-purple-50 rounded border border-purple-100">
+                                <p class="text-xs text-gray-600 mb-1">VAC (完工時會超支多少)</p>
+                                <p id="res-vac" class="text-xl font-bold">--</p>
+                                <p class="text-[10px] text-gray-500">正數=省錢, 負數=超支</p>
+                            </div>
+                            <div class="p-4 bg-purple-50 rounded border border-purple-100">
+                                <p class="text-xs text-gray-600 mb-1">ETC (還需投入多少錢)</p>
+                                <p id="res-etc" class="text-xl font-bold text-gray-700">--</p>
+                                <p class="text-[10px] text-gray-500">EAC - AC</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chart -->
+            <div class="bg-white p-6 rounded-lg card-shadow h-64">
+                <canvas id="evmChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Section 3: Quiz -->
+        <div id="content-quiz" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-lg card-shadow">
+                <h2 class="text-2xl font-bold mb-6">模擬小考</h2>
+                
+                <!-- Question 1 -->
+                <div class="mb-8 border-b pb-6">
+                    <p class="font-bold text-lg mb-3">Q1. 專案經理計算出 CPI = 0.8。若此績效持續下去，對於「完工估計 (EAC)」的影響為何？</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, false, 'EAC 會變小代表省錢，但 CPI < 1 是超支。')" class="w-full text-left p-3 border rounded hover:bg-gray-50">A. EAC 會小於原本的預算 (BAC)</button>
+                        <button onclick="checkAnswer(this, true, '正確！效率差 (CPI < 1) 代表做完同樣的事要花更多錢，所以 EAC 會大於 BAC。')" class="w-full text-left p-3 border rounded hover:bg-gray-50">B. EAC 會大於原本的預算 (BAC)</button>
+                        <button onclick="checkAnswer(this, false, 'EAC = BAC 只有在 CPI = 1 時才會發生。')" class="w-full text-left p-3 border rounded hover:bg-gray-50">C. EAC 會等於原本的預算 (BAC)</button>
+                    </div>
+                    <div class="mt-2 p-3 rounded hidden feedback-box"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="mb-8 border-b pb-6">
+                    <p class="font-bold text-lg mb-3">Q2. 為了更細緻地管理成本，我們通常在 WBS 的哪個層級設定 EVM 監測點？</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, false, '里程碑通常只代表時間點，不一定包含具體成本細節。')" class="w-full text-left p-3 border rounded hover:bg-gray-50">A. 里程碑 (Milestone)</button>
+                        <button onclick="checkAnswer(this, true, '正確！控制帳戶是 WBS 中用來整合範疇、預算、實際成本的管理控制點。')" class="w-full text-left p-3 border rounded hover:bg-gray-50">B. 控制帳戶 (Control Account)</button>
+                        <button onclick="checkAnswer(this, false, '專案章程太高層級了。')" class="w-full text-left p-3 border rounded hover:bg-gray-50">C. 專案章程 (Project Charter)</button>
+                    </div>
+                    <div class="mt-2 p-3 rounded hidden feedback-box"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div>
+                    <p class="font-bold text-lg mb-3">Q3. 專案經理發現 CV < 0 且 SV < 0，這表示？</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, true, '正確！兩者都小於 0，代表既超支又落後，是最糟的情況。')" class="w-full text-left p-3 border rounded hover:bg-gray-50">A. 進度落後，且成本超支</button>
+                        <button onclick="checkAnswer(this, false, 'CV < 0 是超支。')" class="w-full text-left p-3 border rounded hover:bg-gray-50">B. 進度落後，但成本節約</button>
+                    </div>
+                    <div class="mt-2 p-3 rounded hidden feedback-box"></div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 py-6 mt-12 text-center">
+        <p>Created for PMP Study • EVM Guide (Full Version)</p>
+    </footer>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all contents
+            document.getElementById('content-concept').classList.add('hidden');
+            document.getElementById('content-calculator').classList.add('hidden');
+            document.getElementById('content-quiz').classList.add('hidden');
+            
+            // Reset Tab Styles
+            ['concept', 'calculator', 'quiz'].forEach(t => {
+                document.getElementById('tab-' + t).className = "px-6 py-3 text-gray-500 hover:text-blue-500 focus:outline-none whitespace-nowrap";
+            });
+
+            // Activate selected tab
+            document.getElementById('content-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).className = "tab-active px-6 py-3 focus:outline-none whitespace-nowrap";
+            
+            if(tabId === 'calculator' && myChart) myChart.resize();
+        }
+
+        // Calculator Logic
+        let myChart = null;
+
+        function calculateEVM() {
+            const bac = parseFloat(document.getElementById('input-bac').value) || 0;
+            const pv = parseFloat(document.getElementById('input-pv').value) || 0;
+            const ev = parseFloat(document.getElementById('input-ev').value) || 0;
+            const ac = parseFloat(document.getElementById('input-ac').value) || 0;
+
+            // 1. Basic EVM
+            const cv = ev - ac;
+            const sv = ev - pv;
+            const cpi = ac === 0 ? 0 : (ev / ac);
+            const spi = pv === 0 ? 0 : (ev / pv);
+
+            // 2. Forecasting (EAC = BAC / CPI)
+            let eac = 0;
+            if (cpi === 0) {
+                 eac = bac; // Avoid infinity, assume plan if no data
+            } else {
+                 eac = bac / cpi;
+            }
+            
+            const vac = bac - eac;
+            const etc = eac - ac; // Estimate to Complete
+
+            // Update UI - Basic
+            document.getElementById('res-cpi').innerText = cpi.toFixed(2);
+            document.getElementById('res-spi').innerText = spi.toFixed(2);
+            document.getElementById('res-cv').innerText = Math.round(cv);
+            document.getElementById('res-sv').innerText = Math.round(sv);
+
+            // Update UI - Forecast
+            document.getElementById('disp-bac').innerText = bac;
+            document.getElementById('res-eac').innerText = Math.round(eac);
+            document.getElementById('res-vac').innerText = Math.round(vac);
+            document.getElementById('res-etc').innerText = Math.round(etc);
+
+            // Coloring
+            updateStatus('cpi', cpi, 1);
+            updateStatus('spi', spi, 1);
+            updateStatusVal('cv', cv);
+            updateStatusVal('sv', sv);
+            
+            // Forecast coloring
+            const vacEl = document.getElementById('res-vac');
+            if(vac < 0) vacEl.className = "text-xl font-bold text-red-600";
+            else vacEl.className = "text-xl font-bold text-green-600";
+
+            // Diagnosis Text
+            let diag = "";
+            if (cpi < 1) diag += "目前每花 $1 只能回報 $" + cpi.toFixed(2) + " 的價值。";
+            else diag += "成本控制良好。";
+            
+            if (vac < 0) diag += " 若不改善，專案結束時預計會超支 $" + Math.abs(Math.round(vac)) + "。";
+            else diag += " 預計結案時可節省 $" + Math.round(vac) + "。";
+
+            document.getElementById('diagnosis-text').innerText = diag;
+
+            // Chart
+            updateChart(bac, pv, ev, ac, eac);
+        }
+
+        function updateStatus(id, val, benchmark) {
+            const el = document.getElementById('res-' + id);
+            const desc = document.getElementById('desc-' + id);
+            if (val < benchmark) {
+                el.className = "text-2xl font-bold text-red-600";
+                if(id==='cpi') desc.innerText = "成本超支";
+                if(id==='spi') desc.innerText = "進度落後";
+                desc.className = "text-[10px] font-medium text-red-600";
+            } else {
+                el.className = "text-2xl font-bold text-green-600";
+                if(id==='cpi') desc.innerText = "成本節約";
+                if(id==='spi') desc.innerText = "進度超前";
+                desc.className = "text-[10px] font-medium text-green-600";
+            }
+        }
+
+        function updateStatusVal(id, val) {
+            const el = document.getElementById('res-' + id);
+            el.className = val < 0 ? "text-lg font-bold text-red-600" : "text-lg font-bold text-green-600";
+        }
+
+        function updateChart(bac, pv, ev, ac, eac) {
+            const ctx = document.getElementById('evmChart').getContext('2d');
+            if (myChart) {
+                myChart.data.datasets[0].data = [bac, pv, ev, ac, eac];
+                myChart.update();
+            } else {
+                myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['BAC (總預算)', 'PV (計畫)', 'EV (實獲)', 'AC (實花)', 'EAC (預估完工)'],
+                        datasets: [{
+                            label: '金額 ($)',
+                            data: [bac, pv, ev, ac, eac],
+                            backgroundColor: [
+                                'rgba(107, 114, 128, 0.5)', // BAC - Gray
+                                'rgba(59, 130, 246, 0.5)',  // PV - Blue
+                                'rgba(245, 158, 11, 0.8)',  // EV - Yellow (Strong)
+                                'rgba(239, 68, 68, 0.5)',   // AC - Red
+                                'rgba(147, 51, 234, 0.5)'   // EAC - Purple
+                            ],
+                            borderColor: [
+                                'rgba(107, 114, 128, 1)',
+                                'rgba(59, 130, 246, 1)',
+                                'rgba(245, 158, 11, 1)',
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(147, 51, 234, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        // Quiz
+        function checkAnswer(btn, isCorrect, feedback) {
+            const parent = btn.parentElement;
+            const feedbackBox = parent.nextElementSibling;
+            const buttons = parent.getElementsByTagName('button');
+            for(let b of buttons) {
+                b.classList.remove('bg-green-100', 'border-green-500', 'bg-red-100', 'border-red-500');
+                b.disabled = true;
+            }
+            if(isCorrect) {
+                btn.classList.add('bg-green-100', 'border-green-500');
+                feedbackBox.className = "mt-2 p-3 rounded bg-green-50 text-green-800 border border-green-200";
+                feedbackBox.innerHTML = "✅ " + feedback;
+            } else {
+                btn.classList.add('bg-red-100', 'border-red-500');
+                feedbackBox.className = "mt-2 p-3 rounded bg-red-50 text-red-800 border border-red-200";
+                feedbackBox.innerHTML = "❌ " + feedback;
+            }
+            feedbackBox.classList.remove('hidden');
+        }
+
+        window.onload = function() { calculateEVM(); }
+    </script>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案範疇管理學習指南 | PMP 備考小幫手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f9ff;
+        }
+
+        .card-flip {
+            perspective: 1000px;
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .card-flip:hover .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-back {
+            transform: rotateY(180deg);
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-project-diagram text-yellow-400 text-2xl"></i>
+                <h1 class="text-xl font-bold tracking-wide">專案範疇管理備考指南</h1>
+            </div>
+            <div class="text-sm bg-blue-800 px-3 py-1 rounded-full hidden sm:block">
+                適合初學者的 PMP 入門
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-5xl mx-auto w-full p-4 space-y-8">
+
+        <!-- Intro Section -->
+        <section class="text-center py-8">
+            <h2 class="text-3xl font-bold text-slate-800 mb-4">掌握「定義範疇 (Define Scope)」</h2>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                將這一章想像成「簽訂合約」的過程。我們要把模糊的需求，轉化為具體的執行藍圖，並設下防護網避免專案失敗。
+            </p>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <div class="flex justify-center space-x-2 sm:space-x-4 mb-6 border-b border-slate-200 pb-2 overflow-x-auto">
+            <button onclick="switchTab('concepts')" id="tab-concepts" class="tab-btn px-6 py-2 rounded-t-lg font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50 transition-colors">核心觀念</button>
+            <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn px-6 py-2 rounded-t-lg font-medium text-slate-500 hover:text-blue-500 transition-colors">情境測驗</button>
+            <button onclick="switchTab('simulation')" id="tab-simulation" class="tab-btn px-6 py-2 rounded-t-lg font-medium text-slate-500 hover:text-blue-500 transition-colors">模擬試題</button>
+        </div>
+
+        <!-- Tab Content: Concepts -->
+        <div id="content-concepts" class="fade-in space-y-8">
+            
+            <!-- Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="card-flip h-64 cursor-pointer group">
+                    <div class="card-inner bg-white rounded-xl border border-slate-200">
+                        <div class="card-front bg-white">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 text-blue-600">
+                                <i class="fas fa-file-signature text-3xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">專案範疇說明書</h3>
+                            <p class="text-sm text-slate-500">定義範疇的主要產出物</p>
+                            <p class="text-xs text-blue-500 mt-4">(滑鼠懸停/點擊翻轉)</p>
+                        </div>
+                        <div class="card-back bg-gradient-to-br from-blue-600 to-blue-800">
+                            <h3 class="text-xl font-bold mb-2 text-white">Project Scope Statement</h3>
+                            <p class="text-white text-sm leading-relaxed">
+                                這是所有利害關係人的共識文件。包含：<br>
+                                1. 驗收標準<br>
+                                2. 專案邊界<br>
+                                3. <span class="text-yellow-300 font-bold">排除事項 (不做什麼)</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="card-flip h-64 cursor-pointer">
+                    <div class="card-inner bg-white rounded-xl border border-slate-200">
+                        <div class="card-front bg-white">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 text-green-600">
+                                <i class="fas fa-box-open text-3xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">產品範疇 vs 專案範疇</h3>
+                            <p class="text-sm text-slate-500">常常搞混的兩個詞</p>
+                            <p class="text-xs text-blue-500 mt-4">(滑鼠懸停/點擊翻轉)</p>
+                        </div>
+                        <div class="card-back bg-gradient-to-br from-green-600 to-green-800">
+                            <div class="text-left space-y-3">
+                                <div>
+                                    <h4 class="font-bold text-yellow-300 text-sm">產品範疇 (Product)</h4>
+                                    <p class="text-xs">產品長什麼樣？功能與特色。<br>(例：手機要有5G功能)</p>
+                                </div>
+                                <div class="border-t border-green-400 pt-2">
+                                    <h4 class="font-bold text-yellow-300 text-sm">專案範疇 (Project)</h4>
+                                    <p class="text-xs">為了做出產品要做的工作。<br>(例：研發、測試、組裝)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card-flip h-64 cursor-pointer">
+                    <div class="card-inner bg-white rounded-xl border border-slate-200">
+                        <div class="card-front bg-white">
+                            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 text-red-600">
+                                <i class="fas fa-shield-alt text-3xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">專案的兩大病徵</h3>
+                            <p class="text-sm text-slate-500">定義範疇就是要防止它們</p>
+                            <p class="text-xs text-blue-500 mt-4">(滑鼠懸停/點擊翻轉)</p>
+                        </div>
+                        <div class="card-back bg-gradient-to-br from-red-600 to-red-800">
+                            <div class="text-left space-y-3">
+                                <div>
+                                    <h4 class="font-bold text-yellow-300 text-sm">範疇蔓延 (Scope Creep)</h4>
+                                    <p class="text-xs">未經核准、不知不覺擴大範圍。<br>(被動接受客戶無理要求)</p>
+                                </div>
+                                <div class="border-t border-red-400 pt-2">
+                                    <h4 class="font-bold text-yellow-300 text-sm">範疇鍍金 (Gold Plating)</h4>
+                                    <p class="text-xs">團隊自己加戲，做多餘的事。<br>(主動做白工)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flow Chart -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mt-8">
+                <h3 class="text-lg font-bold mb-4 border-l-4 border-blue-500 pl-3">定義範疇的流程定位 (Process Flow)</h3>
+                <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 text-center">
+                    <div class="flex-1 p-3 bg-slate-100 rounded-lg">
+                        <div class="text-xs text-slate-500">輸入 (Input)</div>
+                        <div class="font-bold text-slate-700">需求文件 & 專案章程</div>
+                    </div>
+                    <div class="text-slate-400 text-2xl"><i class="fas fa-arrow-right transform rotate-90 md:rotate-0"></i></div>
+                    <div class="flex-1 p-4 bg-blue-100 border-2 border-blue-500 rounded-lg shadow-md transform scale-105">
+                        <div class="text-xs text-blue-600 font-bold mb-1">本過程 (Process)</div>
+                        <div class="font-bold text-blue-900 text-lg">定義範疇</div>
+                        <div class="text-xs text-blue-600 mt-1">過濾、篩選、界定</div>
+                    </div>
+                    <div class="text-slate-400 text-2xl"><i class="fas fa-arrow-right transform rotate-90 md:rotate-0"></i></div>
+                    <div class="flex-1 p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div class="text-xs text-green-600">輸出 (Output)</div>
+                        <div class="font-bold text-green-800">專案範疇說明書</div>
+                        <div class="text-xs text-slate-500 mt-1">建立 WBS 的基礎</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Quiz -->
+        <div id="content-quiz" class="hidden fade-in">
+            <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+                <div class="bg-indigo-600 p-6 text-white text-center">
+                    <h3 class="text-2xl font-bold">病徵辨識挑戰</h3>
+                    <p class="opacity-90 mt-2">請判斷以下情境是「範疇蔓延 (Scope Creep)」還是「範疇鍍金 (Gold Plating)」？</p>
+                </div>
+                
+                <div class="p-8">
+                    <div id="quiz-container">
+                        <!-- Questions will be injected here -->
+                    </div>
+                    
+                    <div id="quiz-feedback" class="hidden mt-6 p-4 rounded-lg text-center font-bold"></div>
+                    
+                    <div class="flex justify-between mt-8 pt-6 border-t border-slate-100">
+                        <div class="text-slate-500">得分: <span id="score" class="font-bold text-indigo-600">0</span></div>
+                        <button onclick="nextQuestion()" id="next-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-colors disabled:opacity-50" disabled>下一題</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Simulation -->
+        <div id="content-simulation" class="hidden fade-in">
+            <div class="max-w-3xl mx-auto space-y-6">
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-lightbulb text-yellow-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                考試技巧：看到「客戶要求新功能」或「團隊想加功能」時，正確答案通常包含「變更請求 (Change Request)」或是「拒絕並參考範疇說明書」。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+                    <h3 class="text-lg font-bold mb-4 text-slate-800">模擬考題 1</h3>
+                    <p class="mb-4 text-slate-700">專案進行中，團隊工程師發現如果加入一個額外的動畫模組，產品會看起來更炫，而且只要花兩小時就能做完。他很高興地完成了並展示給你看。身為專案經理，你該怎麼做？</p>
+                    
+                    <div class="space-y-3">
+                        <button onclick="checkAnswer(this, false, '這是範疇鍍金。即使是好意，未經核准的變更就是浪費資源。')" class="w-full text-left p-3 rounded border hover:bg-slate-50 transition-colors option-btn">A. 誇獎他主動積極，並將此功能納入交付。</button>
+                        <button onclick="checkAnswer(this, false, '這也是範疇鍍金。不應該在沒有變更請求的情況下增加範疇。')" class="w-full text-left p-3 rounded border hover:bg-slate-50 transition-colors option-btn">B. 只要不影響專案進度，就接受這個變更。</button>
+                        <button onclick="checkAnswer(this, true, '正確！這是典型的「範疇鍍金 (Gold Plating)」。即使只花兩小時，也是未經核准的範疇，應予以糾正以維持紀律。')" class="w-full text-left p-3 rounded border hover:bg-slate-50 transition-colors option-btn">C. 告知這屬於範疇鍍金，並要求團隊專注於範疇說明書內的工作。</button>
+                        <button onclick="checkAnswer(this, false, '這雖然是正規流程，但針對團隊「主動增加」且「已經做完」的行為，首先應指正鍍金的觀念。')" class="w-full text-left p-3 rounded border hover:bg-slate-50 transition-colors option-btn">D. 立即發起變更請求 (Change Request) 來補跑流程。</button>
+                    </div>
+                    <div class="mt-3 text-sm hidden feedback-text"></div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+                    <h3 class="text-lg font-bold mb-4 text-slate-800">模擬考題 2</h3>
+                    <p class="mb-4 text-slate-700">在驗收會議上，客戶生氣地表示：「為什麼這套軟體不能在平板電腦上使用？這是基本需求！」你檢查了文件，發現這在「專案排除事項 (Exclusions)」中已明確列出不支援平板。這說明了什麼？</p>
+                    
+                    <div class="space-y-3">
+                        <button onclick="checkAnswer(this, true, '正確！範疇說明書中的「排除事項」就是用來管理這種期望落差的證據。')" class="w-full text-left p-3 rounded border hover:bg-slate-50 transition-colors option-btn">A. 定義範疇流程成功發揮了作用，專案經理有據可依。</button>
+                        <button onclick="checkAnswer(this, false, '不一定。如果合約已排除，這是客戶的認知錯誤，而非蒐集需求不周。')" class="w-full text-left p-3 rounded border hover:bg-slate-50 transition-colors option-btn">B. 蒐集需求階段做得不夠徹底，導致客戶誤解。</button>
+                        <button onclick="checkAnswer(this, false, '不應該。依據範疇說明書，你有權利拒絕或要求客戶走變更流程並付費。')" class="w-full text-left p-3 rounded border hover:bg-slate-50 transition-colors option-btn">C. 專案經理應該立即答應客戶免費修改，以維持客戶滿意度。</button>
+                    </div>
+                    <div class="mt-3 text-sm hidden feedback-text"></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-400 py-6 text-center mt-8">
+        <p class="text-sm">Based on NotebookLM Analysis | Designed for Beginners</p>
+    </footer>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all content
+            ['concepts', 'quiz', 'simulation'].forEach(id => {
+                document.getElementById(`content-${id}`).classList.add('hidden');
+                document.getElementById(`tab-${id}`).classList.remove('text-blue-600', 'border-b-2', 'border-blue-600', 'bg-blue-50');
+                document.getElementById(`tab-${id}`).classList.add('text-slate-500');
+            });
+
+            // Show selected content
+            document.getElementById(`content-${tabId}`).classList.remove('hidden');
+            
+            // Style active tab
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            activeTab.classList.remove('text-slate-500');
+            activeTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600', 'bg-blue-50');
+        }
+
+        // Quiz Logic
+        const quizData = [
+            {
+                scenario: "客戶在走廊遇到你，隨口說：「能不能把按鈕改成圓形的？」你為了不傷和氣直接答應並叫工程師改了，沒填任何單子。",
+                type: "creep",
+                explanation: "這是「範疇蔓延 (Scope Creep)」。未經正式核准流程 (Change Control) 的變更。"
+            },
+            {
+                scenario: "團隊成員小王覺得原定規格的資料庫太慢，自己加班換了一個更貴更快的版本，想給客戶一個驚喜。",
+                type: "gold",
+                explanation: "這是「範疇鍍金 (Gold Plating)」。團隊主動增加不必要的功能，浪費專案資源。"
+            },
+            {
+                scenario: "雖然合約沒寫要提供「夜間模式」，但設計師覺得現在很流行，就順手做進去了。",
+                type: "gold",
+                explanation: "這是「範疇鍍金 (Gold Plating)」。做超出範疇說明書定義的工作。"
+            },
+            {
+                scenario: "專案每週進度會議上，客戶每次都提出一個「小修改」，累積起來專案已經延遲了一個月。",
+                type: "creep",
+                explanation: "這是「範疇蔓延 (Scope Creep)」。典型的不受控擴張。"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function renderQuestion() {
+            const container = document.getElementById('quiz-container');
+            const data = quizData[currentQuestion];
+            
+            container.innerHTML = `
+                <div class="text-lg mb-6 font-medium text-slate-800 leading-relaxed">
+                    <span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">情境 ${currentQuestion + 1}</span>
+                    ${data.scenario}
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="answerQuiz('creep')" class="quiz-btn bg-white border-2 border-red-200 text-red-600 hover:bg-red-50 py-4 rounded-xl font-bold transition-all transform hover:scale-105">
+                        <i class="fas fa-spider text-2xl block mb-2"></i>
+                        範疇蔓延 (Scope Creep)
+                    </button>
+                    <button onclick="answerQuiz('gold')" class="quiz-btn bg-white border-2 border-yellow-200 text-yellow-600 hover:bg-yellow-50 py-4 rounded-xl font-bold transition-all transform hover:scale-105">
+                        <i class="fas fa-gem text-2xl block mb-2"></i>
+                        範疇鍍金 (Gold Plating)
+                    </button>
+                </div>
+            `;
+            
+            // Reset UI
+            document.getElementById('quiz-feedback').className = 'hidden mt-6 p-4 rounded-lg text-center font-bold';
+            document.getElementById('next-btn').disabled = true;
+        }
+
+        function answerQuiz(answer) {
+            const data = quizData[currentQuestion];
+            const feedbackEl = document.getElementById('quiz-feedback');
+            const btns = document.querySelectorAll('.quiz-btn');
+            
+            // Disable buttons
+            btns.forEach(btn => btn.disabled = true);
+
+            if (answer === data.type) {
+                score += 25;
+                document.getElementById('score').innerText = score;
+                feedbackEl.innerHTML = `<i class="fas fa-check-circle text-xl mr-2"></i>答對了！ ${data.explanation}`;
+                feedbackEl.className = 'mt-6 p-4 rounded-lg text-center font-bold bg-green-100 text-green-800 border border-green-200 fade-in';
+            } else {
+                feedbackEl.innerHTML = `<i class="fas fa-times-circle text-xl mr-2"></i>答錯了。 ${data.explanation}`;
+                feedbackEl.className = 'mt-6 p-4 rounded-lg text-center font-bold bg-red-100 text-red-800 border border-red-200 fade-in';
+            }
+            
+            document.getElementById('quiz-feedback').classList.remove('hidden');
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                // End of quiz
+                document.getElementById('quiz-container').innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-5xl text-yellow-500 mb-4"><i class="fas fa-trophy"></i></div>
+                        <h3 class="text-2xl font-bold mb-2">測驗完成！</h3>
+                        <p class="text-lg text-slate-600">你的得分是：<span class="text-indigo-600 font-bold text-2xl">${score}</span> / 100</p>
+                        <button onclick="location.reload()" class="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">重新開始</button>
+                    </div>
+                `;
+                document.getElementById('quiz-feedback').classList.add('hidden');
+                document.getElementById('next-btn').classList.add('hidden');
+            }
+        }
+
+        // Simulation Question Logic
+        function checkAnswer(btn, isCorrect, feedback) {
+            const parent = btn.parentElement;
+            const feedbackDiv = parent.nextElementSibling;
+            
+            // Reset styles for this group
+            const buttons = parent.querySelectorAll('.option-btn');
+            buttons.forEach(b => {
+                b.classList.remove('bg-green-100', 'border-green-500', 'bg-red-100', 'border-red-500');
+                b.classList.add('border-slate-200');
+            });
+
+            // Apply style to clicked button
+            if (isCorrect) {
+                btn.classList.remove('border-slate-200', 'hover:bg-slate-50');
+                btn.classList.add('bg-green-50', 'border-green-500', 'text-green-800');
+                feedbackDiv.className = 'mt-3 text-sm p-3 bg-green-50 text-green-800 rounded border border-green-200 fade-in block';
+                feedbackDiv.innerHTML = `<i class="fas fa-check mr-1"></i> ${feedback}`;
+            } else {
+                btn.classList.remove('border-slate-200', 'hover:bg-slate-50');
+                btn.classList.add('bg-red-50', 'border-red-500', 'text-red-800');
+                feedbackDiv.className = 'mt-3 text-sm p-3 bg-red-50 text-red-800 rounded border border-red-200 fade-in block';
+                feedbackDiv.innerHTML = `<i class="fas fa-times mr-1"></i> ${feedback}`;
+            }
+        }
+
+        // Initialize
+        renderQuestion();
+    </script>
+</body>
+</html>

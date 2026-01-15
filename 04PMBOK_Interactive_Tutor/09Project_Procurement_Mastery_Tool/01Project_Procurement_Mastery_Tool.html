@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案採購管理：互動備考特訓班 (完整版)</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e40af;
+            --accent: #f59e0b;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --success: #10b981;
+            --error: #ef4444;
+            --purple: #7c3aed;
+        }
+        body {
+            font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 { margin: 0; font-size: 1.8rem; }
+        p.subtitle { margin-top: 5px; opacity: 0.9; }
+
+        .card {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+            border-top: 5px solid transparent;
+        }
+        .card.advanced {
+            border-top: 5px solid var(--purple);
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h2 { border-left: 5px solid var(--accent); padding-left: 10px; color: var(--secondary); }
+        .card.advanced h2 { border-left-color: var(--purple); color: var(--purple); }
+        
+        /* Tab Navigation */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: #e5e7eb;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .content-section.active {
+            display: block;
+        }
+
+        /* Interactive Elements */
+        .concept-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .concept-box.adv {
+            background: #f5f3ff;
+            border-left-color: var(--purple);
+        }
+        .keyword {
+            font-weight: bold;
+            color: var(--primary);
+            background: #dbeafe;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .keyword-adv {
+            font-weight: bold;
+            color: var(--purple);
+            background: #ede9fe;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Quiz Styles */
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+        .quiz-option:hover { border-color: var(--primary); }
+        .quiz-option.correct { background: #d1fae5; border-color: var(--success); }
+        .quiz-option.wrong { background: #fee2e2; border-color: var(--error); }
+        
+        /* Contract Simulator */
+        .contract-scale {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            position: relative;
+            padding: 0 10px;
+        }
+        .scale-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #ccc;
+            z-index: 0;
+        }
+        .contract-point {
+            z-index: 1;
+            background: white;
+            border: 2px solid var(--secondary);
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .contract-point:hover, .contract-point.selected {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .scenario-box {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>專案採購管理：互動備考特訓</h1>
+        <p class="subtitle">基礎觀念 + 進階滿分細節 (完整版)</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('study')">1. 觀念導讀</button>
+        <button class="tab-btn" onclick="switchTab('simulator')">2. 合約戰略模擬</button>
+        <button class="tab-btn" onclick="switchTab('quiz')">3. 實戰刷題 (新增進階題)</button>
+    </div>
+
+    <div id="study" class="content-section active">
+        <div class="card">
+            <h2>核心概念：規劃採購管理</h2>
+            <p>這是一個「做決策」的過程。在專案規劃階段，我們必須決定兩件大事：</p>
+            <ul>
+                <li><strong>買什麼？</strong> (識別潛在賣方)</li>
+                <li><strong>怎麼買？</strong> (採購方法與合約)</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>關鍵工具：自製或外購分析 (Make-or-Buy)</h2>
+            <p>決定資源配置的關鍵工具。</p>
+            <ul>
+                <li><span class="keyword">自製 (Make)</span>：保護機密、利用閒置人力。</li>
+                <li><span class="keyword">外購 (Buy)</span>：轉移風險、缺乏技術、專注核心。</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>必考重點：SOW (工作說明書)</h2>
+            <ul>
+                <li><strong>明確性：</strong> 清楚說明規格，減少誤解。</li>
+                <li><strong>彈性：</strong> 具體之餘保留彈性，避免過度強制細節。</li>
+            </ul>
+        </div>
+
+        <div class="card advanced">
+            <h2>🔥 進階滿分細節：不可忽視的兩個產出</h2>
+            <p>除了上述重點，考試常考這兩個容易被忽略的「規劃階段產出」：</p>
+            
+            <div class="concept-box adv">
+                <h3>1. 來源選定準則 (Source Selection Criteria)</h3>
+                <p>簡單說就是<strong>「廠商評分表」</strong>。我們在找廠商前，要先想好用什麼標準打分數。</p>
+                <ul>
+                    <li>不僅僅看價格，還可能包含：技術能力、管理方法、過去績效。</li>
+                </ul>
+            </div>
+
+            <div class="concept-box adv">
+                <h3>2. 獨立成本估算 (Independent Cost Estimates)</h3>
+                <p>簡單說就是<strong>「買方心中的底價」</strong>。用來作為標竿，評估廠商報價合不合理。</p>
+                <ul>
+                    <li><span class="keyword-adv">考試情境：</span> 如果所有廠商的報價都比你的獨立估算高很多，通常代表你的 <strong>SOW (工作說明書) 寫得不夠清楚</strong>，導致廠商誤解了需求。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="simulator" class="content-section">
+        <div class="card">
+            <h2>合約類型與風險分配</h2>
+            <p>請依據風險高低，為以下情境選擇合適的合約。</p>
+            <p style="font-size:0.9em; color:#666;">💡 進階補充：成本補償合約 (CR) 還有 CPF(加固定費用)、CPIF(加獎勵金) 等變體，主要目的是為了激勵賣方。</p>
+            
+            <div class="scenario-box" id="scenario-text">
+                <strong>情境 1：</strong> 你的專案需要開發一個從未有人做過的「量子運算模組」，範圍非常模糊，研發風險極高，但你願意承擔成本以換取技術突破。
+            </div>
+            
+            <div class="contract-scale">
+                <div class="scale-line"></div>
+                <div class="contract-point" onclick="checkContract('FP')">固定價格 (FP)</div>
+                <div class="contract-point" onclick="checkContract('TM')">時間與材料 (T&M)</div>
+                <div class="contract-point" onclick="checkContract('CR')">成本補償 (CR)</div>
+            </div>
+
+            <div id="contract-feedback" style="margin-top: 20px; padding: 10px; border-radius: 6px; display: none;"></div>
+        </div>
+    </div>
+
+    <div id="quiz" class="content-section">
+        <div class="card">
+            <h2>考試模擬題</h2>
+            <div id="quiz-container">
+                <div class="question-block">
+                    <p><strong>Q1. 專案經理正在決定軟體模組應由內部開發還是外包。請問他正在使用什麼技術？</strong></p>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">A. 專家判斷</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, true)">B. 自製或外購分析 (Make-or-Buy Analysis)</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">C. 來源選定準則</button>
+                    <div class="feedback" style="display:none; color: var(--secondary); margin-top:5px; font-size: 0.9em;">
+                        解析：決定「由內部完成還是委託外部」即為自製或外購分析。
+                    </div>
+                </div>
+
+                <div class="question-block" style="margin-top: 30px;">
+                    <p><strong>Q2. 關於「採購工作說明書 (SOW)」的敘述，下列何者正確？</strong></p>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">A. SOW 應嚴格規定每一個微小步驟，不留彈性。</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, true)">B. SOW 應清晰說明需求，並在具體之餘保留一定彈性。</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">C. SOW 不需要參考範疇基準。</button>
+                    <div class="feedback" style="display:none; color: var(--secondary); margin-top:5px; font-size: 0.9em;">
+                        解析：SOW 強調「清晰但保留彈性」，過度強制細節可能導致爭議。
+                    </div>
+                </div>
+
+                 <div class="question-block" style="margin-top: 30px;">
+                    <p><strong>Q3. 若專案工作範圍非常明確（如採購標準筆電），對買方風險最低的合約是？</strong></p>
+                    <button class="quiz-option" onclick="checkAnswer(this, true)">A. 固定價格合約 (Fixed-price)</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">B. 成本補償合約 (Cost-reimbursable)</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">C. 時間與材料合約 (T&M)</button>
+                    <div class="feedback" style="display:none; color: var(--secondary); margin-top:5px; font-size: 0.9em;">
+                        解析：範圍明確時，固定價格合約可鎖定成本，將風險轉移給賣方。
+                    </div>
+                </div>
+
+                <div class="question-block" style="margin-top: 30px; border-top: 2px dashed #ccc; padding-top: 20px;">
+                    <p><strong>Q4. (進階題) 在審查廠商報價時，專案經理發現「所有廠商」的報價都遠高於專案內部的「獨立成本估算」。最可能的原因是什麼？</strong></p>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">A. 潛在賣方想聯合哄抬價格。</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, true)">B. 採購工作說明書 (SOW) 定義不夠充分，導致廠商誤解需求。</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">C. 專案經理選錯了合約類型。</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">D. 應該直接取消採購。</button>
+                    <div class="feedback" style="display:none; color: var(--purple); margin-top:5px; font-size: 0.9em; font-weight:bold;">
+                        解析：答對了！當所有廠商報價都異常偏高，通常不是廠商的問題，而是買方的 SOW 寫得不清楚，讓廠商覺得風險很高而提高了報價。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Tab Switching
+    function switchTab(tabId) {
+        document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // Quiz Logic
+    function checkAnswer(btn, isCorrect) {
+        const parent = btn.parentElement;
+        const buttons = parent.querySelectorAll('.quiz-option');
+        buttons.forEach(b => {
+            b.disabled = true;
+            b.style.cursor = 'default';
+        });
+
+        if (isCorrect) {
+            btn.classList.add('correct');
+            btn.innerHTML += " ✅";
+        } else {
+            btn.classList.add('wrong');
+            btn.innerHTML += " ❌";
+        }
+        parent.querySelector('.feedback').style.display = 'block';
+    }
+
+    // Simulator Logic
+    const scenarios = [
+        {
+            text: "情境 1：你的專案需要開發一個從未有人做過的「量子運算模組」，範圍非常模糊，研發風險極高。你需要給廠商空間去試錯。",
+            correct: 'CR',
+            explanation: "正解！範圍不確定且需要研發時，【成本補償合約 (CR)】最合適，買方承擔成本風險以換取專案推進。"
+        },
+        {
+            text: "情境 2：你要外包撰寫一份標準的使用手冊，頁數固定、格式明確，你想嚴格控制預算。",
+            correct: 'FP',
+            explanation: "沒錯！規格明確時，【固定價格合約 (FP)】對買方風險最低，不用擔心超支。"
+        },
+        {
+            text: "情境 3：你需要聘請一位外部專家來協助解決突發的伺服器當機問題，不知道要修多久。",
+            correct: 'TM',
+            explanation: "正確！工期短且無法預知時數時，【時間與材料合約 (T&M)】最靈活。"
+        }
+    ];
+    let currentScenario = 0;
+
+    function checkContract(type) {
+        const feedback = document.getElementById('contract-feedback');
+        const scenario = scenarios[currentScenario];
+        feedback.style.display = 'block';
+        
+        if (type === scenario.correct) {
+            feedback.style.backgroundColor = '#d1fae5';
+            feedback.style.color = '#065f46';
+            feedback.innerHTML = "<strong>🎉 決策正確：</strong> " + scenario.explanation;
+            setTimeout(() => {
+                currentScenario = (currentScenario + 1) % scenarios.length;
+                document.getElementById('scenario-text').innerHTML = "<strong>情境 " + (currentScenario + 1) + "：</strong> " + scenarios[currentScenario].text;
+                feedback.style.display = 'none';
+            }, 3000);
+        } else {
+            feedback.style.backgroundColor = '#fee2e2';
+            feedback.style.color = '#991b1b';
+            feedback.innerHTML = "<strong>⚠️ 決策風險：</strong> 這個合約類型不太適合此情境，請重新思考「風險」與「範圍明確度」。";
+        }
+    }
+</script>
+
+</body>
+</html>

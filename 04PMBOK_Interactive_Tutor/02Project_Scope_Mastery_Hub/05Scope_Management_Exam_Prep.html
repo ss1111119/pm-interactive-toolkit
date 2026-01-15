@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案範疇管理：考試衝刺指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0fdf4; /* Light Green background */
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .correct-anim {
+            animation: pulse-green 0.5s;
+        }
+        .wrong-anim {
+            animation: shake-red 0.5s;
+        }
+        @keyframes pulse-green {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); background-color: #dcfce7; }
+            100% { transform: scale(1); }
+        }
+        @keyframes shake-red {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); background-color: #fee2e2; }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- Navbar -->
+    <nav class="bg-emerald-700 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <i data-lucide="graduation-cap"></i> PMP 範疇管理衝刺班
+            </h1>
+            <div class="text-sm hidden md:block">針對初學者的視覺化教學</div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto p-4 space-y-8 pb-20">
+
+        <!-- Header Section -->
+        <header class="text-center py-8">
+            <h2 class="text-3xl font-bold text-emerald-800 mb-2">驗證範疇 vs. 管制範疇</h2>
+            <p class="text-slate-600">不懂專案管理也能懂的「蓋房子」邏輯</p>
+        </header>
+
+        <!-- The Analogy Section (Visual Learning) -->
+        <section class="bg-white rounded-xl p-6 shadow-md border-l-4 border-emerald-500">
+            <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <i data-lucide="home" class="text-emerald-600"></i> 核心比喻：蓋房子
+            </h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-slate-50 p-4 rounded-lg relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-2 opacity-10">
+                        <i data-lucide="check-circle-2" size="100"></i>
+                    </div>
+                    <h4 class="font-bold text-lg text-emerald-700 mb-2">驗證範疇 (Validate Scope)</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-start gap-2"><i data-lucide="user-check" class="w-4 h-4 mt-1 text-emerald-500"></i> <b>動作：</b>找屋主來驗收剛剛蓋好的廚房。</li>
+                        <li class="flex items-start gap-2"><i data-lucide="file-signature" class="w-4 h-4 mt-1 text-emerald-500"></i> <b>目的：</b>要屋主簽名畫押 (正式驗收)。</li>
+                        <li class="flex items-start gap-2"><i data-lucide="alert-triangle" class="w-4 h-4 mt-1 text-amber-500"></i> <b>關鍵：</b>關注「客戶滿意度」與「接受度」。</li>
+                    </ul>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-2 opacity-10">
+                        <i data-lucide="shield-alert" size="100"></i>
+                    </div>
+                    <h4 class="font-bold text-lg text-blue-700 mb-2">管制範疇 (Control Scope)</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-start gap-2"><i data-lucide="shield" class="w-4 h-4 mt-1 text-blue-500"></i> <b>動作：</b>阻止工人亂加蓋陽台，或屋主亂改設計。</li>
+                        <li class="flex items-start gap-2"><i data-lucide="ruler" class="w-4 h-4 mt-1 text-blue-500"></i> <b>目的：</b>守住藍圖 (基準)，防止範圍蔓延。</li>
+                        <li class="flex items-start gap-2"><i data-lucide="trending-up" class="w-4 h-4 mt-1 text-blue-500"></i> <b>關鍵：</b>分析「計畫 vs 實際」的差異。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Differences Table -->
+        <section class="bg-white rounded-xl p-6 shadow-md">
+            <h3 class="text-xl font-bold mb-4 text-emerald-800">必考比較表</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+                        <tr>
+                            <th class="px-4 py-3">比較項目</th>
+                            <th class="px-4 py-3 text-emerald-700">驗證範疇</th>
+                            <th class="px-4 py-3 text-blue-700">管制範疇</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                        <tr>
+                            <td class="px-4 py-3 font-medium">主要目的</td>
+                            <td class="px-4 py-3">獲得<b>「正式驗收」</b></td>
+                            <td class="px-4 py-3">監控狀態、管理<b>「基準變更」</b></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">關注點</td>
+                            <td class="px-4 py-3">交付標的的<b>「接受度」</b></td>
+                            <td class="px-4 py-3">防範<b>「範疇蔓延」</b> (Scope Creep)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">如果失敗...</td>
+                            <td class="px-4 py-3">產生變更請求 (修復缺陷)</td>
+                            <td class="px-4 py-3">專案失控、預算超支</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">常用工具</td>
+                            <td class="px-4 py-3">檢查 (Inspection)</td>
+                            <td class="px-4 py-3">差異分析 (Variance Analysis)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Interactive Scenario Game -->
+        <section class="bg-indigo-50 rounded-xl p-6 shadow-md border border-indigo-100">
+            <h3 class="text-xl font-bold mb-2 text-indigo-800 flex items-center gap-2">
+                <i data-lucide="brain-circuit"></i> 情境判斷練習
+            </h3>
+            <p class="text-sm text-indigo-600 mb-4">這就像考試題目。請閱讀情境，選擇這是屬於哪一個過程。</p>
+            
+            <div id="scenario-container" class="bg-white p-6 rounded-lg shadow-sm text-center min-h-[200px] flex flex-col justify-center items-center">
+                <p id="scenario-text" class="text-lg font-medium mb-6">點擊下方按鈕開始練習...</p>
+                <div id="feedback-area" class="mb-4 font-bold hidden"></div>
+                <div class="flex gap-4 justify-center" id="action-buttons">
+                    <button onclick="startGame()" class="bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition">開始挑戰</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="bg-white rounded-xl p-6 shadow-md">
+            <h3 class="text-xl font-bold mb-4 text-emerald-800 border-b pb-2">課後小測驗</h3>
+            <div id="quiz-container" class="space-y-6">
+                <!-- Questions generated by JS -->
+            </div>
+            <div id="score-area" class="mt-6 text-center hidden">
+                <p class="text-2xl font-bold text-emerald-600">你的得分: <span id="score-val">0</span> / 3</p>
+                <button onclick="renderQuiz()" class="mt-4 text-emerald-600 underline">重新測驗</button>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Script -->
+    <script>
+        // Init Icons
+        lucide.createIcons();
+
+        // --- Scenario Game Logic ---
+        const scenarios = [
+            {
+                text: "屋主在看剛裝好的櫥櫃，並且很開心地在完工單上簽名。",
+                type: "validate",
+                reason: "關鍵字：簽名、完工單。這是正式接受交付標的。"
+            },
+            {
+                text: "你發現目前的工程進度比原定計畫落後，且預算似乎快超支了。",
+                type: "control",
+                reason: "關鍵字：計畫 vs 實際。這是監控績效與基準的差異。"
+            },
+            {
+                text: "工人想私自把窗戶加大，你阻止了他，因為這不在藍圖裡。",
+                type: "control",
+                reason: "關鍵字：阻止、不在藍圖裡。這是防止範疇蔓延。"
+            },
+            {
+                text: "雖然牆壁很堅固(品質沒問題)，但客戶覺得顏色不對，拒絕付款。",
+                type: "validate",
+                reason: "關鍵字：客戶拒絕、顏色不對。這是關於「接受度」的問題。"
+            },
+            {
+                text: "客戶突然要求增加一個游泳池，你要求他填寫變更申請單送交 CCB 審核。",
+                type: "control",
+                reason: "關鍵字：增加需求、變更申請單。這是管理變更控制。"
+            }
+        ];
+
+        let currentScenarioIndex = 0;
+
+        function startGame() {
+            currentScenarioIndex = 0;
+            showScenario();
+        }
+
+        function showScenario() {
+            const container = document.getElementById('scenario-container');
+            const feedback = document.getElementById('feedback-area');
+            const btns = document.getElementById('action-buttons');
+            
+            if (currentScenarioIndex >= scenarios.length) {
+                document.getElementById('scenario-text').innerText = "恭喜！你已經完成了所有情境練習。";
+                feedback.classList.add('hidden');
+                btns.innerHTML = `<button onclick="startGame()" class="bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition">再玩一次</button>`;
+                return;
+            }
+
+            const s = scenarios[currentScenarioIndex];
+            document.getElementById('scenario-text').innerText = `情境 ${currentScenarioIndex + 1}: ${s.text}`;
+            feedback.innerText = "";
+            feedback.className = "mb-4 font-bold hidden";
+            
+            btns.innerHTML = `
+                <button onclick="checkAnswer('validate')" class="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 w-32">驗證範疇</button>
+                <button onclick="checkAnswer('control')" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-32">管制範疇</button>
+            `;
+        }
+
+        function checkAnswer(userChoice) {
+            const s = scenarios[currentScenarioIndex];
+            const feedback = document.getElementById('feedback-area');
+            const container = document.getElementById('scenario-container');
+
+            feedback.classList.remove('hidden');
+            
+            if (userChoice === s.type) {
+                feedback.innerHTML = `<span class="text-green-600 flex justify-center items-center gap-2"><i data-lucide="check"></i> 答對了！ ${s.reason}</span>`;
+                container.classList.add('correct-anim');
+                lucide.createIcons();
+                setTimeout(() => {
+                    container.classList.remove('correct-anim');
+                    currentScenarioIndex++;
+                    showScenario();
+                }, 2000);
+            } else {
+                feedback.innerHTML = `<span class="text-red-600 flex justify-center items-center gap-2"><i data-lucide="x"></i> 答錯囉。 再想一下！</span>`;
+                container.classList.add('wrong-anim');
+                lucide.createIcons();
+                setTimeout(() => container.classList.remove('wrong-anim'), 500);
+            }
+        }
+
+        // --- Quiz Logic ---
+        const quizData = [
+            {
+                q: "關於「驗證範疇」與「品質管制」的區別，下列何者正確？",
+                options: [
+                    "品質管制關注「接受度」，驗證範疇關注「正確性」",
+                    "驗證範疇關注「接受度」，品質管制關注「正確性」",
+                    "兩者完全相同",
+                    "驗證範疇由內部團隊進行，品質管制由客戶進行"
+                ],
+                a: 1 // index
+            },
+            {
+                q: "「管制範疇」最重要的功能之一是防止什麼？",
+                options: [
+                    "成本節省",
+                    "專案提早結束",
+                    "範疇蔓延 (Scope Creep)",
+                    "合約簽訂"
+                ],
+                a: 2
+            },
+            {
+                q: "當PM發現實際績效與基準有落差時，通常會使用什麼分析技術？",
+                options: [
+                    "SWOT 分析",
+                    "差異分析 (Variance Analysis)",
+                    "問卷調查",
+                    "腦力激盪"
+                ],
+                a: 1
+            }
+        ];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            document.getElementById('score-area').classList.add('hidden');
+            container.innerHTML = '';
+
+            quizData.forEach((item, idx) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = "bg-slate-50 p-4 rounded-lg";
+                let optionsHtml = '';
+                item.options.forEach((opt, optIdx) => {
+                    optionsHtml += `
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 hover:bg-slate-100 rounded">
+                            <input type="radio" name="q${idx}" value="${optIdx}" class="text-emerald-600 focus:ring-emerald-500">
+                            <span>${opt}</span>
+                        </label>
+                    `;
+                });
+
+                qDiv.innerHTML = `
+                    <p class="font-bold mb-2">${idx + 1}. ${item.q}</p>
+                    <div class="space-y-1">${optionsHtml}</div>
+                    <div id="res${idx}" class="mt-2 text-sm font-bold hidden"></div>
+                `;
+                container.appendChild(qDiv);
+            });
+
+            const btn = document.createElement('button');
+            btn.className = "w-full bg-emerald-600 text-white py-2 rounded font-bold hover:bg-emerald-700 transition mt-4";
+            btn.innerText = "提交答案";
+            btn.onclick = calculateScore;
+            container.appendChild(btn);
+        }
+
+        function calculateScore() {
+            let score = 0;
+            quizData.forEach((item, idx) => {
+                const radios = document.getElementsByName(`q${idx}`);
+                let val = -1;
+                for (const r of radios) {
+                    if (r.checked) val = parseInt(r.value);
+                }
+                
+                const resDiv = document.getElementById(`res${idx}`);
+                resDiv.classList.remove('hidden');
+
+                if (val === item.a) {
+                    score++;
+                    resDiv.className = "mt-2 text-sm font-bold text-green-600";
+                    resDiv.innerText = "正確！";
+                } else {
+                    resDiv.className = "mt-2 text-sm font-bold text-red-600";
+                    resDiv.innerText = `錯誤。正確答案是：${item.options[item.a]}`;
+                }
+            });
+
+            document.getElementById('score-area').classList.remove('hidden');
+            document.getElementById('score-val').innerText = score;
+        }
+
+        // Initialize
+        renderQuiz();
+
+    </script>
+</body>
+</html>

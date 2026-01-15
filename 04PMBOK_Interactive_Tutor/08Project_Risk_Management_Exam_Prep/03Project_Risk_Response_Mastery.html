@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案風險管理 (Chapter 11) 全方位特訓 v2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        .card-flip { perspective: 1000px; }
+        .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 1rem; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .card-back { transform: rotateY(180deg); }
+        .flipped .card-inner { transform: rotateY(180deg); }
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.5s; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen">
+
+<div id="app" class="max-w-4xl mx-auto p-4 sm:p-6">
+    
+    <header class="mb-8 text-center">
+        <h1 class="text-3xl font-bold text-indigo-700 mb-2">專案風險管理 (Chapter 11)</h1>
+        <p class="text-slate-600">v2.0 完整版：包含策略、定義與流程整合</p>
+    </header>
+
+    <nav class="flex flex-wrap justify-center gap-2 mb-8 bg-white p-2 rounded-xl shadow-sm">
+        <button @click="currentTab = 'concepts'" :class="['px-4 py-2 rounded-lg transition', currentTab === 'concepts' ? 'bg-indigo-600 text-white font-bold' : 'hover:bg-indigo-50 text-slate-600']">
+            <i class="fas fa-book-open mr-2"></i>核心觀念
+        </button>
+        <button @click="currentTab = 'strategies'" :class="['px-4 py-2 rounded-lg transition', currentTab === 'strategies' ? 'bg-indigo-600 text-white font-bold' : 'hover:bg-indigo-50 text-slate-600']">
+            <i class="fas fa-chess-board mr-2"></i>策略記憶卡
+        </button>
+        <button @click="currentTab = 'process'" :class="['px-4 py-2 rounded-lg transition', currentTab === 'process' ? 'bg-indigo-600 text-white font-bold' : 'hover:bg-indigo-50 text-slate-600']">
+            <i class="fas fa-cogs mr-2"></i>流程與整合
+        </button>
+        <button @click="currentTab = 'quiz'" :class="['px-4 py-2 rounded-lg transition', currentTab === 'quiz' ? 'bg-indigo-600 text-white font-bold' : 'hover:bg-indigo-50 text-slate-600']">
+            <i class="fas fa-clipboard-check mr-2"></i>情境模擬考
+        </button>
+    </nav>
+
+    <div v-if="currentTab === 'concepts'" class="space-y-6 animate-fade-in">
+        <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-indigo-500">
+            <h2 class="text-xl font-bold mb-4 flex items-center"><i class="fas fa-bullseye text-indigo-500 mr-2"></i> 定義與目標</h2>
+            <p class="mb-4">「規劃風險因應」是將分析結果轉化為行動的關鍵。目標是增加「機會」並減少「威脅」。</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h2 class="text-xl font-bold mb-4">因應行動的三個層次 (考試重點)</h2>
+            <div class="space-y-4">
+                <div class="flex items-start">
+                    <div class="bg-blue-100 text-blue-700 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0">1</div>
+                    <div>
+                        <h3 class="font-bold text-lg">風險因應 (Risk Response)</h3>
+                        <p class="text-sm text-slate-600">事前主動管理。在風險發生之前建立策略。</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="bg-yellow-100 text-yellow-700 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0">2</div>
+                    <div>
+                        <h3 class="font-bold text-lg">應變計畫 (Contingency Plan)</h3>
+                        <p class="text-sm text-slate-600">事發後才做。僅在特定觸發條件發生時啟動。</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="bg-gray-100 text-gray-700 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0">3</div>
+                    <div>
+                        <h3 class="font-bold text-lg">退路計畫 (Fallback Plan)</h3>
+                        <p class="text-sm text-slate-600">最後手段。當應變計畫失敗後的備案（B計畫的B計畫）。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="currentTab === 'strategies'" class="space-y-8 animate-fade-in">
+        <div>
+            <h3 class="text-xl font-bold text-red-600 mb-4 border-b pb-2">威脅 (Negative Risks) 的 5 種策略</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div v-for="(strat, index) in negativeStrategies" :key="index" 
+                     class="card-flip h-40 cursor-pointer group" 
+                     :class="{ 'flipped': strat.flipped }"
+                     @click="strat.flipped = !strat.flipped">
+                    <div class="card-inner">
+                        <div class="card-front bg-red-100 border-2 border-red-200">
+                            <i class="fas fa-shield-alt text-3xl text-red-400 mb-2"></i>
+                            <h4 class="text-lg font-bold">{{ strat.name }} ({{ strat.en }})</h4>
+                        </div>
+                        <div class="card-back bg-white border-2 border-red-200">
+                            <p class="font-medium text-slate-800 text-sm">{{ strat.desc }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-xl font-bold text-green-600 mb-4 border-b pb-2">機會 (Positive Risks) 的 4 種策略</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div v-for="(strat, index) in positiveStrategies" :key="index" 
+                     class="card-flip h-40 cursor-pointer group" 
+                     :class="{ 'flipped': strat.flipped }"
+                     @click="strat.flipped = !strat.flipped">
+                    <div class="card-inner">
+                        <div class="card-front bg-green-100 border-2 border-green-200">
+                            <i class="fas fa-star text-3xl text-green-400 mb-2"></i>
+                            <h4 class="text-lg font-bold">{{ strat.name }} ({{ strat.en }})</h4>
+                        </div>
+                        <div class="card-back bg-white border-2 border-green-200">
+                            <p class="font-medium text-slate-800 text-sm">{{ strat.desc }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="currentTab === 'process'" class="space-y-6 animate-fade-in">
+        <div class="bg-amber-50 p-6 rounded-xl border border-amber-200">
+            <h2 class="text-xl font-bold text-amber-800 mb-3"><i class="fas fa-layer-group mr-2"></i>整體專案風險 (Overall Project Risk)</h2>
+            <p class="text-amber-900 mb-2">不只是看單一事件，還要看「整包」專案。</p>
+            <ul class="list-disc list-inside text-sm text-amber-800 space-y-1">
+                <li>目標：將專案整體的不確定性維持在組織<strong>可容忍的範圍</strong>內。</li>
+                <li>策略：同樣使用規避、轉移、減輕等策略，但層次是針對「整體專案目標」。</li>
+            </ul>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="font-bold text-lg mb-3 text-indigo-600">工具：多準則決策分析</h3>
+                <p class="text-sm text-slate-600 mb-2">Multicriteria Decision Analysis</p>
+                <p class="text-slate-700 text-sm">選擇策略不能只靠直覺，需評估：</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-slate-600">
+                    <li>成本 (Cost)</li>
+                    <li>資源需求 (Resource)</li>
+                    <li>時程影響 (Timing)</li>
+                    <li>副作用 (Secondary Risks)</li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="font-bold text-lg mb-3 text-indigo-600">產出：管理連鎖反應</h3>
+                <p class="text-sm text-slate-600 mb-2">制定好策略後，會發生什麼事？</p>
+                <div class="space-y-2 mt-2">
+                    <div class="flex items-center p-2 bg-slate-50 rounded">
+                        <i class="fas fa-file-contract text-slate-400 mr-3"></i>
+                        <span class="text-sm"><strong>變更請求：</strong>需要更多錢或時間來執行策略。</span>
+                    </div>
+                    <div class="flex items-center p-2 bg-slate-50 rounded">
+                        <i class="fas fa-chart-line text-slate-400 mr-3"></i>
+                        <span class="text-sm"><strong>更新基準：</strong>成本基準、時程基準改變。</span>
+                    </div>
+                    <div class="flex items-center p-2 bg-slate-50 rounded">
+                        <i class="fas fa-list-alt text-slate-400 mr-3"></i>
+                        <span class="text-sm"><strong>更新文件：</strong>風險登記簿（記錄新策略）。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="currentTab === 'quiz'" class="max-w-2xl mx-auto animate-fade-in">
+        <div class="bg-white p-8 rounded-xl shadow-lg">
+            <div class="mb-6 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-700">情境模擬題 {{ currentQuestion + 1 }} / {{ quizQuestions.length }}</h3>
+                <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded">得分: {{ score }}</span>
+            </div>
+
+            <div v-if="!quizFinished">
+                <div class="mb-6">
+                    <p class="text-lg text-slate-800 leading-relaxed">{{ quizQuestions[currentQuestion].scenario }}</p>
+                </div>
+
+                <div class="space-y-3">
+                    <button v-for="(option, idx) in quizQuestions[currentQuestion].options" 
+                            :key="idx"
+                            @click="checkAnswer(idx)"
+                            :disabled="answered"
+                            :class="['w-full text-left p-4 rounded-lg border-2 transition relative', 
+                                answered && idx === quizQuestions[currentQuestion].correct ? 'bg-green-100 border-green-500 text-green-800' : 
+                                answered && idx === selectedAnswer && idx !== quizQuestions[currentQuestion].correct ? 'bg-red-100 border-red-500 text-red-800' : 
+                                'border-slate-200 hover:border-indigo-400 bg-white']">
+                        {{ option }}
+                        <i v-if="answered && idx === quizQuestions[currentQuestion].correct" class="fas fa-check absolute right-4 top-4 text-green-600"></i>
+                        <i v-if="answered && idx === selectedAnswer && idx !== quizQuestions[currentQuestion].correct" class="fas fa-times absolute right-4 top-4 text-red-600"></i>
+                    </button>
+                </div>
+
+                <div v-if="answered" class="mt-6 p-4 bg-indigo-50 rounded-lg border border-indigo-100">
+                    <p class="font-bold text-indigo-800 mb-1">解析：</p>
+                    <p class="text-sm text-indigo-700">{{ quizQuestions[currentQuestion].explanation }}</p>
+                    <button @click="nextQuestion" class="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">
+                        下一題 <i class="fas fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div v-else class="text-center py-8">
+                <div class="mb-4">
+                    <i class="fas fa-trophy text-6xl text-yellow-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">測驗完成！</h3>
+                <p class="text-lg mb-6">你答對了 {{ score }} 題，共 {{ quizQuestions.length }} 題。</p>
+                <button @click="resetQuiz" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
+                    重新測驗
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-12 text-center text-slate-400 text-sm pb-8">
+        <p>Project Risk Management Mastery v2.0</p>
+    </footer>
+
+</div>
+
+<script>
+    const { createApp, ref } = Vue;
+
+    createApp({
+        setup() {
+            const currentTab = ref('concepts');
+            
+            const negativeStrategies = ref([
+                { name: '上報', en: 'Escalate', desc: '風險超出你的權限，或影響多個專案。必須交給高層處理。', flipped: false },
+                { name: '規避', en: 'Avoid', desc: '採取行動消除威脅。例如改變計畫、縮小範疇，讓風險根本不可能發生。', flipped: false },
+                { name: '轉移', en: 'Transfer', desc: '將責任與衝擊丟給第三方。例如買保險、外包合約。', flipped: false },
+                { name: '減輕', en: 'Mitigate', desc: '降低發生機率或減輕衝擊程度。例如多做幾次測試。', flipped: false },
+                { name: '接受', en: 'Accept', desc: '沒招了或不划算。主動接受（留錢）、被動接受（隨緣）。', flipped: false }
+            ]);
+
+            const positiveStrategies = ref([
+                { name: '開拓', en: 'Exploit', desc: '確保機會 100% 發生。例如指派最強的員工。', flipped: false },
+                { name: '分享', en: 'Share', desc: '與第三方合作來獲取機會。例如合資、共享利潤。', flipped: false },
+                { name: '強化', en: 'Enhance', desc: '增加機會發生的機率或擴大其好處。', flipped: false },
+                { name: '接受', en: 'Accept', desc: '機會來了就用，但不主動追求。', flipped: false }
+            ]);
+
+            const quizQuestions = ref([
+                {
+                    scenario: '專案團隊發現一項關鍵技術太過複雜，內部無人能解，專案經理決定將該部分「外包」給專業廠商並簽訂合約。這是？',
+                    options: ['規避 (Avoid)', '減輕 (Mitigate)', '轉移 (Transfer)', '接受 (Accept)'],
+                    correct: 2,
+                    explanation: '將責任轉給第三方（外包廠商）並透過合約保護，屬於「轉移」。'
+                },
+                {
+                    scenario: '為了避開颱風季，專案經理修改時程表，將戶外工作提前完成。這是？',
+                    options: ['減輕 (Mitigate)', '規避 (Avoid)', '上報 (Escalate)', '開拓 (Exploit)'],
+                    correct: 1,
+                    explanation: '透過改變計畫（修改時程）來完全消除風險發生的可能性，屬於「規避」。'
+                },
+                {
+                    scenario: '專案經理決定採用一項昂貴的風險減輕策略，但在做決定前，他評估了該策略的成本、時程影響及可能產生的副作用。請問他正在使用什麼工具？',
+                    options: ['SWOT 分析', '多準則決策分析', '蒙地卡羅分析', '機率與衝擊矩陣'],
+                    correct: 1,
+                    explanation: '評估多個變數（成本、資源、副作用）來選擇最佳方案，是「多準則決策分析 (Multicriteria Decision Analysis)」。'
+                },
+                {
+                    scenario: '規劃風險因應後，專案經理發現需要購買額外的設備來減輕風險，這將導致專案成本增加。下一步他應該做什麼？',
+                    options: ['直接購買設備', '提出變更請求', '忽略不管', '使用退路計畫'],
+                    correct: 1,
+                    explanation: '有效的因應規劃若涉及基準（成本/時程）變動，必須先提出「變更請求」，並更新專案管理計畫書。'
+                },
+                {
+                    scenario: '應變計畫 (Contingency Plan) 失敗了，現在必須執行最後的手段。這個手段稱為？',
+                    options: ['風險因應', '退路計畫 (Fallback Plan)', '權變措施', '規避策略'],
+                    correct: 1,
+                    explanation: '當應變計畫失敗後執行的最後選項，稱為「退路計畫」。'
+                }
+            ]);
+
+            const currentQuestion = ref(0);
+            const score = ref(0);
+            const answered = ref(false);
+            const selectedAnswer = ref(null);
+            const quizFinished = ref(false);
+
+            const checkAnswer = (idx) => {
+                if (answered.value) return;
+                selectedAnswer.value = idx;
+                answered.value = true;
+                if (idx === quizQuestions.value[currentQuestion.value].correct) {
+                    score.value++;
+                }
+            };
+
+            const nextQuestion = () => {
+                if (currentQuestion.value < quizQuestions.value.length - 1) {
+                    currentQuestion.value++;
+                    answered.value = false;
+                    selectedAnswer.value = null;
+                } else {
+                    quizFinished.value = true;
+                }
+            };
+
+            const resetQuiz = () => {
+                currentQuestion.value = 0;
+                score.value = 0;
+                answered.value = false;
+                selectedAnswer.value = null;
+                quizFinished.value = false;
+            };
+
+            return {
+                currentTab,
+                negativeStrategies,
+                positiveStrategies,
+                quizQuestions,
+                currentQuestion,
+                score,
+                answered,
+                selectedAnswer,
+                checkAnswer,
+                nextQuestion,
+                quizFinished,
+                resetQuiz
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>估計活動工期 - 互動學習工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            transition: all 0.2s;
+        }
+        .animate-bounce-in {
+            animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Icons
+        const Icons = {
+            Clock: () => <i data-lucide="clock" className="w-6 h-6"></i>,
+            Calculator: () => <i data-lucide="calculator" className="w-6 h-6"></i>,
+            BookOpen: () => <i data-lucide="book-open" className="w-6 h-6"></i>,
+            Target: () => <i data-lucide="target" className="w-6 h-6"></i>,
+            CheckCircle: () => <i data-lucide="check-circle" className="w-6 h-6 text-green-500"></i>,
+            XCircle: () => <i data-lucide="x-circle" className="w-6 h-6 text-red-500"></i>,
+            AlertTriangle: () => <i data-lucide="alert-triangle" className="w-6 h-6"></i>,
+            TrendingUp: () => <i data-lucide="trending-up" className="w-6 h-6"></i>,
+            Users: () => <i data-lucide="users" className="w-6 h-6"></i>,
+            FileText: () => <i data-lucide="file-text" className="w-6 h-6"></i>,
+            Map: () => <i data-lucide="map" className="w-6 h-6"></i>
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('concepts');
+
+            useEffect(() => {
+                lucide.createIcons();
+            }, [activeTab]);
+
+            return (
+                <div className="min-h-screen pb-12">
+                    {/* Header */}
+                    <header className="bg-blue-600 text-white p-6 shadow-lg">
+                        <div className="max-w-4xl mx-auto">
+                            <h1 className="text-3xl font-bold flex items-center gap-3">
+                                <Icons.Clock />
+                                專案時程管理：估計活動工期
+                            </h1>
+                            <p className="mt-2 text-blue-100">PMP 考試準備互動指南</p>
+                        </div>
+                    </header>
+
+                    {/* Navigation */}
+                    <nav className="max-w-4xl mx-auto mt-6 px-4">
+                        <div className="bg-white rounded-lg shadow p-1 flex overflow-x-auto">
+                            {[
+                                { id: 'concepts', label: '核心觀念', icon: <Icons.BookOpen /> },
+                                { id: 'methods', label: '估算技術比較', icon: <Icons.TrendingUp /> },
+                                { id: 'calculator', label: 'PERT 計算機', icon: <Icons.Calculator /> },
+                                { id: 'quiz', label: '模擬測驗', icon: <Icons.Target /> }
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-md transition-colors whitespace-nowrap ${
+                                        activeTab === tab.id 
+                                        ? 'bg-blue-100 text-blue-700 font-bold' 
+                                        : 'text-gray-600 hover:bg-gray-50'
+                                    }`}
+                                >
+                                    {tab.icon}
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                    </nav>
+
+                    {/* Content Area */}
+                    <main className="max-w-4xl mx-auto mt-6 px-4">
+                        {activeTab === 'concepts' && <ConceptsView />}
+                        {activeTab === 'methods' && <MethodsView />}
+                        {activeTab === 'calculator' && <PertCalculatorView />}
+                        {activeTab === 'quiz' && <QuizView />}
+                    </main>
+                </div>
+            );
+        };
+
+        // 1. Concepts View (Updated with Inputs and Context)
+        const ConceptsView = () => (
+            <div className="space-y-6">
+                {/* 1. Definition */}
+                <div className="bg-white p-6 rounded-xl shadow card-hover border-l-4 border-blue-500">
+                    <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+                        <Icons.FileText /> 定義與區別
+                    </h2>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                            <h3 className="font-bold text-blue-800 mb-2">工期 (Duration)</h3>
+                            <p className="text-gray-700">完成工作所需的「時間段數」。</p>
+                            <p className="text-sm text-gray-500 mt-2">例：這項工作需要 3 個工作天才能完成。</p>
+                        </div>
+                        <div className="bg-purple-50 p-4 rounded-lg">
+                            <h3 className="font-bold text-purple-800 mb-2">工作量 (Effort)</h3>
+                            <p className="text-gray-700">完成工作所需的「人天」或「人時」。</p>
+                            <p className="text-sm text-gray-500 mt-2">例：這項工作總共需要 24 個人時。</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 2. Key Inputs & Context (Newly Added) */}
+                <div className="bg-white p-6 rounded-xl shadow card-hover border-l-4 border-teal-500">
+                    <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+                        <Icons.Users /> 關鍵輸入與環境制約
+                    </h2>
+                    <div className="grid md:grid-cols-2 gap-6">
+                         <div>
+                            <h3 className="font-bold text-teal-700 mb-2">資源依賴性</h3>
+                            <ul className="list-disc pl-5 text-gray-700 space-y-1">
+                                <li>工期受<strong>資源數量</strong>影響（2人做 vs 1人做）。</li>
+                                <li>工期受<strong>資源能力</strong>影響（資深員工 vs 新手）。</li>
+                                <li className="text-sm text-gray-500">必須參考「資源需求」文件。</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-teal-700 mb-2">假設與風險</h3>
+                            <ul className="list-disc pl-5 text-gray-700 space-y-1">
+                                <li><strong>風險登錄簿</strong>：分析可能延誤工期的風險。</li>
+                                <li><strong>假設日誌</strong>：記錄估算時的假設條件。</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="mt-4 p-3 bg-gray-50 rounded-lg text-sm text-gray-600 border-t border-gray-200">
+                        <strong>📌 流程地位：</strong> 此流程是「發展時程」的基礎。如果估計不準，後續建立的<strong>關鍵路徑 (CPM)</strong> 或<strong>甘特圖</strong>都將失去管理效力。
+                    </div>
+                </div>
+
+                {/* 3. Reserve Analysis */}
+                <div className="bg-white p-6 rounded-xl shadow card-hover border-l-4 border-orange-500">
+                    <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+                        <Icons.AlertTriangle /> 儲備分析 (Reserve Analysis)
+                    </h2>
+                    <p className="mb-4 text-gray-600">估計工期時，必須考慮不確定性，並預留緩衝時間。</p>
+                    <div className="space-y-4">
+                        <div className="flex items-start gap-4">
+                            <div className="bg-orange-100 p-2 rounded-full mt-1">
+                                <Icons.AlertTriangle />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-gray-800">應變儲備 (Contingency Reserves)</h3>
+                                <p className="text-gray-600">針對<span className="font-bold text-orange-600">「已知的不確定性」</span>（如已識別的風險）。</p>
+                                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">包含在時程基準內</span>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-4">
+                            <div className="bg-red-100 p-2 rounded-full mt-1">
+                                <Icons.AlertTriangle />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-gray-800">管理儲備 (Management Reserves)</h3>
+                                <p className="text-gray-600">針對<span className="font-bold text-red-600">「未知的不確定性」</span>（如未預見的變動）。</p>
+                                <span className="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded-full">不含在基準內，但在專案總需求中</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        // 2. Methods View
+        const MethodsView = () => {
+            const methods = [
+                {
+                    title: "類比估計 (Analogous)",
+                    desc: "參考過去類似專案的實際工期。",
+                    pros: "速度快、成本低。",
+                    cons: "準確性較低。",
+                    context: "由上而下估計法，常在初期資訊不足時使用。"
+                },
+                {
+                    title: "參數估計 (Parametric)",
+                    desc: "利用歷史數據與變數的統計關係（如：坪數 × 每坪時間）。",
+                    pros: "比類比準確。",
+                    cons: "依賴模型成熟度與數據品質。",
+                    context: "數學模型計算。"
+                },
+                {
+                    title: "三點估計 (Three-point)",
+                    desc: "考量不確定性 (PERT)。",
+                    pros: "能反映風險，可計算標準差。",
+                    cons: "計算較複雜。",
+                    context: "樂觀 + (4 × 可能) + 悲觀 ÷ 6"
+                },
+                {
+                    title: "由下而上估計 (Bottom-up)",
+                    desc: "將活動細分後逐一估計再彙總。",
+                    pros: "最為精確。",
+                    cons: "最耗時、費事。",
+                    context: "適合詳細規劃階段。"
+                }
+            ];
+
+            return (
+                <div className="grid md:grid-cols-2 gap-4">
+                    {methods.map((m, idx) => (
+                        <div key={idx} className="bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:border-blue-300 transition-colors">
+                            <h3 className="text-lg font-bold text-blue-700 mb-2">{m.title}</h3>
+                            <p className="text-gray-700 font-medium mb-2">{m.desc}</p>
+                            <div className="text-sm text-gray-600 space-y-1">
+                                <p>✅ <span className="font-semibold">優點：</span>{m.pros}</p>
+                                <p>❌ <span className="font-semibold">缺點：</span>{m.cons}</p>
+                                <p className="mt-2 pt-2 border-t border-gray-100 text-gray-500 italic">{m.context}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
+        // 3. PERT Calculator View
+        const PertCalculatorView = () => {
+            const [values, setValues] = useState({ o: 0, m: 0, p: 0 });
+            const [result, setResult] = useState(null);
+
+            const calculate = () => {
+                const o = parseFloat(values.o);
+                const m = parseFloat(values.m);
+                const p = parseFloat(values.p);
+
+                if (isNaN(o) || isNaN(m) || isNaN(p)) return;
+
+                const te = (o + 4 * m + p) / 6; // Expected Duration
+                const sd = (p - o) / 6; // Standard Deviation
+
+                setResult({ te: te.toFixed(2), sd: sd.toFixed(2) });
+            };
+
+            return (
+                <div className="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto">
+                    <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">PERT 三點估計計算機</h2>
+                    
+                    <div className="grid grid-cols-3 gap-4 mb-6">
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-green-600">樂觀時間 (tO)</label>
+                            <input 
+                                type="number" 
+                                value={values.o}
+                                onChange={(e) => setValues({...values, o: e.target.value})}
+                                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-300 outline-none"
+                                placeholder="最快"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-blue-600">最可能時間 (tM)</label>
+                            <input 
+                                type="number" 
+                                value={values.m}
+                                onChange={(e) => setValues({...values, m: e.target.value})}
+                                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-300 outline-none"
+                                placeholder="正常"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-red-600">悲觀時間 (tP)</label>
+                            <input 
+                                type="number" 
+                                value={values.p}
+                                onChange={(e) => setValues({...values, p: e.target.value})}
+                                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-red-300 outline-none"
+                                placeholder="最慢"
+                            />
+                        </div>
+                    </div>
+
+                    <button 
+                        onClick={calculate}
+                        className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors mb-6 shadow-md"
+                    >
+                        計算期望工期
+                    </button>
+
+                    {result && (
+                        <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <div className="grid grid-cols-2 gap-8 text-center">
+                                <div>
+                                    <p className="text-gray-500 mb-1">期望工期 (tE)</p>
+                                    <p className="text-3xl font-bold text-blue-600">{result.te}</p>
+                                    <p className="text-xs text-gray-400 mt-1">(tO + 4tM + tP) / 6</p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500 mb-1">標準差 (σ)</p>
+                                    <p className="text-3xl font-bold text-purple-600">{result.sd}</p>
+                                    <p className="text-xs text-gray-400 mt-1">(tP - tO) / 6</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="mt-6 bg-blue-50 p-4 rounded text-sm text-blue-800">
+                        <strong>💡 學習提示：</strong> 
+                        試著輸入 樂觀=2, 最可能=5, 悲觀=14。
+                        <br/>
+                        你會發現雖然平均是 7，但加權後的 PERT 平均值是 6 (因為 "最可能" 的權重有 4 倍)。
+                    </div>
+                </div>
+            );
+        };
+
+        // 4. Quiz View
+        const QuizView = () => {
+            const questions = [
+                {
+                    q: "哪一種估計技術雖然速度最快，但準確性較低，通常在專案初期資訊不足時使用？",
+                    options: ["參數估計", "三點估計", "類比估計", "由下而上估計"],
+                    ans: 2,
+                    expl: "類比估計 (Analogous Estimating) 是參考過去類似專案，屬於粗略估算。"
+                },
+                {
+                    q: "根據 PERT 技術，如果樂觀時間是 2 天，最可能時間是 3 天，悲觀時間是 10 天，請問期望工期是多少？",
+                    options: ["3 天", "4 天", "5 天", "6 天"],
+                    ans: 1,
+                    expl: "計算公式：(2 + 4*3 + 10) / 6 = 24 / 6 = 4 天。"
+                },
+                {
+                    q: "針對「未知的不確定性」（如未預見的變動）所預留的時間，不包含在時程基準內，稱為？",
+                    options: ["應變儲備", "管理儲備", "成本基準", "風險登記簿"],
+                    ans: 1,
+                    expl: "管理儲備 (Management Reserves) 是為了應對未知風險，不包含在基準內。"
+                },
+                {
+                    q: "哪一種估計法最為精確，但也最耗時費事？",
+                    options: ["類比估計", "由下而上估計", "參數估計", "三點估計"],
+                    ans: 1,
+                    expl: "由下而上估計 (Bottom-up) 將活動細分後逐一估計，準確度最高。"
+                },
+                {
+                    q: "估算工期時，若未考慮「資源能力」的差異，最可能導致什麼後果？",
+                    options: ["增加管理儲備", "估算結果不準確", "改變關鍵路徑", "無法使用類比估計"],
+                    ans: 1,
+                    expl: "工期受資源能力直接影響（如新手 vs 資深），若未考慮會導致估算失準。"
+                }
+            ];
+
+            const [userAnswers, setUserAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+
+            const handleSelect = (qIdx, optIdx) => {
+                if (showResults) return;
+                setUserAnswers({...userAnswers, [qIdx]: optIdx});
+            };
+
+            const score = Object.keys(userAnswers).reduce((acc, key) => {
+                return acc + (userAnswers[key] === questions[key].ans ? 1 : 0);
+            }, 0);
+
+            return (
+                <div className="max-w-2xl mx-auto space-y-6">
+                    {questions.map((q, qIdx) => (
+                        <div key={qIdx} className="bg-white p-6 rounded-xl shadow border border-gray-100">
+                            <h3 className="font-bold text-lg mb-4 text-gray-800">
+                                <span className="text-blue-500 mr-2">Q{qIdx + 1}.</span>
+                                {q.q}
+                            </h3>
+                            <div className="space-y-2">
+                                {q.options.map((opt, optIdx) => {
+                                    let btnClass = "w-full text-left p-3 rounded-lg border transition-all ";
+                                    
+                                    if (showResults) {
+                                        if (optIdx === q.ans) btnClass += "bg-green-100 border-green-500 text-green-800 font-bold";
+                                        else if (userAnswers[qIdx] === optIdx) btnClass += "bg-red-100 border-red-500 text-red-800";
+                                        else btnClass += "bg-gray-50 border-gray-200 opacity-60";
+                                    } else {
+                                        if (userAnswers[qIdx] === optIdx) btnClass += "bg-blue-100 border-blue-500 text-blue-800";
+                                        else btnClass += "hover:bg-gray-50 border-gray-200";
+                                    }
+
+                                    return (
+                                        <button 
+                                            key={optIdx}
+                                            onClick={() => handleSelect(qIdx, optIdx)}
+                                            className={btnClass}
+                                        >
+                                            <div className="flex justify-between items-center">
+                                                <span>{opt}</span>
+                                                {showResults && optIdx === q.ans && <Icons.CheckCircle />}
+                                                {showResults && userAnswers[qIdx] === optIdx && optIdx !== q.ans && <Icons.XCircle />}
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            {showResults && (
+                                <div className="mt-4 p-3 bg-yellow-50 text-yellow-800 text-sm rounded border border-yellow-200">
+                                    <strong>解析：</strong> {q.expl}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+
+                    <div className="text-center py-6">
+                        {!showResults ? (
+                            <button 
+                                onClick={() => setShowResults(true)}
+                                disabled={Object.keys(userAnswers).length < questions.length}
+                                className={`px-8 py-3 rounded-full font-bold shadow-lg transition-transform ${
+                                    Object.keys(userAnswers).length < questions.length 
+                                    ? 'bg-gray-300 cursor-not-allowed text-gray-500' 
+                                    : 'bg-blue-600 text-white hover:scale-105'
+                                }`}
+                            >
+                                提交答案
+                            </button>
+                        ) : (
+                            <div className="text-center animate-bounce-in">
+                                <p className="text-2xl font-bold mb-2">
+                                    得分：<span className={score === questions.length ? "text-green-600" : "text-blue-600"}>{score}</span> / {questions.length}
+                                </p>
+                                <button 
+                                    onClick={() => {
+                                        setShowResults(false);
+                                        setUserAnswers({});
+                                        window.scrollTo(0,0);
+                                    }}
+                                    className="text-blue-600 hover:underline mt-2"
+                                >
+                                    重新測驗
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

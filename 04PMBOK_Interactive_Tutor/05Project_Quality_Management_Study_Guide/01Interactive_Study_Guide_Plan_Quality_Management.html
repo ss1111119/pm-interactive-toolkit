@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動式章節學習模組</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+        /* 自定義捲軸樣式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Icons (使用 SVG 替代 lucide-react 以確保在單一 HTML 中運作) ---
+        const Icons = {
+            Book: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
+            CheckCircle: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+            Brain: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>,
+            Layout: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="9" x2="9" y1="9" y2="21"/></svg>,
+            ChevronRight: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="9 18 15 12 9 6"/></svg>,
+            Droplets: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg>,
+            Sun: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>,
+            CloudRain: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>,
+            ArrowDown: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="12" x2="12" y1="5" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>,
+            Award: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>,
+            RefreshCw: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        };
+
+        // --- 模擬章節資料 ---
+        const INITIAL_DATA = {
+            title: "自然科學：水循環 (The Water Cycle)",
+            description: "本章節探討地球上水的持續運動過程，包括蒸發、凝結、降水和集水等核心機制。",
+            points: [
+                {
+                    id: "p1",
+                    title: "蒸發 (Evaporation)",
+                    icon: <Icons.Sun className="w-6 h-6 text-orange-500" />,
+                    content: "太陽的熱能使地表水（如海洋、湖泊）轉變為水蒸氣，上升到大氣中。這是水循環的驅動力。",
+                    details: [
+                        "能量來源：太陽輻射",
+                        "狀態變化：液態 -> 氣態",
+                        "關鍵影響：溫度越高，蒸發越快"
+                    ]
+                },
+                {
+                    id: "p2",
+                    title: "凝結 (Condensation)",
+                    icon: <Icons.CloudRain className="w-6 h-6 text-gray-500" />,
+                    content: "當水蒸氣上升並冷卻時，它會轉變回微小的液態水滴，形成雲。",
+                    details: [
+                        "狀態變化：氣態 -> 液態",
+                        "形成產物：雲、霧",
+                        "物理機制：空氣冷卻飽和"
+                    ]
+                },
+                {
+                    id: "p3",
+                    title: "降水 (Precipitation)",
+                    icon: <Icons.ArrowDown className="w-6 h-6 text-blue-600" />,
+                    content: "當雲中的水滴聚集得太重而無法懸浮時，會以雨、雪或冰雹的形式落回地面。",
+                    details: [
+                        "形式：雨、雪、冰雹、霰",
+                        "重力作用：受地心引力影響落下",
+                        "水量補給：陸地淡水的主要來源"
+                    ]
+                },
+                {
+                    id: "p4",
+                    title: "集水與逕流 (Collection)",
+                    icon: <Icons.Droplets className="w-6 h-6 text-blue-400" />,
+                    content: "降落的水匯聚到河流、湖泊和海洋中，或滲入地下成為地下水，最終再次蒸發。",
+                    details: [
+                        "地表逕流：水在地面流動",
+                        "地下水：滲入土壤的水",
+                        "循環閉環：準備再次蒸發"
+                    ]
+                }
+            ],
+            quiz: [
+                {
+                    question: "水循環的主要驅動能量來自什麼？",
+                    options: ["地熱", "太陽能", "風力", "潮汐力"],
+                    correct: 1
+                },
+                {
+                    question: "雲的形成是屬於哪一個階段？",
+                    options: ["蒸發", "降水", "凝結", "逕流"],
+                    correct: 2
+                },
+                {
+                    question: "下列何者不是降水的一種形式？",
+                    options: ["雨", "霧", "雪", "冰雹"],
+                    correct: 1
+                }
+            ]
+        };
+
+        function InteractiveChapterApp() {
+            const [activeTab, setActiveTab] = useState('learn');
+            const [selectedPoint, setSelectedPoint] = useState(INITIAL_DATA.points[0]);
+            const [checklist, setChecklist] = useState({});
+            const [quizScore, setQuizScore] = useState(0);
+            const [showQuizResult, setShowQuizResult] = useState(false);
+            const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
+            const [userAnswers, setUserAnswers] = useState({});
+
+            useEffect(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, [selectedPoint, activeTab]);
+
+            const toggleCheck = (id) => {
+                setChecklist(prev => ({
+                    ...prev,
+                    [id]: !prev[id]
+                }));
+            };
+
+            const handleQuizAnswer = (optionIndex) => {
+                setUserAnswers(prev => ({ ...prev, [currentQuizIndex]: optionIndex }));
+            };
+
+            const submitQuiz = () => {
+                let score = 0;
+                INITIAL_DATA.quiz.forEach((q, idx) => {
+                    if (userAnswers[idx] === q.correct) score++;
+                });
+                setQuizScore(score);
+                setShowQuizResult(true);
+            };
+
+            const resetQuiz = () => {
+                setUserAnswers({});
+                setShowQuizResult(false);
+                setCurrentQuizIndex(0);
+                setQuizScore(0);
+            };
+
+            const allPointsChecked = INITIAL_DATA.points.every(p => checklist[p.id]);
+
+            return (
+                <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-12">
+                    {/* Header */}
+                    <header className="bg-indigo-600 text-white p-6 shadow-lg">
+                        <div className="max-w-4xl mx-auto">
+                            <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+                                <Icons.Book className="w-8 h-8" />
+                                {INITIAL_DATA.title}
+                            </h1>
+                            <p className="text-indigo-100">{INITIAL_DATA.description}</p>
+                        </div>
+                    </header>
+
+                    {/* Navigation */}
+                    <nav className="bg-white shadow sticky top-0 z-10 border-b border-slate-200 overflow-x-auto">
+                        <div className="max-w-4xl mx-auto flex">
+                            <button
+                                onClick={() => setActiveTab('learn')}
+                                className={`flex-1 py-4 px-2 text-center font-medium flex items-center justify-center gap-2 border-b-2 transition-colors ${activeTab === 'learn' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-indigo-500'}`}
+                            >
+                                <Icons.Layout className="w-5 h-5" />
+                                <span className="whitespace-nowrap">知識點學習</span>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('checklist')}
+                                className={`flex-1 py-4 px-2 text-center font-medium flex items-center justify-center gap-2 border-b-2 transition-colors ${activeTab === 'checklist' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-indigo-500'}`}
+                            >
+                                <Icons.CheckCircle className="w-5 h-5" />
+                                <span className="whitespace-nowrap">掌握度檢核</span>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('quiz')}
+                                className={`flex-1 py-4 px-2 text-center font-medium flex items-center justify-center gap-2 border-b-2 transition-colors ${activeTab === 'quiz' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-indigo-500'}`}
+                            >
+                                <Icons.Brain className="w-5 h-5" />
+                                <span className="whitespace-nowrap">隨堂測驗</span>
+                            </button>
+                        </div>
+                    </nav>
+
+                    {/* Main Content */}
+                    <main className="max-w-4xl mx-auto p-4 md:p-6 pb-24">
+                        
+                        {/* VIEW: 知識點學習 */}
+                        {activeTab === 'learn' && (
+                            <div className="grid md:grid-cols-3 gap-6">
+                                {/* Sidebar List */}
+                                <div className="md:col-span-1 space-y-2">
+                                    <h3 className="font-semibold text-slate-500 mb-2 uppercase text-xs tracking-wider">章節目錄</h3>
+                                    {INITIAL_DATA.points.map((point) => (
+                                        <button
+                                            key={point.id}
+                                            onClick={() => setSelectedPoint(point)}
+                                            className={`w-full text-left p-3 rounded-lg flex items-center justify-between group transition-all ${
+                                                selectedPoint.id === point.id 
+                                                ? 'bg-indigo-50 border-l-4 border-indigo-600 shadow-sm' 
+                                                : 'bg-white hover:bg-slate-50 border border-transparent'
+                                            }`}
+                                        >
+                                            <span className={`font-medium ${selectedPoint.id === point.id ? 'text-indigo-700' : 'text-slate-600'}`}>
+                                                {point.title}
+                                            </span>
+                                            {checklist[point.id] && <Icons.CheckCircle className="w-4 h-4 text-green-500" />}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Detail View */}
+                                <div className="md:col-span-2">
+                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-8 flex justify-center items-center text-white h-48">
+                                            <div className="transform scale-150 p-4 bg-white/20 rounded-full backdrop-blur-sm">
+                                                {selectedPoint.icon}
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="p-6 md:p-8">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <h2 className="text-2xl font-bold text-slate-800">{selectedPoint.title}</h2>
+                                                <button 
+                                                    onClick={() => toggleCheck(selectedPoint.id)}
+                                                    className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                                                        checklist[selectedPoint.id] 
+                                                        ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                                                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                                                    }`}
+                                                >
+                                                    {checklist[selectedPoint.id] ? <><Icons.CheckCircle className="w-4 h-4" /> 已學習</> : '標記為已讀'}
+                                                </button>
+                                            </div>
+
+                                            <p className="text-lg text-slate-600 leading-relaxed mb-6">
+                                                {selectedPoint.content}
+                                            </p>
+
+                                            <div className="bg-indigo-50 rounded-xl p-6">
+                                                <h3 className="font-semibold text-indigo-900 mb-3 flex items-center gap-2">
+                                                    <Icons.Layout className="w-4 h-4" /> 重點細節
+                                                </h3>
+                                                <ul className="space-y-3">
+                                                    {selectedPoint.details.map((detail, idx) => (
+                                                        <li key={idx} className="flex items-start gap-3 text-slate-700">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-2 shrink-0" />
+                                                            <span>{detail}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                            
+                                            {/* Navigation Buttons */}
+                                            <div className="mt-8 flex justify-between">
+                                                {INITIAL_DATA.points.findIndex(p => p.id === selectedPoint.id) > 0 ? (
+                                                    <button 
+                                                        onClick={() => setSelectedPoint(INITIAL_DATA.points[INITIAL_DATA.points.findIndex(p => p.id === selectedPoint.id) - 1])}
+                                                        className="text-slate-500 hover:text-indigo-600 font-medium px-4 py-2"
+                                                    >
+                                                        &larr; 上一個
+                                                    </button>
+                                                ) : <div></div>}
+                                                
+                                                {INITIAL_DATA.points.findIndex(p => p.id === selectedPoint.id) < INITIAL_DATA.points.length - 1 ? (
+                                                    <button 
+                                                        onClick={() => setSelectedPoint(INITIAL_DATA.points[INITIAL_DATA.points.findIndex(p => p.id === selectedPoint.id) + 1])}
+                                                        className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 font-medium flex items-center gap-2 shadow-lg shadow-indigo-200"
+                                                    >
+                                                        下一個 <Icons.ChevronRight className="w-4 h-4" />
+                                                    </button>
+                                                ) : (
+                                                    <button 
+                                                        onClick={() => setActiveTab('quiz')}
+                                                        className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-medium flex items-center gap-2 shadow-lg shadow-green-200"
+                                                    >
+                                                        前往測驗 <Icons.Brain className="w-4 h-4" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* VIEW: 掌握度檢核 */}
+                        {activeTab === 'checklist' && (
+                            <div className="max-w-2xl mx-auto">
+                                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+                                    <div className="text-center mb-8">
+                                        <h2 className="text-2xl font-bold text-slate-800 mb-2">學習進度追蹤</h2>
+                                        <p className="text-slate-500">確認您是否已理解本章節的所有關鍵知識點。</p>
+                                        
+                                        <div className="mt-6 w-full bg-slate-100 rounded-full h-4 overflow-hidden">
+                                            <div 
+                                                className="bg-green-500 h-full transition-all duration-1000 ease-out"
+                                                style={{ width: `${(Object.values(checklist).filter(Boolean).length / INITIAL_DATA.points.length) * 100}%` }}
+                                            ></div>
+                                        </div>
+                                        <p className="mt-2 text-sm text-slate-600 font-medium">
+                                            完成度: {Object.values(checklist).filter(Boolean).length} / {INITIAL_DATA.points.length}
+                                        </p>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        {INITIAL_DATA.points.map(point => (
+                                            <label 
+                                                key={point.id} 
+                                                className={`flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                                                    checklist[point.id] 
+                                                    ? 'border-green-500 bg-green-50' 
+                                                    : 'border-slate-100 hover:border-indigo-200'
+                                                }`}
+                                            >
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={!!checklist[point.id]}
+                                                    onChange={() => toggleCheck(point.id)}
+                                                    className="w-5 h-5 text-green-600 rounded focus:ring-green-500 mr-4"
+                                                />
+                                                <div className="flex-1">
+                                                    <span className={`font-bold block ${checklist[point.id] ? 'text-green-800' : 'text-slate-700'}`}>
+                                                        {point.title}
+                                                    </span>
+                                                </div>
+                                                {checklist[point.id] && <Icons.CheckCircle className="w-5 h-5 text-green-500" />}
+                                            </label>
+                                        ))}
+                                    </div>
+
+                                    {allPointsChecked && (
+                                        <div className="mt-8 p-4 bg-yellow-50 text-yellow-800 rounded-lg flex items-center justify-center gap-3 animate-pulse border border-yellow-200">
+                                            <Icons.Award className="w-6 h-6" />
+                                            <span className="font-bold">太棒了！您已標記完成所有知識點。</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* VIEW: 隨堂測驗 */}
+                        {activeTab === 'quiz' && (
+                            <div className="max-w-2xl mx-auto">
+                                {!showQuizResult ? (
+                                    <div className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+                                        <div className="bg-slate-800 text-white p-4 flex justify-between items-center">
+                                            <span className="font-bold">問題 {currentQuizIndex + 1} / {INITIAL_DATA.quiz.length}</span>
+                                            <span className="text-slate-400 text-sm">單選題</span>
+                                        </div>
+                                        
+                                        <div className="p-8">
+                                            <h3 className="text-xl font-bold text-slate-800 mb-6">
+                                                {INITIAL_DATA.quiz[currentQuizIndex].question}
+                                            </h3>
+                                            
+                                            <div className="space-y-3">
+                                                {INITIAL_DATA.quiz[currentQuizIndex].options.map((option, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => handleQuizAnswer(idx)}
+                                                        className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                                                            userAnswers[currentQuizIndex] === idx
+                                                            ? 'border-indigo-600 bg-indigo-50 text-indigo-900 font-semibold'
+                                                            : 'border-slate-200 hover:border-indigo-300 hover:bg-slate-50'
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-center">
+                                                            <div className={`w-6 h-6 rounded-full border flex items-center justify-center mr-3 ${
+                                                                userAnswers[currentQuizIndex] === idx ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-400 text-slate-400'
+                                                            }`}>
+                                                                {String.fromCharCode(65 + idx)}
+                                                            </div>
+                                                            {option}
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-between">
+                                            <button 
+                                                onClick={() => setCurrentQuizIndex(prev => Math.max(0, prev - 1))}
+                                                disabled={currentQuizIndex === 0}
+                                                className="px-4 py-2 text-slate-500 disabled:opacity-50 hover:text-indigo-600"
+                                            >
+                                                上一題
+                                            </button>
+                                            
+                                            {currentQuizIndex < INITIAL_DATA.quiz.length - 1 ? (
+                                                <button 
+                                                    onClick={() => setCurrentQuizIndex(prev => prev + 1)}
+                                                    className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700"
+                                                >
+                                                    下一題
+                                                </button>
+                                            ) : (
+                                                <button 
+                                                    onClick={submitQuiz}
+                                                    disabled={Object.keys(userAnswers).length !== INITIAL_DATA.quiz.length}
+                                                    className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-200"
+                                                >
+                                                    提交答案
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-8 text-center">
+                                        <div className="w-20 h-20 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                                            <Icons.Award className="w-10 h-10" />
+                                        </div>
+                                        <h2 className="text-3xl font-bold text-slate-800 mb-2">測驗結果</h2>
+                                        <p className="text-slate-500 mb-8">您在 {INITIAL_DATA.quiz.length} 題中答對了 {quizScore} 題</p>
+                                        
+                                        <div className="text-6xl font-black text-indigo-600 mb-8">
+                                            {Math.round((quizScore / INITIAL_DATA.quiz.length) * 100)}<span className="text-2xl text-slate-400 font-normal">%</span>
+                                        </div>
+
+                                        <button 
+                                            onClick={resetQuiz}
+                                            className="inline-flex items-center gap-2 bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition-colors shadow-lg"
+                                        >
+                                            <Icons.RefreshCw className="w-5 h-5" /> 重新測驗
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </main>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<InteractiveChapterApp />);
+    </script>
+</body>
+</html>

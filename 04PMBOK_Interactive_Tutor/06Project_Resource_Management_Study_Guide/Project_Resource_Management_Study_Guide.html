@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案資源管理 - 互動備考指南 (完整版)</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Data Definitions
+        const processes = [
+            { id: 1, name: "規劃資源管理", desc: "制定指南：決定如何估算、獲取、管理資源。", icon: "fa-solid fa-compass-drafting", category: "規劃" },
+            { id: 2, name: "估計活動資源", desc: "計算數量：需要多少人？需要多少設備？(通常與成本估算同步)", icon: "fa-solid fa-calculator", category: "規劃" },
+            { id: 3, name: "獲得資源", desc: "找人找物：招募團隊、採購設備。受組織結構影響大。", icon: "fa-solid fa-handshake", category: "執行" },
+            { id: 4, name: "發展團隊", desc: "提升能力：訓練、建立默契 (塔克曼模型)。", icon: "fa-solid fa-users-gear", category: "執行" },
+            { id: 5, name: "管理團隊", desc: "解決問題：績效評估、解決衝突、提供回饋。", icon: "fa-solid fa-list-check", category: "執行" },
+            { id: 6, name: "管制資源", desc: "監控實體：確保設備材料按計畫使用 (不含管人)。", icon: "fa-solid fa-boxes-packing", category: "監控" }
+        ];
+
+        const tuckmanStages = [
+            { stage: "1. 形成期 (Forming)", detail: "大家剛認識，很有禮貌但還不清楚角色。" },
+            { stage: "2. 激盪期 (Storming)", detail: "開始有衝突，爭奪控制權，最危險的時期。" },
+            { stage: "3. 規範期 (Norming)", detail: "建立規則，習慣彼此，衝突減少。" },
+            { stage: "4. 轉換/表現期 (Performing)", detail: "默契極佳，專注於解決問題，高效產出。" },
+            { stage: "5. 解散期 (Adjourning)", detail: "專案結束，成員離開，可能會感到失落。" }
+        ];
+
+        const modernTrends = [
+            { title: "資源分解結構 (RBS)", desc: "按資源類別 (如人員、設備、材料) 顯示的層級圖，有助於採購與財務分類。", icon: "fa-solid fa-sitemap" },
+            { title: "虛擬團隊 (Virtual Teams)", desc: "利用通訊技術，成員分散各地。優點是廣納人才，缺點是溝通成本高 (溝通佔 PM 90% 時間)。", icon: "fa-solid fa-laptop-house" },
+            { title: "情緒智商 (EQ)", desc: "管理團隊的軟實力，能有效減少衝突並凝聚向心力。", icon: "fa-solid fa-heart-pulse" },
+            { title: "精實與 JIT", desc: "精實管理 (Lean) 與及時生產 (JIT)，強調減少資源浪費與庫存。", icon: "fa-solid fa-stopwatch" }
+        ];
+
+        const orgStructures = [
+            { type: "功能型組織 (Functional)", pmPower: "極低", desc: "資源都在部門經理手上，PM 幾乎沒權力，只能「協調」。" },
+            { type: "矩陣型組織 (Matrix)", pmPower: "中等", desc: "權力共享。強矩陣 PM 權力大；弱矩陣 PM 像助理。" },
+            { type: "專案型組織 (Projectized)", pmPower: "高", desc: "PM 擁有全權，資源專屬於專案，結束後資源無處可去(歸建問題)。" }
+        ];
+
+        const quizQuestions = [
+            {
+                q: "根據塔克曼模型，團隊成員開始產生衝突、爭奪權力是屬於哪個階段？",
+                options: ["形成期", "激盪期", "規範期", "轉換期"],
+                ans: 1,
+                explanation: "激盪期 (Storming) 是團隊開始磨合、產生衝突的階段。"
+            },
+            {
+                q: "如果專案資源有限，必須延長專案工期來配合資源的可用性，這是使用了哪種技術？",
+                options: ["資源平滑 (Resource Smoothing)", "資源平衡 (Resource Leveling)", "RACI 矩陣", "資源分解結構"],
+                ans: 1,
+                explanation: "資源平衡 (Leveling) 會受資源限制而改變關鍵路徑，通常導致工期延長。"
+            },
+            {
+                q: "在 RACI 矩陣中，負責批准工作成果、對成敗負最終責任的人是？",
+                options: ["R (Responsible)", "A (Accountable)", "C (Consult)", "I (Inform)"],
+                ans: 1,
+                explanation: "A (Accountable) 是當責者，通常只有一位，負責最終的核准。"
+            },
+            {
+                q: "關於「組織結構」對資源獲取的影響，下列何者正確？",
+                options: ["功能型組織中，PM 擁有最高的資源控制權", "專案型組織中，PM 擁有最高的資源控制權", "矩陣型組織中，PM 不需要與部門經理協商", "組織結構不影響資源獲取"],
+                ans: 1,
+                explanation: "在專案型組織中，PM 擁有高度自主權；功能型組織中，權力在部門經理手上。"
+            },
+            {
+                q: "下列哪一項工具可以顯示資源的「類別」與「類型」層級結構？",
+                options: ["RACI 矩陣", "RBS (資源分解結構)", "WBS (工作分解結構)", "組織圖"],
+                ans: 1,
+                explanation: "RBS (Resource Breakdown Structure) 是按資源分類顯示的層級結構。"
+            }
+        ];
+
+        // Components
+        const ProcessFlow = () => (
+            <div className="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3 fade-in">
+                {processes.map(p => (
+                    <div key={p.id} className="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500 hover:shadow-lg transition-shadow">
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-xs font-bold text-blue-500 uppercase">{p.category}</span>
+                            <i className={`${p.icon} text-gray-400 text-xl`}></i>
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-800 mb-2">{p.id}. {p.name}</h3>
+                        <p className="text-gray-600 text-sm">{p.desc}</p>
+                    </div>
+                ))}
+            </div>
+        );
+
+        const KeyConcepts = () => (
+            <div className="p-4 space-y-6 fade-in">
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-xl font-bold text-indigo-700 mb-4 border-b pb-2"><i className="fa-solid fa-people-group mr-2"></i>塔克曼模型 (Tuckman Model)</h3>
+                    <div className="space-y-3">
+                        {tuckmanStages.map((stage, idx) => (
+                            <div key={idx} className="flex items-start">
+                                <div className="bg-indigo-100 text-indigo-800 font-bold rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">{idx + 1}</div>
+                                <div>
+                                    <p className="font-bold text-gray-800">{stage.stage}</p>
+                                    <p className="text-sm text-gray-600">{stage.detail}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-xl font-bold text-emerald-700 mb-4 border-b pb-2"><i className="fa-solid fa-table mr-2"></i>RACI 矩陣 (責任指派)</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-emerald-50 p-3 rounded">
+                            <strong className="text-emerald-800 text-lg">R</strong>esponsible
+                            <p className="text-xs text-gray-600">執行者：實際做事的人。</p>
+                        </div>
+                        <div className="bg-emerald-50 p-3 rounded">
+                            <strong className="text-emerald-800 text-lg">A</strong>ccountable
+                            <p className="text-xs text-gray-600">當責者：負全責、簽核的人(唯一)。</p>
+                        </div>
+                        <div className="bg-emerald-50 p-3 rounded">
+                            <strong className="text-emerald-800 text-lg">C</strong>onsult
+                            <p className="text-xs text-gray-600">諮詢者：雙向溝通，提供意見。</p>
+                        </div>
+                        <div className="bg-emerald-50 p-3 rounded">
+                            <strong className="text-emerald-800 text-lg">I</strong>nform
+                            <p className="text-xs text-gray-600">告知者：單向溝通，事後通知。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const TrendsAndOrg = () => (
+            <div className="p-4 space-y-6 fade-in">
+                 {/* Modern Trends */}
+                 <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-xl font-bold text-purple-700 mb-4 border-b pb-2"><i className="fa-solid fa-arrow-trend-up mr-2"></i>工具與現代趨勢</h3>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {modernTrends.map((trend, idx) => (
+                            <div key={idx} className="flex items-start p-3 bg-purple-50 rounded hover:bg-purple-100 transition-colors">
+                                <i className={`${trend.icon} text-purple-600 text-2xl mr-3 mt-1`}></i>
+                                <div>
+                                    <h4 className="font-bold text-gray-800">{trend.title}</h4>
+                                    <p className="text-sm text-gray-600">{trend.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Org Structure */}
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-xl font-bold text-orange-700 mb-4 border-b pb-2"><i className="fa-solid fa-building mr-2"></i>組織結構與資源權力</h3>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm text-left text-gray-500">
+                            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th className="px-4 py-3">組織類型</th>
+                                    <th className="px-4 py-3">PM 資源權力</th>
+                                    <th className="px-4 py-3">說明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {orgStructures.map((org, idx) => (
+                                    <tr key={idx} className="bg-white border-b hover:bg-gray-50">
+                                        <td className="px-4 py-3 font-medium text-gray-900">{org.type}</td>
+                                        <td className="px-4 py-3">
+                                            <span className={`px-2 py-1 rounded text-xs font-bold ${
+                                                org.pmPower === '高' ? 'bg-green-100 text-green-800' : 
+                                                org.pmPower === '極低' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
+                                            }`}>{org.pmPower}</span>
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-600">{org.desc}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const Comparison = () => (
+            <div className="p-4 fade-in">
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">超級考點：資源分配技術比較</h3>
+                    
+                    <div className="grid md:grid-cols-2 gap-8">
+                        {/* Leveling */}
+                        <div className="border border-red-200 rounded-xl p-4 bg-red-50">
+                            <h4 className="font-bold text-red-700 text-lg mb-2 text-center">資源平衡 (Leveling)</h4>
+                            <div className="bg-white p-3 rounded h-32 flex items-center justify-center mb-3">
+                                <div className="text-center">
+                                    <div className="text-4xl text-red-500 mb-2"><i className="fa-solid fa-scale-unbalanced"></i></div>
+                                    <span className="text-xs font-bold text-gray-500">資源不足 → 改變工期</span>
+                                </div>
+                            </div>
+                            <ul className="text-sm text-gray-700 list-disc list-inside space-y-1">
+                                <li><strong>資源有限</strong>時使用</li>
+                                <li>會改變關鍵路徑</li>
+                                <li>通常會<strong>延長完工日期</strong></li>
+                                <li>"為了配合資源，犧牲時間"</li>
+                            </ul>
+                        </div>
+
+                        {/* Smoothing */}
+                        <div className="border border-blue-200 rounded-xl p-4 bg-blue-50">
+                            <h4 className="font-bold text-blue-700 text-lg mb-2 text-center">資源平滑 (Smoothing)</h4>
+                            <div className="bg-white p-3 rounded h-32 flex items-center justify-center mb-3">
+                                <div className="text-center">
+                                    <div className="text-4xl text-blue-500 mb-2"><i className="fa-solid fa-layer-group"></i></div>
+                                    <span className="text-xs font-bold text-gray-500">資源調整 → 工期不變</span>
+                                </div>
+                            </div>
+                            <ul className="text-sm text-gray-700 list-disc list-inside space-y-1">
+                                <li>利用<strong>浮動時間(Float)</strong>調整</li>
+                                <li><strong>不會</strong>改變關鍵路徑</li>
+                                <li>完工日期<strong>維持不變</strong></li>
+                                <li>"為了均勻分配，但不犧牲時間"</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const Quiz = () => {
+            const [currentQ, setCurrentQ] = useState(0);
+            const [selected, setSelected] = useState(null);
+            const [showResult, setShowResult] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const handleAnswer = (index) => {
+                setSelected(index);
+                setShowResult(true);
+                if (index === quizQuestions[currentQ].ans) {
+                    setScore(score + 1);
+                }
+            };
+
+            const nextQ = () => {
+                setSelected(null);
+                setShowResult(false);
+                if (currentQ < quizQuestions.length - 1) {
+                    setCurrentQ(currentQ + 1);
+                } else {
+                    setCurrentQ(-1); // Finished
+                }
+            };
+
+            const reset = () => {
+                setCurrentQ(0);
+                setScore(0);
+                setSelected(null);
+                setShowResult(false);
+            };
+
+            if (currentQ === -1) {
+                return (
+                    <div className="p-8 text-center fade-in bg-white rounded-lg shadow m-4">
+                        <div className="text-6xl mb-4">🏆</div>
+                        <h2 className="text-2xl font-bold mb-2">測驗結束</h2>
+                        <p className="text-lg mb-6">你的得分：<span className="font-bold text-blue-600">{score}</span> / {quizQuestions.length}</p>
+                        <button onClick={reset} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">重新測驗</button>
+                    </div>
+                );
+            }
+
+            const q = quizQuestions[currentQ];
+
+            return (
+                <div className="p-4 fade-in max-w-2xl mx-auto">
+                    <div className="bg-white p-6 rounded-lg shadow-lg">
+                        <div className="flex justify-between text-sm text-gray-500 mb-4">
+                            <span>Question {currentQ + 1} of {quizQuestions.length}</span>
+                            <span>Score: {score}</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-800 mb-6">{q.q}</h3>
+                        <div className="space-y-3">
+                            {q.options.map((opt, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => !showResult && handleAnswer(idx)}
+                                    disabled={showResult}
+                                    className={`w-full text-left p-4 rounded border transition-colors ${
+                                        showResult 
+                                            ? idx === q.ans 
+                                                ? 'bg-green-100 border-green-500 text-green-800' 
+                                                : idx === selected 
+                                                    ? 'bg-red-100 border-red-500 text-red-800' 
+                                                    : 'bg-gray-50 border-gray-200'
+                                            : 'hover:bg-blue-50 border-gray-200 hover:border-blue-300'
+                                    }`}
+                                >
+                                    {opt}
+                                </button>
+                            ))}
+                        </div>
+                        {showResult && (
+                            <div className="mt-6 p-4 bg-yellow-50 rounded border border-yellow-200">
+                                <p className="font-bold text-yellow-800 mb-1"><i className="fa-solid fa-lightbulb mr-2"></i>解析：</p>
+                                <p className="text-yellow-900">{q.explanation}</p>
+                                <button onClick={nextQ} className="mt-4 bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900 w-full">
+                                    {currentQ < quizQuestions.length - 1 ? '下一題' : '查看結果'}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('process');
+
+            return (
+                <div className="min-h-screen pb-10">
+                    <header className="bg-slate-800 text-white p-6 shadow-lg">
+                        <div className="container mx-auto">
+                            <h1 className="text-2xl md:text-3xl font-bold"><i className="fa-solid fa-clipboard-check mr-3"></i>專案資源管理 (Chapter 09)</h1>
+                            <p className="text-slate-300 mt-2">PMP 考試重點整理與模擬測驗</p>
+                        </div>
+                    </header>
+                    
+                    <nav className="bg-white shadow sticky top-0 z-10 overflow-x-auto">
+                        <div className="container mx-auto flex">
+                            {[
+                                { id: 'process', label: '六大流程', icon: 'fa-solid fa-arrow-down-1-9' },
+                                { id: 'concepts', label: '關鍵名詞', icon: 'fa-solid fa-key' },
+                                { id: 'trends', label: '趨勢與架構', icon: 'fa-solid fa-building-user' },
+                                { id: 'compare', label: '易混淆觀念', icon: 'fa-solid fa-scale-balanced' },
+                                { id: 'quiz', label: '模擬測驗', icon: 'fa-solid fa-pen-to-square' },
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex-1 py-4 px-6 text-sm font-bold whitespace-nowrap transition-colors border-b-4 ${
+                                        activeTab === tab.id 
+                                            ? 'border-blue-500 text-blue-600 bg-blue-50' 
+                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                                    }`}
+                                >
+                                    <i className={`${tab.icon} mr-2`}></i>{tab.label}
+                                </button>
+                            ))}
+                        </div>
+                    </nav>
+
+                    <main className="container mx-auto mt-6 max-w-4xl">
+                        {activeTab === 'process' && <ProcessFlow />}
+                        {activeTab === 'concepts' && <KeyConcepts />}
+                        {activeTab === 'trends' && <TrendsAndOrg />}
+                        {activeTab === 'compare' && <Comparison />}
+                        {activeTab === 'quiz' && <Quiz />}
+                    </main>
+
+                    <footer className="text-center text-gray-400 text-sm mt-10 mb-6">
+                        <p>專為專案管理初學者設計的互動式學習指南</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

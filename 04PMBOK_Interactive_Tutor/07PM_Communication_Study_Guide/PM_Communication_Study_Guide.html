@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案溝通管理 - 完整備考全書 (V2)</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #475569;
+            --bg: #f0f9ff;
+            --card-bg: #ffffff;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --error: #ef4444;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: #1e293b;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--primary), #1e40af);
+            color: white;
+        }
+
+        h1 { margin: 0; font-size: 2rem; }
+        .subtitle { opacity: 0.9; margin-top: 10px; font-size: 1rem; }
+
+        .content-pad { padding: 30px; }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin: 40px 0 20px;
+            color: var(--secondary);
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 10px;
+        }
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 30px;
+            background: var(--accent);
+            margin-right: 15px;
+            border-radius: 4px;
+        }
+
+        /* 核心概念區 */
+        .highlight-box {
+            background-color: #eff6ff;
+            border: 2px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .stat-circle {
+            background: var(--primary);
+            color: white;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* 流程卡片 */
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            border-top: 5px solid var(--secondary);
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .card h3 { margin-top: 0; color: var(--primary); }
+        .card.planning { border-top-color: #3b82f6; }
+        .card.executing { border-top-color: #f59e0b; }
+        .card.monitoring { border-top-color: #10b981; }
+
+        /* 表格樣式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+        }
+        th { background-color: #f8fafc; color: var(--secondary); }
+        tr:nth-child(even) { background-color: #fcfcfc; }
+
+        /* 術語網格 */
+        .term-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .term-item {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+        }
+        .term-title { font-weight: bold; display: block; margin-bottom: 5px; color: var(--primary); }
+
+        /* 補充知識點 - 手風琴樣式 */
+        .details {
+            margin-top: 30px;
+        }
+        details {
+            background-color: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        summary {
+            padding: 15px;
+            background-color: #f1f5f9;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--secondary);
+            list-style: none; /* Hide default triangle */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        summary::after { content: '+'; font-size: 1.5rem; }
+        details[open] summary::after { content: '-'; }
+        .details-content { padding: 20px; border-top: 1px solid var(--border); }
+
+        /* 測驗區 */
+        .quiz-area {
+            background: #fffbea;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #fcd34d;
+        }
+        .question { font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; }
+        .options button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+        }
+        .options button:hover { background-color: #f8fafc; border-color: var(--primary); }
+        .feedback { margin-top: 15px; padding: 15px; border-radius: 6px; display: none; }
+        .feedback.correct { background: #dcfce7; color: #166534; }
+        .feedback.wrong { background: #fee2e2; color: #991b1b; }
+
+        @media (max-width: 600px) {
+            .content-pad { padding: 15px; }
+            .stat-circle { width: 60px; height: 60px; font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>專案溝通管理 V2</h1>
+        <div class="subtitle">完整備考指南：流程、維度與整合</div>
+    </header>
+
+    <div class="content-pad">
+        
+        <div class="highlight-box">
+            <div class="stat-circle">90%</div>
+            <div>
+                <h3>專案經理的時間分配</h3>
+                <p>PM 約有 75% - 90% 的時間花在溝通。溝通不良會導致士氣低落、延誤交期及產出效能不佳。</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">三大核心流程 (考點骨架)</h2>
+        <div class="process-grid">
+            <div class="card planning">
+                <h3>1. 規劃 (Plan)</h3>
+                <p><strong>階段：</strong>規劃組</p>
+                <p><strong>核心：</strong>根據利害關係人需求，產出「溝通管理計畫書」。</p>
+                <p><strong>考點：</strong>如果有人抱怨沒收到信，通常是這裡沒規劃好。</p>
+            </div>
+            <div class="card executing">
+                <h3>2. 管理 (Manage)</h3>
+                <p><strong>階段：</strong>執行組</p>
+                <p><strong>核心：</strong>資訊的建立、收集、分發、儲存。</p>
+                <p><strong>考點：</strong>實際發送報告、召開會議都在這。</p>
+            </div>
+            <div class="card monitoring">
+                <h3>3. 監視 (Monitor)</h3>
+                <p><strong>階段：</strong>監控組</p>
+                <p><strong>核心：</strong>確保資訊需求被滿足。</p>
+                <p><strong>考點：</strong>關鍵字是「調整」。若溝通無效，需修正策略。</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">溝通模型與方法</h2>
+        <div class="term-grid">
+            <div class="term-item">
+                <span class="term-title">互動式 (Interactive)</span>
+                多向交換，最有效率。<br>(例：會議、通話)
+            </div>
+            <div class="term-item">
+                <span class="term-title">推式 (Push)</span>
+                傳送給特定人，不保證理解。<br>(例：Email、新聞稿)
+            </div>
+            <div class="term-item">
+                <span class="term-title">拉式 (Pull)</span>
+                資訊量大，自行存取。<br>(例：內網、知識庫)
+            </div>
+            <div class="term-item">
+                <span class="term-title">噪音 (Noise)</span>
+                干擾傳遞或理解的因素。<br>(例：文化差異、環境吵雜)
+            </div>
+        </div>
+
+        <h2 class="section-title">進階考點細節 (點擊展開)</h2>
+        <div class="details">
+            <details>
+                <summary>1. 溝通維度分類表 (必考比較)</summary>
+                <div class="details-content">
+                    <table>
+                        <tr>
+                            <th>維度</th>
+                            <th>說明與範例</th>
+                        </tr>
+                        <tr>
+                            <td><strong>正式 vs. 非正式</strong></td>
+                            <td>正式：計畫書、報告 (留存紀錄)<br>非正式：Email、口頭談話 (即時互動)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>書面 vs. 口頭</strong></td>
+                            <td>書面：便於查證<br>口頭：利於解決衝突、澄清誤會</td>
+                        </tr>
+                        <tr>
+                            <td><strong>垂直 vs. 水平</strong></td>
+                            <td>垂直：對上級或下屬<br>水平：對同儕或跨部門</td>
+                        </tr>
+                        <tr>
+                            <td><strong>內部 vs. 外部</strong></td>
+                            <td>內部：團隊成員<br>外部：顧客、媒體、大眾</td>
+                        </tr>
+                    </table>
+                </div>
+            </details>
+
+            <details>
+                <summary>2. 專案績效報告種類</summary>
+                <div class="details-content">
+                    <ul>
+                        <li><strong>現況報告 (Status Report)：</strong> 描述「現在」在哪裡。</li>
+                        <li><strong>進度報告 (Progress Report)：</strong> 描述「過去這段時間」完成了什麼。</li>
+                        <li><strong>預測報告 (Forecasting Report)：</strong> 預測「未來」會如何。</li>
+                        <li><strong>趨勢分析：</strong> 績效是在變好還是變壞？</li>
+                        <li><strong>會議紀錄好壞標準：</strong> 完整性、正確性、執行力、分工性。</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details>
+                <summary>3. 與其他領域及組織的整合</summary>
+                <div class="details-content">
+                    <p><strong>資源管理：</strong> 溝通是用來解決團隊衝突、提升向心力的工具。</p>
+                    <p><strong>利害關係人管理：</strong> 溝通的目的是管理他們的「期望」與「參與度」。</p>
+                    <p><strong>組織結構影響：</strong>
+                        <br>❌ <strong>功能型組織：</strong> 溝通路徑長，受限於部門壁壘（溝通較難）。
+                        <br>✅ <strong>專案型組織：</strong> PM 權力大，溝通較直接。
+                    </p>
+                </div>
+            </details>
+        </div>
+
+        <h2 class="section-title">情境模擬測驗</h2>
+        <div class="quiz-area">
+            <div class="question">Q1: 你正在管理一個跨國專案，團隊成員分佈在不同時區。為了確保所有人都知道最新的專案變更，你發送了一封詳細的電子郵件。但過了一週，你發現很多人根本沒看那封信導致做錯事。請問這顯示了哪種溝通方法的缺點？</div>
+            <div class="options">
+                <button onclick="checkAnswer(this, true, '正確！Email 屬於推式溝通 (Push)，缺點就是「不保證接收者已理解或已閱讀」。')">A. 推式溝通 (Push)</button>
+                <button onclick="checkAnswer(this, false, '錯誤。拉式溝通是讓他們自己去網站看，題目說是寄 Email。')">B. 拉式溝通 (Pull)</button>
+                <button onclick="checkAnswer(this, false, '錯誤。互動式溝通通常能確認對方是否理解（如電話確認），這正是 Email 缺乏的。')">C. 互動式溝通 (Interactive)</button>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="quiz-area" style="margin-top: 20px;">
+            <div class="question">Q2: 專案經理正在撰寫會議紀錄，他特別注意紀錄中必須包含「誰負責什麼項目」以及「何時完成」。這符合高品質會議紀錄的哪項特性？</div>
+            <div class="options">
+                <button onclick="checkAnswer(this, false, '不完全正確。正確性是指內容無誤，但題目強調的是指派任務。')">A. 正確性</button>
+                <button onclick="checkAnswer(this, true, '正確！分工性 (與執行力) 強調明確指出誰該做什麼 (Action Items)。')">B. 分工性/執行力</button>
+                <button onclick="checkAnswer(this, false, '錯誤。趨勢分析是看績效走向，不是會議紀錄的特性。')">C. 趨勢分析</button>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+    </div>
+
+    <footer style="text-align: center; padding: 20px; color: var(--secondary); font-size: 0.8rem;">
+        Complete Study Guide V2 | Based on NotebookLM Analysis
+    </footer>
+</div>
+
+<script>
+    function checkAnswer(btn, isCorrect, msg) {
+        const parent = btn.parentElement.parentElement;
+        const feedback = parent.querySelector('.feedback');
+        
+        feedback.style.display = 'block';
+        feedback.textContent = msg;
+        
+        if (isCorrect) {
+            feedback.className = 'feedback correct';
+        } else {
+            feedback.className = 'feedback wrong';
+        }
+    }
+</script>
+
+</body>
+</html>
