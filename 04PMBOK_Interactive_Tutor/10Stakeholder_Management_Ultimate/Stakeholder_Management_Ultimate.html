@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理終極全配版：利害關係人</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #475569;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --tag-bg: #e0f2fe;
+            --tag-hover: #bae6fd;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
+            background-color: var(--bg);
+            color: var(--secondary);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            width: 100%;
+            padding: 2.5rem 0;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        h1 { margin: 0; font-size: 2rem; }
+        .badge { background: var(--accent); color: #fff; padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; vertical-align: middle; margin-left: 10px; font-weight: bold; }
+        p.subtitle { opacity: 0.9; margin-top: 0.5rem; }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            margin: 0 auto 3rem auto;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .tab-btn {
+            padding: 10px 25px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--secondary);
+            border-radius: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Section Visibility */
+        .section { display: none; animation: fadeIn 0.4s ease-out; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Card Styles */
+        .concept-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border-left: 6px solid var(--primary);
+        }
+
+        .concept-title {
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.8rem;
+        }
+
+        .concept-icon { margin-right: 10px; font-size: 1.4rem; }
+
+        /* Lists and Text */
+        ul, ol { padding-left: 20px; line-height: 1.7; }
+        li { margin-bottom: 8px; }
+        strong { color: #0f172a; }
+
+        /* Interactive Tags Area */
+        .tag-group { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .tag {
+            background-color: var(--tag-bg);
+            color: #0369a1;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            display: inline-flex; align-items: center;
+        }
+        .tag::after { content: "👇"; margin-left: 6px; font-size: 0.8em; opacity: 0.5; }
+        .tag:hover { transform: translateY(-2px); background-color: var(--tag-hover); }
+        .tag.active { background-color: var(--primary); color: white; border-color: var(--primary-dark); }
+        .tag.active::after { content: "👀"; opacity: 1; }
+
+        .definition-box {
+            margin-top: 1rem; padding: 1.5rem;
+            background-color: #fffbeb; border: 2px dashed #fcd34d;
+            border-radius: 12px; color: #92400e;
+            display: none; animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%; border-collapse: collapse; margin-top: 1rem;
+        }
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #e2e8f0; padding: 12px; text-align: left;
+        }
+        .comparison-table th { background-color: #f1f5f9; color: var(--secondary); }
+
+        /* Quiz Styles */
+        .quiz-container { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .question-text { font-size: 1.25rem; font-weight: bold; margin-bottom: 1.5rem; color: #1e293b; }
+        .option-btn {
+            width: 100%; padding: 15px; margin-bottom: 10px;
+            border: 2px solid #e2e8f0; border-radius: 10px;
+            background: white; text-align: left; cursor: pointer;
+            font-size: 1rem; transition: all 0.2s;
+        }
+        .option-btn:hover:not([disabled]) { border-color: var(--primary); background-color: #eff6ff; }
+        .option-btn.correct { background-color: #ecfdf5; border-color: #10b981; color: #047857; font-weight: bold; }
+        .option-btn.wrong { background-color: #fef2f2; border-color: #ef4444; color: #b91c1c; opacity: 0.7; }
+        .feedback { margin-top: 1.5rem; padding: 1rem; border-radius: 8px; display: none; }
+        .feedback.success { background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+        .feedback.error { background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+
+        .progress-bar { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin-bottom: 2rem; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
+        .nav-btn { background: var(--primary); color: white; padding: 10px 20px; border: none; border-radius: 8px; margin-top: 1rem; cursor: pointer; display: none; }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>利害關係人管理 <span class="badge">終極全配版</span></h1>
+    <p class="subtitle">定義、流程、工具、整合與軟技能一次掌握</p>
+</header>
+
+<div class="container">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('core')">1. 核心觀念</button>
+        <button class="tab-btn" onclick="switchTab('process')">2. 四大流程</button>
+        <button class="tab-btn" onclick="switchTab('tools')">3. 工具與整合</button>
+        <button class="tab-btn" onclick="switchTab('skills')">4. 軟技能互動</button>
+        <button class="tab-btn" onclick="switchTab('quiz')">✍️ 總測驗</button>
+    </div>
+
+    <div id="core" class="section active">
+        <div class="concept-card">
+            <div class="concept-title"><span class="concept-icon">🎯</span>成功的定義演變</div>
+            <p><strong>舊觀念：</strong> 時程內 + 預算內 = 成功。</p>
+            <p><strong>新觀念（第10大領域）：</strong> 達成或超出<strong>利害關係人的期待</strong> = 成功。</p>
+            <p><em>筆記：就算專案做得再完美，如果客戶（利害關係人）不開心，就是失敗。</em></p>
+        </div>
+
+        <div class="concept-card">
+            <div class="concept-title"><span class="concept-icon">⚖️</span>區辨：溝通 vs. 利害關係人</div>
+            <table class="comparison-table">
+                <tr>
+                    <th>項目</th>
+                    <th>溝通管理 (Communications)</th>
+                    <th>利害關係人管理 (Stakeholders)</th>
+                </tr>
+                <tr>
+                    <td><strong>焦點</strong></td>
+                    <td>資訊的傳遞技術</td>
+                    <td><strong>人</strong> 的情緒與支持</td>
+                </tr>
+                <tr>
+                    <td><strong>目的</strong></td>
+                    <td>確保訊息準確送達</td>
+                    <td><strong>管理期望</strong>、減少阻力</td>
+                </tr>
+                <tr>
+                    <td><strong>角色</strong></td>
+                    <td>資訊分發者</td>
+                    <td>關係協調者</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div id="process" class="section">
+        <div class="concept-card">
+            <div class="concept-title"><span class="concept-icon">🔄</span>四大關鍵流程 (順序必考)</div>
+            <p>專案管理的邏輯是線性的，請記住這個順序：</p>
+            <ol>
+                <li>
+                    <strong>識別 (Identify)</strong><br>
+                    <span style="font-size:0.9em; color:#64748b;">時間點：啟動階段。</span><br>
+                    產出「利害關係人登記簿」，記錄誰是誰、權力多大。
+                </li>
+                <li>
+                    <strong>規劃 (Plan)</strong><br>
+                    <span style="font-size:0.9em; color:#64748b;">時間點：規劃階段。</span><br>
+                    產出「參與計畫」。思考如何讓反對者變中立，中立者變支持者。
+                </li>
+                <li>
+                    <strong>管理 (Manage)</strong><br>
+                    <span style="font-size:0.9em; color:#64748b;">時間點：執行階段。</span><br>
+                    實際去溝通、運用軟技能解決衝突（這是動詞）。
+                </li>
+                <li>
+                    <strong>監視 (Monitor)</strong><br>
+                    <span style="font-size:0.9em; color:#64748b;">時間點：監控階段。</span><br>
+                    檢查策略有沒有效？如果這個人還是反對，就要調整計畫。
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <div id="tools" class="section">
+        <div class="concept-card">
+            <div class="concept-title"><span class="concept-icon">📊</span>分析工具：權力/利益方格</div>
+            <p>我們不能對所有人都花一樣的時間，必須依照重要性分類：</p>
+            <ul>
+                <li><strong>高權力 / 高利益：</strong> <span style="color:#d97706; font-weight:bold;">重點管理</span>（老闆、大客戶）。要隨時報告，確保滿意。</li>
+                <li><strong>高權力 / 低利益：</strong> 保持滿意（避免他們變成阻礙）。</li>
+                <li><strong>低權力 / 高利益：</strong> 隨時告知（雖然沒實權，但很關心專案）。</li>
+                <li><strong>低權力 / 低利益：</strong> 監督即可（不要花太多時間）。</li>
+            </ul>
+        </div>
+
+        <div class="concept-card">
+            <div class="concept-title"><span class="concept-icon">🕸️</span>跨領域整合 (Spiderweb)</div>
+            <p>利害關係人影響著其他知識領域：</p>
+            <ul>
+                <li><strong>與範疇 (Scope)：</strong> 「蒐集需求」的輸入就是利害關係人。沒有人，就沒有需求。</li>
+                <li><strong>與風險 (Risk)：</strong> 每個人的「風險容忍度」不同（保守 vs. 激進），這決定了你的風險應對策略。</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="skills" class="section">
+        <div class="concept-card">
+            <div class="concept-title"><span class="concept-icon">💡</span>關鍵軟實力 (點擊學習)</div>
+            <p>在「管理 (Manage)」流程中，你需要以下技能來搞定「人」的問題：</p>
+            
+            <div class="tag-group">
+                <button class="tag" onclick="showDef('listening', this)">主動聆聽 (Active Listening)</button>
+                <button class="tag" onclick="showDef('culture', this)">文化意識 (Cultural Awareness)</button>
+                <button class="tag" onclick="showDef('conflict', this)">衝突管理 (Conflict Management)</button>
+                <button class="tag" onclick="showDef('political', this)">政治意識 (Political Awareness)</button>
+            </div>
+
+            <div id="def-box" class="definition-box">
+                <div id="def-title" style="font-weight:bold; font-size:1.1rem; margin-bottom:0.5rem;"></div>
+                <div id="def-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="quiz" class="section">
+        <div class="quiz-container">
+            <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+            <div id="quiz-content"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- Soft Skills Logic ---
+    const definitions = {
+        listening: {
+            title: "👂 主動聆聽 (Active Listening)",
+            content: "不只是「聽見」，而是聽出「弦外之音」。<br>做法：複述對方的觀點、觀察肢體語言、確認理解。<br>考點：當利害關係人覺得需求未被重視時首選。"
+        },
+        culture: {
+            title: "🌏 文化意識 (Cultural Awareness)",
+            content: "理解不同群體或國家的溝通差異。<br>做法：調整溝通方式（例如高語境文化不直接說不）。<br>考點：跨國團隊或海外顧問溝通不良時使用。"
+        },
+        conflict: {
+            title: "⚔️ 衝突管理 (Conflict Management)",
+            content: "解決意見不合。包含：撤退、強迫、妥協、緩和、解決問題。<br>考點：最好的方法通常是「合作/解決問題 (Collaborate)」，追求雙贏。"
+        },
+        political: {
+            title: "🏛️ 政治意識 (Political Awareness)",
+            content: "看懂組織內的「潛規則」與權力流動。<br>做法：辨識誰是真正的掌權者（Key Influencer）。<br>考點：推動變革受阻，或需要組織內部資源時使用。"
+        }
+    };
+
+    function showDef(key, btn) {
+        document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        const box = document.getElementById('def-box');
+        document.getElementById('def-title').innerHTML = definitions[key].title;
+        document.getElementById('def-content').innerHTML = definitions[key].content;
+        box.style.display = 'block';
+        box.style.animation = 'none';
+        box.offsetHeight; /* trigger reflow */
+        box.style.animation = 'slideDown 0.3s ease';
+    }
+
+    // --- Tab Logic ---
+    function switchTab(tabId) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.querySelector(`button[onclick="switchTab('${tabId}')"]`).classList.add('active');
+        if(tabId === 'quiz' && currentQuestion === 0) renderQuestion();
+    }
+
+    // --- Quiz Logic ---
+    const quizData = [
+        {
+            question: "Q1. 專案經理小明發現專案最大的風險來自於一位擁有極高權力，但對專案漠不關心的高層。根據「權力/利益方格」，小明應採取什麼策略？",
+            options: ["重點管理 (Manage Closely)", "保持滿意 (Keep Satisfied)", "隨時告知 (Keep Informed)", "監督即可 (Monitor)"],
+            correct: 1,
+            explanation: "高權力、低利益（漠不關心）的對象，策略是「保持滿意」。你要確保他不會變成阻礙，但不需要像對待核心利害關係人那樣每天報告。"
+        },
+        {
+            question: "Q2. 關於「溝通管理」與「利害關係人管理」的差異，下列何者正確？",
+            options: ["溝通管理關注『人』；利害關係人管理關注『訊息』", "兩者完全相同", "溝通管理是傳遞資訊的技術；利害關係人管理是管理期望與支持", "利害關係人管理只在專案結束時進行"],
+            correct: 2,
+            explanation: "核心考點！溝通是手段（怎麼傳Email、怎麼開會），利害關係人管理是目的（確保他們支持專案、滿意成果）。"
+        },
+        {
+            question: "Q3. 在哪一個流程中，我們主要產出「利害關係人登記簿」？",
+            options: ["識別利害關係人 (Identify)", "規劃利害關係人參與 (Plan)", "管理利害關係人參與 (Manage)", "監視利害關係人參與 (Monitor)"],
+            correct: 0,
+            explanation: "「識別」流程的主要產出就是登記簿（Register），這是在專案一開始（啟動階段）就要做的。"
+        },
+        {
+            question: "Q4. 團隊成員因為文化背景不同，對於「準時」的定義有誤解，導致衝突。專案經理應該運用哪項技能？",
+            options: ["政治意識", "文化意識", "談判技巧", "權力分析"],
+            correct: 1,
+            explanation: "這屬於文化差異造成的溝通障礙，應運用「文化意識」來理解並協調不同背景成員的認知。"
+        },
+        {
+            question: "Q5. 為何「蒐集需求 (Collect Requirements)」與利害關係人管理高度相關？",
+            options: ["因為利害關係人提供預算", "因為必須先識別出利害關係人，才能找他們問需求", "因為需求文件需要利害關係人簽名", "不相關，這是範疇管理的事"],
+            correct: 1,
+            explanation: "邏輯題。你不知道「人」在哪裡，就無法問出「需求」是什麼。所以利害關係人管理是範疇管理的基礎。"
+        }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function renderQuestion() {
+        const q = quizData[currentQuestion];
+        document.getElementById('progress').style.width = `${((currentQuestion)/quizData.length)*100}%`;
+        document.getElementById('quiz-content').innerHTML = `
+            <div class="question-text">${q.question}</div>
+            <div class="options">${q.options.map((opt, i) => 
+                `<button class="option-btn" onclick="checkAnswer(${i}, this)">${opt}</button>`
+            ).join('')}</div>
+            <div id="feedback-box" class="feedback"></div>
+            <button id="next-btn" class="nav-btn" onclick="nextQuestion()">下一題 ➜</button>
+        `;
+    }
+
+    function checkAnswer(idx, btn) {
+        document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+        const q = quizData[currentQuestion];
+        const fb = document.getElementById('feedback-box');
+        if (idx === q.correct) {
+            btn.classList.add('correct');
+            fb.innerHTML = `<strong>🎉 正確！</strong><br>${q.explanation}`;
+            fb.className = 'feedback show success';
+            score++;
+        } else {
+            btn.classList.add('wrong');
+            document.querySelectorAll('.option-btn')[q.correct].classList.add('correct');
+            fb.innerHTML = `<strong>⚠️ 答錯了</strong><br>${q.explanation}`;
+            fb.className = 'feedback show error';
+        }
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        if (currentQuestion < quizData.length) renderQuestion();
+        else {
+            document.getElementById('progress').style.width = '100%';
+            document.getElementById('quiz-content').innerHTML = `
+                <div style="text-align:center; padding:2rem;">
+                    <h2>全能測驗完成</h2>
+                    <div style="font-size:3rem; color:var(--primary); font-weight:800; margin:1rem 0;">${score} / ${quizData.length}</div>
+                    <p>你現在已經掌握了利害關係人管理的所有核心考點！🎓</p>
+                    <button class="nav-btn" style="display:inline-block;" onclick="location.reload()">🔄 重新複習</button>
+                </div>`;
+        }
+    }
+</script>
+
+</body>
+</html>

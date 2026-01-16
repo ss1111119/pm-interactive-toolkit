@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案利害關係人互動 v2.0 - 完整備考版</title>
+    <style>
+        :root {
+            --primary: #4f46e5; /* 改為更深沈的專業藍 */
+            --secondary: #334155;
+            --accent: #d97706;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Microsoft JhengHei, sans-serif;
+            background-color: var(--bg);
+            color: var(--secondary);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        h1 { color: var(--primary); margin: 0 0 10px 0; }
+        .version-tag { background: var(--accent); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; vertical-align: middle; }
+
+        .tabs { display: flex; justify-content: center; margin-bottom: 20px; gap: 8px; flex-wrap: wrap; }
+        
+        .tab-btn {
+            padding: 10px 16px;
+            border: none;
+            background: #e5e7eb;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #4b5563;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+        }
+
+        .content-section {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: none;
+            animation: fadeIn 0.4s;
+        }
+        .content-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Flashcard Styles (New in v2.0) */
+        .flashcard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .flashcard {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .flashcard:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .flashcard-front { font-weight: bold; font-size: 1.1em; color: var(--primary); }
+        .flashcard-back { display: none; font-size: 0.95em; color: var(--secondary); }
+        .flashcard.flipped .flashcard-front { display: none; }
+        .flashcard.flipped .flashcard-back { display: block; }
+        .instruction { text-align: center; font-size: 0.9em; color: #64748b; margin-bottom: 15px; }
+
+        /* Matrix Styles */
+        .matrix-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: center; }
+        th { background-color: #f8fafc; color: var(--primary); }
+        .cell-interactive { cursor: pointer; user-select: none; }
+        .cell-interactive:hover { background-color: #eff6ff; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; display: inline-block; }
+        .badge-c { background: #fee2e2; color: #991b1b; }
+        .badge-d { background: #dcfce7; color: #166534; }
+
+        /* Quiz Styles */
+        .quiz-item { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        .options label { display: block; margin: 8px 0; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .options label:hover { background: #e0e7ff; }
+        .feedback { margin-top: 10px; padding: 12px; border-radius: 8px; display: none; font-weight: 500; }
+        .feedback.correct { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .feedback.wrong { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>專案管理家教 v2.0 <span class="version-tag">完整版</span></h1>
+        <p>補強 EEF/OPA、參與層級定義與根本原因分析</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('flashcards')">1. 必背定義 (新增)</button>
+        <button class="tab-btn" onclick="switchTab('matrix')">2. 互動矩陣</button>
+        <button class="tab-btn" onclick="switchTab('quiz')">3. 進階測驗 (更新)</button>
+    </div>
+
+    <div id="flashcards" class="content-section active">
+        <h2>關鍵定義閃示卡</h2>
+        <p class="instruction">👇 點擊卡片翻面查看定義，考試前必須熟記！</p>
+        
+        <div class="flashcard-grid">
+            <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                <div class="flashcard-front">Unaware<br>(不知曉)</div>
+                <div class="flashcard-back">完全不知道專案及其潛在影響。<br>策略：需主動告知。</div>
+            </div>
+            <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                <div class="flashcard-front">Resistant<br>(抗拒)</div>
+                <div class="flashcard-back">知道專案，但抵制變更。<br>策略：使用「根本原因分析」找出原因並化解。</div>
+            </div>
+            <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                <div class="flashcard-front">Neutral<br>(中立)</div>
+                <div class="flashcard-back">不予支持也不反對。<br>策略：保持監控，避免轉為抗拒。</div>
+            </div>
+            <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                <div class="flashcard-front">Supportive<br>(支持)</div>
+                <div class="flashcard-back">知道專案並支持變更。<br>策略：維持其熱度。</div>
+            </div>
+            <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                <div class="flashcard-front">Leading<br>(領導)</div>
+                <div class="flashcard-back">積極參與以確保成功。<br>注意：Sponsor 必須在此層級。</div>
+            </div>
+            <div class="flashcard" onclick="this.classList.toggle('flipped')" style="border-color: var(--accent);">
+                <div class="flashcard-front">EEF<br>(企業環境因素)</div>
+                <div class="flashcard-back">不可控因素。<br>例：公司政治氛圍、組織文化。</div>
+            </div>
+             <div class="flashcard" onclick="this.classList.toggle('flipped')" style="border-color: var(--accent);">
+                <div class="flashcard-front">OPA<br>(組織過程資產)</div>
+                <div class="flashcard-back">可利用資源。<br>例：歷史經驗教訓 (Lessons Learned)。</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="matrix" class="content-section">
+        <h2>利害關係人互動評估矩陣</h2>
+        <p>請點擊格子設定狀態 (C=目前, D=期望)。<br>思考：從 C 到 D 需要什麼具體行動？</p>
+
+        <div class="matrix-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>角色</th>
+                        <th>不知曉</th>
+                        <th>抗拒</th>
+                        <th>中立</th>
+                        <th>支持</th>
+                        <th>領導</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>行銷經理</td>
+                        <td class="cell-interactive" onclick="toggleStatus(this)"></td>
+                        <td class="cell-interactive" onclick="toggleStatus(this)"><span class="badge badge-c">C</span></td>
+                        <td class="cell-interactive" onclick="toggleStatus(this)"></td>
+                        <td class="cell-interactive" onclick="toggleStatus(this)"><span class="badge badge-d">D</span></td>
+                        <td class="cell-interactive" onclick="toggleStatus(this)"></td>
+                    </tr>
+                    <tr>
+                        <td>工程師</td>
+                        <td class="cell-interactive" onclick="toggleStatus(this)"></td>
+                        <td class="cell-interactive" onclick="toggleStatus(this)"></td>
+                        <td class="cell-interactive" onclick="toggleStatus(this)"><span class="badge badge-c">C</span><span class="badge badge-d">D</span></td>
+                        <td class="cell-interactive" onclick="toggleStatus(this)"></td>
+                        <td class="cell-interactive" onclick="toggleStatus(this)"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="quiz" class="content-section">
+        <h2>進階情境測驗 (v2.0)</h2>
+        
+        <div class="quiz-item">
+            <p><strong>題目 1：</strong> 專案經理發現某位關鍵利害關係人對專案持「抗拒」態度。為了制定有效的互動策略，經理決定深入探討該利害關係人抗拒背後的真正理由（例如：擔憂工作權受損）。請問他正在使用什麼技術？</p>
+            <div class="options">
+                <label><input type="radio" name="q1" value="wrong"> 標竿學習 (Benchmarking)</label>
+                <label><input type="radio" name="q1" value="correct"> 根本原因分析 (Root Cause Analysis)</label>
+                <label><input type="radio" name="q1" value="wrong"> 決策樹分析 (Decision Tree)</label>
+                <label><input type="radio" name="q1" value="wrong"> 心智圖 (Mind Mapping)</label>
+            </div>
+            <div class="feedback" id="f1"></div>
+        </div>
+
+        <div class="quiz-item">
+            <p><strong>題目 2：</strong> 在規劃利害關係人參與時，專案經理意識到公司的「辦公室政治」非常複雜，可能會影響策略的制定。請問「辦公室政治」屬於下列哪一項輸入？</p>
+            <div class="options">
+                <label><input type="radio" name="q2" value="wrong"> 組織過程資產 (OPA)</label>
+                <label><input type="radio" name="q2" value="correct"> 企業環境因素 (EEF)</label>
+                <label><input type="radio" name="q2" value="wrong"> 利害關係人登記簿</label>
+                <label><input type="radio" name="q2" value="wrong"> 專案章程</label>
+            </div>
+            <div class="feedback" id="f2"></div>
+        </div>
+
+         <div class="quiz-item">
+            <p><strong>題目 3 (魔王題)：</strong> 專案發起人 (Sponsor) 目前對專案的態度是「支持 (Supportive)」。根據專案管理的最佳實務，他在矩陣中的期望位置 (Desired) 應該要是哪裡？</p>
+            <div class="options">
+                <label><input type="radio" name="q3" value="wrong"> 支持 (Supportive) 即可</label>
+                <label><input type="radio" name="q3" value="wrong"> 中立 (Neutral)</label>
+                <label><input type="radio" name="q3" value="correct"> 領導 (Leading)</label>
+                <label><input type="radio" name="q3" value="wrong"> 不知曉 (Unaware)</label>
+            </div>
+            <div class="feedback" id="f3"></div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    function toggleStatus(cell) {
+        if (cell.innerHTML.includes('C')) {
+             cell.innerHTML = '';
+        } else if (cell.innerHTML.includes('D')) {
+             cell.innerHTML = '<span class="badge badge-c">C</span>';
+        } else {
+             cell.innerHTML = '<span class="badge badge-d">D</span>';
+        }
+    }
+
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            let feedbackId = 'f' + this.name.replace('q', '');
+            let feedbackEl = document.getElementById(feedbackId);
+            
+            if (this.value === 'correct') {
+                feedbackEl.className = 'feedback correct';
+                let msg = '✅ 答對了！';
+                if(this.name === 'q1') msg += ' 對抗拒者，找出「為什麼」是關鍵。';
+                if(this.name === 'q2') msg += ' EEF 是你無法控制的環境（如政治）。';
+                if(this.name === 'q3') msg += ' Sponsor 必須積極掃除障礙，所以必須是 Leading。';
+                feedbackEl.innerHTML = msg;
+                feedbackEl.style.display = 'block';
+            } else {
+                feedbackEl.className = 'feedback wrong';
+                feedbackEl.innerHTML = '❌ 再試一次。提示：回顧一下「定義閃示卡」。';
+                feedbackEl.style.display = 'block';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
